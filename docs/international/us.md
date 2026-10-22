@@ -12,7 +12,7 @@
 - **CPRA:** רשימת "sensitive personal information" כוללת מוצא, אמונות דתיות/פילוסופיות, חברות באיגוד, ביומטריה ועוד, אבל **לא** "דעות פוליטיות" במפורש ([Clarip](https://www.clarip.com/data-privacy/handling-sensitive-personal-information-under-the-cpra-and-the-vcdpa/), [IAPP](https://iapp.org/news/a/new-categories-new-rights-the-cpras-opt-out-provision-for-sensitive-data)). הביומטריה של ה-KYC כן נכללת.
 - חלק מחוקי המדינות האחרים אולי כוללים דעות פוליטיות כמידע רגיש. **דורש אימות** מדינה-מדינה ([השוואה של Clarip](https://www.clarip.com/data-privacy/side-by-side-comparison-how-sensitive-data-is-defined-among-states/)).
 - "מכירה" ב-CCPA מוגדרת רחב, וצריך מנגנון opt-out. מידע שעבר de-identification או aggregate consumer information יוצא מההגדרה, בתנאים. **דורש אימות** לגבי התנאים המדויקים. **הנחה:** מכירת תוצאות מצרפיות בלבד (סף k מינימלי) תהיה מחוץ ל"מכירה".
-- ביומטריה: חוק BIPA באילינוי מחייב הסכמה בכתב ומאפשר תביעות פרטיות. סיכון גבוה לתבניות פנים לזיהוי כפילויות. **דורש אימות**.
+- ביומטריה: חוק BIPA באילינוי מחייב הסכמה בכתב ומאפשר תביעות פרטיות. לפי [ADR-0007](../decisions/0007-high-assurance-identity-verification.md) אין תבניות פנים ואין השוואה בין משתמשים, מה שמקטין את הסיכון; אבל גם התאמת 1:1 חולפת עשויה להיחשב איסוף של "biometric identifier", ולכן נדרשים הסכמה בכתב ומדיניות מחיקה מפורסמת. **דורש אימות**.
 
 ## ג. רגולציית פלטפורמות
 - **Section 230** (47 U.S.C. §230) מגן על פלטפורמה מאחריות לתוכן משתמשים ועל החלטות מודרציה בתום לב ([Cornell LII](https://www.law.cornell.edu/uscode/text/47/230)). זה תומך ישירות בחוקי הכבוד/אמת של GeoPoll.
