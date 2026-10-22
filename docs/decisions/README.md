@@ -8,3 +8,6 @@
 |---|---|---|---|
 | [0001](0001-github-repo-source-of-truth.md) | ריפו GitHub כמקור האמת | 2026-10-22 | התקבל |
 | [0002](0002-identity-gov-id-selfie-liveness.md) | אימות זהות: תעודה ממשלתית וסלפי עם liveness דרך ספק KYC | 2026-10-22 | התקבל (הספק לא נבחר) |
+| [0003](0003-israel-mvp-scope-phasing.md) | היקף MVP ישראל וחלוקה לשלבים | 2026-10-22 | מוצע |
+| [0004](0004-election-poll-legal-labelling-blackout-il.md) | סימון סקרי בחירות והקפאה בחלון האיסור (ישראל) | 2026-10-22 | מוצע |
+| [0005](0005-mvp-eligibility-israeli-citizens.md) | זכאות ב-MVP: אזרחים ישראלים מגיל 18 | 2026-10-22 | מוצע |
