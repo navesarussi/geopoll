@@ -45,6 +45,7 @@
 | 09 | שיווק | [09-marketing.md](docs/axes/09-marketing.md) |
 | 10 | עיצוב | [10-design.md](docs/axes/10-design.md) |
 | — | **תוכנית MVP ישראל** (מסמך נגזר) | [docs/mvp-israel.md](docs/mvp-israel.md) |
+| — | הצעות לפיצ'רים (מוצע) | [docs/features/proposals.md](docs/features/proposals.md) |
 | — | יומן החלטות | [docs/decisions/](docs/decisions/README.md) |
 
 ## היררכיית מסמכים
