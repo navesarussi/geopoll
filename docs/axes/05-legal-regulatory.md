@@ -51,3 +51,4 @@ _אין עדיין._
 - [Regulation (EU) 2024/900](https://eur-lex.europa.eu/eli/reg/2024/900/oj)
 - [Loi n° 77-808](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000522846)
 - [ACE Project – poll restrictions](https://aceproject.org/epic-en/CDTable?question=ME060)
+- [מחקר כל זכות: רישיון BY-NC-SA, זכאות לבחירות, פרטיות, חופש המידע](../research/kol-zchut.md)
