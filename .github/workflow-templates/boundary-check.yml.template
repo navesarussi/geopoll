@@ -1,0 +1,13 @@
+# תבנית – לא פעילה. אוכפת שאין ייבוא בין תחום A לתחום B.
+name: boundary-check
+on: [pull_request]
+permissions: {contents: read}
+jobs:
+  boundaries:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: forbid cross-zone imports
+        run: |
+          ! grep -rnE "services/(voting|results)" services/identity services/issuer
+          ! grep -rnE "services/(identity|issuer)" services/voting services/results

@@ -1,0 +1,20 @@
+# תבנית – לא פעילה. להעביר ל-.github/workflows/ci-code.yml רק כשיש קוד ואחרי אישור ADR-0016.
+name: ci-code
+on: [pull_request]
+permissions: {contents: read}
+jobs:
+  ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22, cache: pnpm}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo run lint test build --filter='...[origin/main]'
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo fmt --check && cargo clippy -- -D warnings && cargo test --workspace

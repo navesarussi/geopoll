@@ -209,6 +209,10 @@
 | סקרים מתמשכים, סף k | 1 | [04](axes/04-voting-mechanics.md#מצב-נוכחי) | — |
 | סימון 16ה(ד) והקפאה בחלון | 1 | [04](axes/04-voting-mechanics.md#מצב-נוכחי); [05](axes/05-legal-regulatory.md#מצב-נוכחי) | 0004 (התקבל) |
 | ingestion מ-OData, לוח בחירות IL | 1 | [06](axes/06-infrastructure-engineering.md#מצב-נוכחי) | — |
+| ארכיטקטורה: תחומי אמון A/B/C, בלי קריאה בין A ל-B | 0–1 | [architecture](architecture/README.md); [06](axes/06-infrastructure-engineering.md#מצב-נוכחי); [01](axes/01-security-identity-privacy.md#מצב-נוכחי) | 0007; 0016 (מוצע) |
+| סכמת אישורים: blind signature + Semaphore, PoC Rarimo | 0–1 | [01 · שאלות פתוחות](axes/01-security-identity-privacy.md#שאלות-פתוחות) | 0017 (מוצע) |
+| GTM ובטא סגורה ל-18–25; מדדי PMF | 0–1 | [gtm](gtm/README.md); [09](axes/09-marketing.md#מצב-נוכחי); [11](axes/11-youth-growth.md#מצב-נוכחי) | 0015 |
+| תשתית פיתוח: CI, AGENTS.md, backlog | 0 | [ci-cd](engineering/ci-cd.md); [backlog](roadmap/backlog.md); [AGENTS.md](../AGENTS.md) | 0016 (מוצע) |
 | דוח שקיפות | 1 | [07](axes/07-governance-trust.md#מצב-נוכחי); README עיקרון 5 | — |
 | מרחבי רשויות ותכונת רשות | 2 | [01](axes/01-security-identity-privacy.md); [02](axes/02-content.md) | עתידי |
 | משאלי עם ועצומות | 3 | [04 · משאלי עם](axes/04-voting-mechanics.md#מצב-נוכחי) | עתידי |
@@ -220,7 +224,8 @@
 1ב. אילו סוגי מסמכים ישראליים מתקבלים בשלב 1 (ADR-0007), ועו"ד לבסיס חוקי לעיבוד ביומטרי חולף.
 1ג. אישור הצעות הפיצ'רים P1–P4 ([proposals](features/proposals.md)).
 2. בחירת ספק KYC (ADR חדש).
-3. בחירת פרימיטיב קריפטוגרפי ל-MVP (Semaphore מול blind signatures).
+3. בחירת פרימיטיב קריפטוגרפי ל-MVP – מוצע ב-[ADR-0017](decisions/0017-anonymous-credential-scheme.md); stack ב-[ADR-0016](decisions/0016-proposed-tech-stack.md) (מוצע).
+3א. מיקום נתונים / אחסון בישראל (עו"ד) – [architecture §9](architecture/README.md#9-תשתית-ומיקום-נתונים).
 4. האם לפנות למערך הדיגיטל הלאומי בנוגע למערכת ההזדהות הלאומית.
 5. שפות בשלב 1.
 6. מקור המימון לשלב 0–1: עו"ד חברות ל-ADR-0011; עו"ד ורו"ח למבנה הכפול ולסעיף 46; לקבוע את ערך תקרת השליטה, את המועד/אבן הדרך לירידת המייסד מתחת לתקרה ואת קריטריוני סיווג המחנה (ADR-0011).

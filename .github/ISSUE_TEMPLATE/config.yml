@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: דיווח פגיעות אבטחה (פרטי)
+    url: https://docs.github.com/en/code-security/security-advisories/guidance-on-reporting-and-writing-information-about-vulnerabilities/privately-reporting-a-security-vulnerability
+    about: אין לדווח פגיעות באישו ציבורי. השתמשו ב-Private vulnerability reporting.

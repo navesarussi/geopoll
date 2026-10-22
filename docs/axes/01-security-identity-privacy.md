@@ -31,7 +31,7 @@
 - זיהוי בני 13–15 שאין להם ת"ז (**דורש אימות**).
 - אזרחות מול תושבות מול זכות בחירה: התעודה לא תמיד מוכיחה זכאות.
 - איך מבטלים אישור של מכשיר אבוד בלי ליצור קישור לזהות?
-- בחירת פרימיטיב קריפטוגרפי ל-MVP (Semaphore מול blind signatures).
+- בחירת פרימיטיב קריפטוגרפי ל-MVP: מוצע ב-[ADR-0017](../decisions/0017-anonymous-credential-scheme.md) (blind signature + Semaphore, PoC ל-Rarimo, הערכת Vocdoni). סיכום איומים: [threat-model](../architecture/threat-model.md).
 
 ## הנחות
 > כל פריט כאן הוא השערה או יעד מוצע, לא עובדה.
