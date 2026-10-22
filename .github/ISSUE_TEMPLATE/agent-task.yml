@@ -1,0 +1,31 @@
+name: משימה לסוכן AI / Agent task
+description: משימה מוגדרת היטב שסוכן AI יכול לבצע לפי AGENTS.md
+labels: ["agent", "status:ready"]
+body:
+  - type: input
+    id: id
+    attributes: {label: מזהה משימה (T-xxx)}
+    validations: {required: true}
+  - type: textarea
+    id: scope
+    attributes: {label: היקף – קבצים/תיקיות מותרים}
+    validations: {required: true}
+  - type: textarea
+    id: acceptance
+    attributes: {label: קריטריוני קבלה (ניתנים לבדיקה)}
+    validations: {required: true}
+  - type: textarea
+    id: out
+    attributes: {label: מחוץ להיקף}
+  - type: input
+    id: deps
+    attributes: {label: תלויות}
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: אישור כללים
+      options:
+        - label: קראתי את AGENTS.md
+          required: true
+        - label: המשימה לא נוגעת בהפרדת זהות↔הצבעה בלי ADR מאושר
+          required: true

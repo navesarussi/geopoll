@@ -1,0 +1,40 @@
+# תבנית – לא פעילה. CodeQL, dependency review, SAST, SBOM, secret scan.
+name: security
+on:
+  pull_request:
+  schedule: [{cron: "0 3 * * 1"}]
+permissions: {contents: read, security-events: write, pull-requests: read}
+jobs:
+  codeql:
+    runs-on: ubuntu-latest
+    strategy: {matrix: {language: [javascript-typescript, rust]}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: github/codeql-action/init@v3
+        with: {languages: "${{ matrix.language }}"}
+      - uses: github/codeql-action/analyze@v3
+  dependency-review:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with: {fail-on-severity: high}
+  semgrep:
+    runs-on: ubuntu-latest
+    container: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+      - run: semgrep scan --config auto --error
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: anchore/sbom-action@v0
+        with: {format: spdx-json}
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 0}
+      - uses: gitleaks/gitleaks-action@v2

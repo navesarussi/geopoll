@@ -2,7 +2,7 @@
 
 > רשת חברתית פוליטית עולמית ומדינתית, סביב בחירות: סקרים מתמשכים, משאלי עם ופורומים. כל משתמש מאומת במלואו, ואין קישור קריפטוגרפי בין ההצבעה לזהות.
 
-**סטטוס:** שלב גילוי / טיוטה. עודכן לאחרונה: 2026-10-22 (אושרו הצעות פיצ'רים P1–P4).
+**סטטוס:** שלב גילוי / טיוטה. עודכן לאחרונה: 2026-10-22 (אושרו הצעות פיצ'רים P1–P4; נוספו ארכיטקטורה, GTM/PMF, backlog ותשתית לפיתוח; התקבלו ADR-0016/0017).
 
 ## חזון
 המקום שבו אזרחים מאומתים בכל מדינה מביעים עמדה, מתווכחים בכבוד ורואים תמונת דעת קהל אמינה. אף אחד, גם לא המפעיל, לא יכול לדעת מה כל אחד הצביע.
@@ -53,6 +53,11 @@
 | — | **תוכנית MVP ישראל** (מסמך נגזר) | [docs/mvp-israel.md](docs/mvp-israel.md) |
 | — | הצעות לפיצ'רים (מוצע) | [docs/features/proposals.md](docs/features/proposals.md) |
 | — | יומן החלטות | [docs/decisions/](docs/decisions/README.md) |
+| — | ארכיטקטורה (מוצע) | [docs/architecture/](docs/architecture/README.md) |
+| — | יציאה לשוק והתאמת מוצר לשוק (מוצע) | [docs/gtm/](docs/gtm/README.md) |
+| — | Backlog משימות (מוצע) | [docs/roadmap/backlog.md](docs/roadmap/backlog.md) |
+| — | הנדסה: [monorepo](docs/engineering/monorepo.md), [CI/CD](docs/engineering/ci-cd.md), [הגנת ענפים](docs/engineering/branch-protection.md) | [docs/engineering/](docs/engineering/monorepo.md) |
+| — | כללים לסוכני AI | [AGENTS.md](AGENTS.md) |
 
 ## היררכיית מסמכים
 1. **האפיון הראשי (ההורה):** README, `docs/axes/*` ו-`docs/decisions/*` (ה-PRD הוא הרקע ההיסטורי). כאן מוגדרים החזון, העקרונות וההחלטות.

@@ -1,0 +1,26 @@
+name: פיצ'ר / Feature
+description: בקשה לפיצ'ר חדש
+labels: ["type:feature", "status:triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: בעיה וקהל, description: למי ולמה}
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes: {label: הצעה}
+    validations: {required: true}
+  - type: textarea
+    id: acceptance
+    attributes: {label: קריטריוני קבלה}
+    validations: {required: true}
+  - type: input
+    id: refs
+    attributes: {label: ציר / ADR קשור}
+  - type: checkboxes
+    id: flags
+    attributes:
+      label: דגלים
+      options:
+        - label: נוגע בזהות/הצבעה/ספים (מחייב ADR)
+        - label: דורש עו"ד

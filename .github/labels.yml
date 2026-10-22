@@ -1,0 +1,23 @@
+# הגדרת תוויות. לא הוחלו בריפו; scripts/create-issues --apply-labels יחיל אותן.
+- {name: "type:feature", color: "1d76db", description: "פיצ'ר"}
+- {name: "type:bug", color: "d73a4a", description: "באג"}
+- {name: "type:security", color: "b60205", description: "אבטחה"}
+- {name: "type:docs", color: "0075ca", description: "תיעוד"}
+- {name: "type:infra", color: "5319e7", description: "תשתית/CI"}
+- {name: "type:research", color: "c5def5", description: "מחקר/PoC"}
+- {name: "agent", color: "7057ff", description: "מתאים לסוכן AI"}
+- {name: "human-only", color: "000000", description: "רק בן אדם"}
+- {name: "needs-lawyer", color: "fbca04", description: "דורש חוות דעת עו\"ד"}
+- {name: "needs-adr", color: "f9d0c4", description: "דורש ADR מאושר"}
+- {name: "security-review", color: "e99695", description: "דורש סקירת אבטחה"}
+- {name: "zone:A-identity", color: "006b75", description: "תחום אמון A"}
+- {name: "zone:B-voting", color: "0e8a16", description: "תחום אמון B"}
+- {name: "zone:C-app", color: "bfdadc", description: "תחום C"}
+- {name: "phase:0", color: "ededed", description: "PoC/תשתית"}
+- {name: "phase:1", color: "ededed", description: "כנסת"}
+- {name: "phase:1b", color: "ededed", description: "נוער"}
+- {name: "phase:2", color: "ededed", description: "מקומיות"}
+- {name: "phase:3", color: "ededed", description: "זכויות דמוקרטיות"}
+- {name: "status:triage", color: "ffffff", description: "ממתין למיון"}
+- {name: "status:ready", color: "c2e0c6", description: "מוכן לביצוע"}
+- {name: "status:blocked", color: "d93f0b", description: "חסום"}

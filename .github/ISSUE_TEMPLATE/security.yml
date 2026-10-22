@@ -1,0 +1,18 @@
+name: אבטחה – שיפור (לא פגיעות)
+description: הקשחה או שינוי אבטחתי. פגיעות – רק בדיווח פרטי.
+labels: ["type:security", "security-review", "status:triage"]
+body:
+  - type: markdown
+    attributes: {value: "**פגיעות פעילה? אל תפתחו כאן.** השתמשו ב-Private vulnerability reporting."}
+  - type: textarea
+    id: area
+    attributes: {label: רכיב ותחום אמון (A/B/C)}
+    validations: {required: true}
+  - type: textarea
+    id: risk
+    attributes: {label: סיכון ואיום (קישור ל-threat model)}
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes: {label: הצעה}
+    validations: {required: true}

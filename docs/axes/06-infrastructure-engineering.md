@@ -14,14 +14,16 @@
 | קונפיגורציה מדינתית | לוח בחירות, חלונות איסור, כללי זכאות |
 | ביקורת | קוד פתוח לרכיבי הקריפטו, ביקורת אבטחה חיצונית לפני השקה |
 
+ארכיטקטורה מפורטת (מוצע): [docs/architecture/](../architecture/README.md) – תחומי אמון A/B/C, [מודל איומים](../architecture/threat-model.md), [מסלול גדילה](../architecture/scaling-path.md). תשתית פיתוח: [monorepo](../engineering/monorepo.md), [CI/CD](../engineering/ci-cd.md), [AGENTS.md](../../AGENTS.md), [backlog](../roadmap/backlog.md).
+
 ## החלטות שהתקבלו
-_אין עדיין._
+- [ADR-0016](../decisions/0016-proposed-tech-stack.md) – stack: TS + Rust בתחומים A/B (התקבל, נוה 2026-10-22). ספק/אזור ענן – פתוח (עו"ד).
+- [ADR-0017](../decisions/0017-anonymous-credential-scheme.md) – blind signature + Semaphore, מסלול בדיקת Rarimo (התקבל, נוה 2026-10-22).
 
 ## שאלות פתוחות
-- בחירת stack סופית לצד הלקוח ולצד השרת.
 - עמידות לעומסים בזמן בחירות ולמתקפות DDoS.
 - ביצועי הפקת הוכחות ZK במכשירים חלשים.
-- ספק ענן ואזורי אחסון נתונים (data residency).
+- ספק ענן ואזורי אחסון נתונים (data residency) – **דורש אימות (עו"ד)**: האם נדרש אחסון בישראל.
 
 ## הנחות
 > כל פריט כאן הוא השערה או יעד מוצע, לא עובדה.
