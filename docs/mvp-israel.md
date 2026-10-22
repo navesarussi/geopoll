@@ -21,6 +21,7 @@
 | ADRs בעקבות ה-MVP | [0003](decisions/0003-israel-mvp-scope-phasing.md), [0004](decisions/0004-election-poll-legal-labelling-blackout-il.md), [0005](decisions/0005-mvp-eligibility-israeli-citizens.md). **התקבלו** (נוה, 2026-10-22). זכאות לבחירות מקומיות: [ADR-0013](decisions/0013-eligibility-by-election-type.md) (**התקבל**, נוה, 2026-10-22). |
 | [ADR-0006](decisions/0006-teen-track-13-17.md) מסלול נוער 13–17 (התקבל; הפעלה מותנית בעו"ד) | שלב 1ב: אחרי שמסלול המבוגרים יציב (**הנחה**). מעדכן חלקית את 0005. |
 | [ADR-0007](decisions/0007-high-assurance-identity-verification.md) אימות מוקשח, בלי שמירת ביומטריה (התקבל) | חל מהיום הראשון של שלב 1. |
+| [ADR-0018](decisions/0018-document-zk-identity-complement-kyc.md) דרכון + ZK כמסלול משלים (**מוצע**) | רק אחרי בדיקה פיזית ועו"ד; לא תחליף ל-0007. [מחקר](research/zk-passport-identity.md). |
 | [ADR-0008](decisions/0008-no-advertising.md) בלי פרסומות (התקבל) | חל בכל השלבים. |
 | [ADR-0012](decisions/0012-public-results-display-buckets-batching.md) תוצאות ציבוריות בטווחים, אחוזים מעוגלים, עדכון באצוות (התקבל) | חל מהיום הראשון של שלב 1. |
 | ADRs [0009](decisions/0009-aggregate-data-licensing-safeguards.md), [0010](decisions/0010-freemium-civic-core-free.md), [0011](decisions/0011-investor-independence-governance.md): המודל העסקי (התקבלו 2026-10-22; 0009 עם שינוי לנוער, 0010 עם מסלולי תשלום, 0011 דורש עו"ד חברות) | 0010 (פרימיום) ו-0011 (משקיעים) חלים משלב 1, ו-0009 (נתונים) משלב 3. |
@@ -217,7 +218,7 @@
 ## 10. החלטות פתוחות (לבעל המוצר)
 1. ~~אישור ADR-0013~~ – התקבל 2026-10-22. 0003–0014 התקבלו ב-2026-10-22 (0009 עם שינוי לנוער, 0010 עם מסלולי תשלום). עיקרון-על: שום דבר לא נעשה בלי עו"ד.
 1א. עו"ד לקטינים ודעות פוליטיות (חוסם את שלב 1ב).
-1ב. אילו סוגי מסמכים ישראליים מתקבלים בשלב 1 (ADR-0007), ועו"ד לבסיס חוקי לעיבוד ביומטרי חולף.
+1ב. אילו סוגי מסמכים ישראליים מתקבלים בשלב 1 (ADR-0007), ועו"ד לבסיס חוקי לעיבוד ביומטרי חולף. מסלול משלים מוצע: דרכון + ZK ([ADR-0018](decisions/0018-document-zk-identity-complement-kyc.md), מוצע).
 1ג. ~~אישור הצעות הפיצ'רים P1–P4~~ – אושרו ע"י נוה 2026-10-22 ([proposals](features/proposals.md)).
 2. בחירת ספק KYC (ADR חדש).
 3. בחירת פרימיטיב קריפטוגרפי ל-MVP (Semaphore מול blind signatures).
