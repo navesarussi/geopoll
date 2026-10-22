@@ -25,6 +25,9 @@
 ## החלטות שהתקבלו
 _אין עדיין._
 
+- **עדיפות (התקבל, [ADR-0014](../decisions/0014-priorities-security-legal-transparency.md)):** ציות לחוק ולרגולציה קודם לכל שיקול מוצרי או עסקי.
+- **זכאות לפי סוג בחירות (מוצע, [ADR-0013](../decisions/0013-eligibility-by-election-type.md)):** מקומיות – 17+ ותושבים שאינם אזרחים.
+
 ## שאלות פתוחות
 - באילו מדינות מתחילים את הפיילוט? (**הנחה** נוכחית: ישראל ועוד 1–2)
 - באילו מדינות לא נשיק בכלל? (קריטריונים: חירויות, דרישות נתונים, סיכון למשתמשים)
@@ -56,3 +59,4 @@ _אין עדיין._
 - [Regulation (EU) 2024/900](https://eur-lex.europa.eu/eli/reg/2024/900/oj)
 - [Loi n° 77-808](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000522846)
 - [ACE Project – poll restrictions](https://aceproject.org/epic-en/CDTable?question=ME060)
+- [מחקר כל זכות: רישיון BY-NC-SA, זכאות לבחירות, פרטיות, חופש המידע](../research/kol-zchut.md)
