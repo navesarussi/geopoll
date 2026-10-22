@@ -2,7 +2,7 @@
 
 [← חזרה לאינדקס](../../README.md)
 
-**סטטוס:** מוצע; תלוי ב-[ADR-0016](../decisions/0016-proposed-tech-stack.md). כרגע יש רק תיקיות עם README.
+**סטטוס:** לפי [ADR-0016](../decisions/0016-proposed-tech-stack.md) (התקבל 2026-10-22). כרגע יש רק תיקיות עם README.
 
 ```text
 apps/        mobile, web

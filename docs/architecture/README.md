@@ -2,7 +2,7 @@
 
 [← חזרה לאינדקס](../../README.md)
 
-- **סטטוס:** מוצע (טיוטה v0.1, 2026-10-22). כל בחירה טכנולוגית כאן היא **הנחה** עד ש-[ADR-0016](../decisions/0016-proposed-tech-stack.md) ו-[ADR-0017](../decisions/0017-anonymous-credential-scheme.md) יתקבלו.
+- **סטטוס:** טיוטה v0.1 (2026-10-22). ה-stack ([ADR-0016](../decisions/0016-proposed-tech-stack.md)) וסכמת האישורים ([ADR-0017](../decisions/0017-anonymous-credential-scheme.md)) **התקבלו** (נוה, 2026-10-22). מיקום נתונים ורשימת רישיונות פתוחים (עו"ד); יעדי ביצועים ומספרים נשארים **הנחה**.
 - **יורש מ:** [README · עקרונות](../../README.md#עקרונות-יסוד-לא-משתנים), [ציר 01](../axes/01-security-identity-privacy.md), [ציר 06](../axes/06-infrastructure-engineering.md), ADRs [0007](../decisions/0007-high-assurance-identity-verification.md), [0012](../decisions/0012-public-results-display-buckets-batching.md), [0014](../decisions/0014-priorities-security-legal-transparency.md), [0015](../decisions/0015-fast-convenient-app.md).
 - **מסמכים:** [מודל איומים](threat-model.md) · [מסלול גדילה](scaling-path.md)
 

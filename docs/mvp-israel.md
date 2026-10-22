@@ -21,13 +21,14 @@
 | ADRs בעקבות ה-MVP | [0003](decisions/0003-israel-mvp-scope-phasing.md), [0004](decisions/0004-election-poll-legal-labelling-blackout-il.md), [0005](decisions/0005-mvp-eligibility-israeli-citizens.md). **התקבלו** (נוה, 2026-10-22). זכאות לבחירות מקומיות: [ADR-0013](decisions/0013-eligibility-by-election-type.md) (**התקבל**, נוה, 2026-10-22). |
 | [ADR-0006](decisions/0006-teen-track-13-17.md) מסלול נוער 13–17 (התקבל; הפעלה מותנית בעו"ד) | שלב 1ב: אחרי שמסלול המבוגרים יציב (**הנחה**). מעדכן חלקית את 0005. |
 | [ADR-0007](decisions/0007-high-assurance-identity-verification.md) אימות מוקשח, בלי שמירת ביומטריה (התקבל) | חל מהיום הראשון של שלב 1. |
+| [ADR-0018](decisions/0018-document-zk-identity-complement-kyc.md) דרכון + ZK כמסלול משלים (**מוצע**) | רק אחרי בדיקה פיזית ועו"ד; לא תחליף ל-0007. [מחקר](research/zk-passport-identity.md). |
 | [ADR-0008](decisions/0008-no-advertising.md) בלי פרסומות (התקבל) | חל בכל השלבים. |
 | [ADR-0012](decisions/0012-public-results-display-buckets-batching.md) תוצאות ציבוריות בטווחים, אחוזים מעוגלים, עדכון באצוות (התקבל) | חל מהיום הראשון של שלב 1. |
 | ADRs [0009](decisions/0009-aggregate-data-licensing-safeguards.md), [0010](decisions/0010-freemium-civic-core-free.md), [0011](decisions/0011-investor-independence-governance.md): המודל העסקי (התקבלו 2026-10-22; 0009 עם שינוי לנוער, 0010 עם מסלולי תשלום, 0011 דורש עו"ד חברות) | 0010 (פרימיום) ו-0011 (משקיעים) חלים משלב 1, ו-0009 (נתונים) משלב 3. |
-| [הצעות לפיצ'רים](features/proposals.md) P1 סקר הסקרים | **מוצע.** שכבה חינמית, כפוף להקפאה לפי L2 ולבדיקת זכויות יוצרים. |
-| [הצעות לפיצ'רים](features/proposals.md) P2 "הקול האבוד" | **מוצע.** מחייב סימון לפי L3 (ס' 16ה(ד)) ו-ADR-0004. |
-| [הצעות לפיצ'רים](features/proposals.md) P3 פילוחים | **מוצע.** תלוי ב-ADR-0009 (התקבל עם שינוי). נוער רק לפי סעיף 8, אחרי עו"ד. |
-| [הצעות לפיצ'רים](features/proposals.md) P4 ניתוחי AI | **מוצע.** מקור לכל טענה, תווית AI, בלי הסתברויות מומצאות. |
+| [הצעות לפיצ'רים](features/proposals.md) P1 סקר הסקרים | **התקבל (נוה, 2026-10-22).** שכבה חינמית, כפוף להקפאה לפי L2 ולבדיקת זכויות יוצרים. |
+| [הצעות לפיצ'רים](features/proposals.md) P2 "הקול האבוד" | **התקבל (נוה, 2026-10-22).** מחייב סימון לפי L3 (ס' 16ה(ד)) ו-ADR-0004. |
+| [הצעות לפיצ'רים](features/proposals.md) P3 פילוחים | **התקבל (נוה, 2026-10-22).** תלוי ב-ADR-0009 (התקבל עם שינוי). נוער רק לפי סעיף 8, אחרי עו"ד. |
+| [הצעות לפיצ'רים](features/proposals.md) P4 ניתוחי AI | **התקבל (נוה, 2026-10-22).** מקור לכל טענה, תווית AI, בלי הסתברויות מומצאות. |
 
 ## 1. האידיאל (תזכורת קצרה, ללא הגדרה מחדש)
 ה-MVP צריך להוכיח בישראל את שלוש ההבטחות של החזון: **אדם אמיתי אחד, קול אחד** (עקרונות 1–2), **שיח מכבד ואמין** (עקרונות 3–4) ו**ניטרליות ושקיפות** (עקרון 5). אם אחת מהן לא מוכחת, לא עוברים לשלב הבא.
@@ -209,10 +210,10 @@
 | סקרים מתמשכים, סף k | 1 | [04](axes/04-voting-mechanics.md#מצב-נוכחי) | — |
 | סימון 16ה(ד) והקפאה בחלון | 1 | [04](axes/04-voting-mechanics.md#מצב-נוכחי); [05](axes/05-legal-regulatory.md#מצב-נוכחי) | 0004 (התקבל) |
 | ingestion מ-OData, לוח בחירות IL | 1 | [06](axes/06-infrastructure-engineering.md#מצב-נוכחי) | — |
-| ארכיטקטורה: תחומי אמון A/B/C, בלי קריאה בין A ל-B | 0–1 | [architecture](architecture/README.md); [06](axes/06-infrastructure-engineering.md#מצב-נוכחי); [01](axes/01-security-identity-privacy.md#מצב-נוכחי) | 0007; 0016 (מוצע) |
-| סכמת אישורים: blind signature + Semaphore, PoC Rarimo | 0–1 | [01 · שאלות פתוחות](axes/01-security-identity-privacy.md#שאלות-פתוחות) | 0017 (מוצע) |
+| ארכיטקטורה: תחומי אמון A/B/C, בלי קריאה בין A ל-B | 0–1 | [architecture](architecture/README.md); [06](axes/06-infrastructure-engineering.md#מצב-נוכחי); [01](axes/01-security-identity-privacy.md#מצב-נוכחי) | 0007; 0016 (התקבל) |
+| סכמת אישורים: blind signature + Semaphore, PoC Rarimo | 0–1 | [01 · החלטות](axes/01-security-identity-privacy.md#החלטות-שהתקבלו) | 0017 (התקבל) |
 | GTM ובטא סגורה ל-18–25; מדדי PMF | 0–1 | [gtm](gtm/README.md); [09](axes/09-marketing.md#מצב-נוכחי); [11](axes/11-youth-growth.md#מצב-נוכחי) | 0015 |
-| תשתית פיתוח: CI, AGENTS.md, backlog | 0 | [ci-cd](engineering/ci-cd.md); [backlog](roadmap/backlog.md); [AGENTS.md](../AGENTS.md) | 0016 (מוצע) |
+| תשתית פיתוח: CI, AGENTS.md, backlog | 0 | [ci-cd](engineering/ci-cd.md); [backlog](roadmap/backlog.md); [AGENTS.md](../AGENTS.md) | 0016 (התקבל) |
 | דוח שקיפות | 1 | [07](axes/07-governance-trust.md#מצב-נוכחי); README עיקרון 5 | — |
 | מרחבי רשויות ותכונת רשות | 2 | [01](axes/01-security-identity-privacy.md); [02](axes/02-content.md) | עתידי |
 | משאלי עם ועצומות | 3 | [04 · משאלי עם](axes/04-voting-mechanics.md#מצב-נוכחי) | עתידי |
@@ -221,10 +222,10 @@
 ## 10. החלטות פתוחות (לבעל המוצר)
 1. ~~אישור ADR-0013~~ – התקבל 2026-10-22. 0003–0014 התקבלו ב-2026-10-22 (0009 עם שינוי לנוער, 0010 עם מסלולי תשלום). עיקרון-על: שום דבר לא נעשה בלי עו"ד.
 1א. עו"ד לקטינים ודעות פוליטיות (חוסם את שלב 1ב).
-1ב. אילו סוגי מסמכים ישראליים מתקבלים בשלב 1 (ADR-0007), ועו"ד לבסיס חוקי לעיבוד ביומטרי חולף.
-1ג. אישור הצעות הפיצ'רים P1–P4 ([proposals](features/proposals.md)).
+1ב. אילו סוגי מסמכים ישראליים מתקבלים בשלב 1 (ADR-0007), ועו"ד לבסיס חוקי לעיבוד ביומטרי חולף. מסלול משלים מוצע: דרכון + ZK ([ADR-0018](decisions/0018-document-zk-identity-complement-kyc.md), מוצע).
+1ג. ~~אישור הצעות הפיצ'רים P1–P4~~ – אושרו ע"י נוה 2026-10-22 ([proposals](features/proposals.md)).
 2. בחירת ספק KYC (ADR חדש).
-3. בחירת פרימיטיב קריפטוגרפי ל-MVP – מוצע ב-[ADR-0017](decisions/0017-anonymous-credential-scheme.md); stack ב-[ADR-0016](decisions/0016-proposed-tech-stack.md) (מוצע).
+3. ~~פרימיטיב קריפטוגרפי ו-stack~~ – התקבלו 2026-10-22: [ADR-0017](decisions/0017-anonymous-credential-scheme.md), [ADR-0016](decisions/0016-proposed-tech-stack.md). פתוח: רשימת רישיונות מותרים (עו"ד, T-004).
 3א. מיקום נתונים / אחסון בישראל (עו"ד) – [architecture §9](architecture/README.md#9-תשתית-ומיקום-נתונים).
 4. האם לפנות למערך הדיגיטל הלאומי בנוגע למערכת ההזדהות הלאומית.
 5. שפות בשלב 1.
