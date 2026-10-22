@@ -36,3 +36,6 @@ _אין עדיין._
 
 ## קישורים
 - [PRD – מודל הכנסות](https://cursor.com/canvas/store-b61e953b-d496-43f4-8ec0-a6e94d98cd98/366e1a75-5962-4996-9385-1472b7ac13ca)
+
+## ניתוח מתחרים
+ראו [competitors.md](../competitors.md).
