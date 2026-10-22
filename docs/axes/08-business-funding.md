@@ -20,15 +20,18 @@
 
 | מנוע | מסמך | ADR |
 |---|---|---|
-| נתונים מצרפיים ואנונימיים בלבד | [data-licensing.md](../business/data-licensing.md) | [0009](../decisions/0009-aggregate-data-licensing-safeguards.md) (מוצע) |
-| פרימיום, כשהליבה האזרחית חינמית | [freemium.md](../business/freemium.md) | [0010](../decisions/0010-freemium-civic-core-free.md) (מוצע) |
+| נתונים מצרפיים ואנונימיים בלבד | [data-licensing.md](../business/data-licensing.md) | [0009](../decisions/0009-aggregate-data-licensing-safeguards.md) (התקבל עם שינוי) |
+| פרימיום, כשהליבה האזרחית חינמית | [freemium.md](../business/freemium.md) | [0010](../decisions/0010-freemium-civic-core-free.md) (התקבל עם תוספת) |
 | שירות התייעצות והצבעה לארגונים | [b2b-civic.md](../business/b2b-civic.md) | עתידי |
 | תרומות ומענקים (מבנה כפול: חברה + חל"צ או עמותה) | [entity-donations.md](../business/entity-donations.md) | עתידי, אחרי עו"ד ורו"ח |
-| משקיעים חוצי מחנות ואמנת עצמאות | [investors.md](../business/investors.md) | [0011](../decisions/0011-investor-independence-governance.md) (מוצע) |
+| משקיעים חוצי מחנות ואמנת עצמאות | [investors.md](../business/investors.md) | [0011](../decisions/0011-investor-independence-governance.md) (התקבל; דורש עו"ד חברות) |
 
 ## החלטות שהתקבלו
 - **בלי פרסומות בכלל:** [ADR-0008](../decisions/0008-no-advertising.md) (התקבל).
-- ADRs 0009, 0010 ו-0011 מוצעים וממתינים לאישור.
+- **נתונים מצרפיים:** [ADR-0009](../decisions/0009-aggregate-data-licensing-safeguards.md) (התקבל עם שינוי). נתוני נוער רק אחרי אישור עו"ד, עם k≥100 (ולפחות פי 2 מסף המבוגרים), DP חובה, תווית "אינם בעלי זכות בחירה", בלי ערבוב.
+- **פרימיום ומסלולים:** [ADR-0010](../decisions/0010-freemium-civic-core-free.md) (התקבל עם תוספת). ליבה חינמית לתמיד; מסלולים נפרדים לעסקים, לפרטיים ולפוליטיקאים (בלי פרסום, גישה שווה לכל המפלגות).
+- **עצמאות משקיעים:** [ADR-0011](../decisions/0011-investor-independence-governance.md) (התקבל, כולל 2ה; דורש עו"ד חברות).
+- **עיקרון-על:** שום דבר לא נעשה בלי עו"ד.
 
 ## שאלות פתוחות
 - מבנה תאגידי: ההמלצה הראשונית היא מבנה כפול, חברה בע"מ ולצידה חל"צ או עמותה ([entity-donations.md](../business/entity-donations.md)). **דורש** עו"ד ורו"ח.
@@ -51,9 +54,9 @@
 
 | שלב | מה הציר מספק | סטטוס |
 |---|---|---|
-| [1 · כנסת](../mvp-israel.md#phase-1) | מימון שלב 1: גיוס seed חוצה מחנות עם אמנת עצמאות, בלי רוב לאף מחנה ועם תקרה לאדם ולמשפחה (0011) ומענקים; השקת פרימיום בסיסי (0010) | מתוכנן |
+| [1 · כנסת](../mvp-israel.md#phase-1) | מימון שלב 1: גיוס seed חוצה מחנות עם אמנת עצמאות, בלי רוב לאף מחנה ועם תקרה לאדם ולמשפחה (0011) ומענקים; השקת פרימיום בסיסי ומסלולי עסקים/פרטיים/פוליטיקאים (0010) | מתוכנן |
 | [2 · מקומיות](../mvp-israel.md#phase-2) | שירות B2B/B2G לרשויות ([b2b-civic.md](../business/b2b-civic.md)), בזהירות | מתוכנן |
-| [3 · זכויות דמוקרטיות](../mvp-israel.md#phase-3) | נתונים מצרפיים לחוקרים (0009: סף k ו-DP); B2B לפריימריז ולארגונים | מתוכנן |
+| [3 · זכויות דמוקרטיות](../mvp-israel.md#phase-3) | נתונים מצרפיים לחוקרים (0009: סף k ו-DP; נוער רק אחרי עו"ד, k≥100 ו-DP חובה); B2B לפריימריז ולארגונים | מתוכנן |
 
 ## הצעות לפיצ'רים
 - [הצעות לפיצ'רים](../features/proposals.md), סטטוס **מוצע**: P3 פילוחים בפרימיום ובמכירת נתונים (ADR-0009), P1 בשכבה החינמית.
