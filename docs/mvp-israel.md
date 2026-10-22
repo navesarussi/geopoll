@@ -18,7 +18,7 @@
 | [README · מבנה המרחבים](../README.md#מבנה-המרחבים) | ב-MVP פעילים רק המרחבים "מדינה: ישראל" ו"בחירות". "עולמי" נדחה (סטייה D1). |
 | [ADR-0001](decisions/0001-github-repo-source-of-truth.md) הריפו כמקור האמת | המסמך הזה נמצא בריפו ומתעדכן לפי כללי הסנכרון. |
 | [ADR-0002](decisions/0002-identity-gov-id-selfie-liveness.md) תעודה, סלפי ו-liveness דרך ספק KYC | המנגנון של ה-MVP. בישראל המסמכים הם ת"ז, ת"ז ביומטרית, דרכון ורישיון נהיגה, וזה מצמצם את ההחלטה ולא סוטה ממנה. |
-| ADRs מוצעים בעקבות ה-MVP | [0003](decisions/0003-israel-mvp-scope-phasing.md), [0004](decisions/0004-election-poll-legal-labelling-blackout-il.md), [0005](decisions/0005-mvp-eligibility-israeli-citizens.md). כולם בסטטוס **מוצע**. |
+| ADRs מוצעים בעקבות ה-MVP | [0003](decisions/0003-israel-mvp-scope-phasing.md), [0004](decisions/0004-election-poll-legal-labelling-blackout-il.md), [0005](decisions/0005-mvp-eligibility-israeli-citizens.md). כולם בסטטוס **מוצע**. ADRs 0006–0011 ב-PR #1 ו-PR #3 (מוצעים). |
 | [הצעות לפיצ'רים](features/proposals.md) P1 סקר הסקרים | **מוצע.** שכבה חינמית, כפוף להקפאה לפי L2 ולבדיקת זכויות יוצרים. |
 | [הצעות לפיצ'רים](features/proposals.md) P2 "הקול האבוד" | **מוצע.** מחייב סימון לפי L3 (ס' 16ה(ד)) ו-ADR-0004. |
 | [הצעות לפיצ'רים](features/proposals.md) P3 פילוחים | **מוצע.** תלוי ב-ADR-0009 (PR #3). בלי נתוני נוער (ADR-0006, PR #1). |
@@ -188,7 +188,7 @@
 | תוצאות משוקללות | 3 | [04](axes/04-voting-mechanics.md#מצב-נוכחי); [05](axes/05-legal-regulatory.md) | עתידי |
 
 ## 10. החלטות פתוחות (לבעל המוצר)
-1. אישור ADRs 0003–0005 (היקף, סימון והקפאה, זכאות).
+1. אישור ADRs 0003–0011 (היקף, סימון והקפאה, זכאות; נוער, אימות, בלי פרסומות – PR #1; נתונים, פרימיום, עצמאות משקיעים – PR #3). **הערה:** יש לעדכן אחרי מיזוג PRs 1/3/2.
 2. בחירת ספק KYC (ADR חדש).
 3. בחירת פרימיטיב קריפטוגרפי ל-MVP (Semaphore מול blind signatures).
 4. האם לפנות למערך הדיגיטל הלאומי בנוגע למערכת ההזדהות הלאומית.
