@@ -20,6 +20,7 @@
 8. **בלי פרסומות, אף פעם:** אין פרסומות, תוכן ממומן או שימוש בנתונים לפרסום ([ADR-0008](docs/decisions/0008-no-advertising.md)).
 9. **אבטחה וחוק קודם:** בכל התנגשות, אבטחה וציות לחוק ולרגולציה גוברים ([ADR-0014](docs/decisions/0014-priorities-security-legal-transparency.md)).
 10. **שקיפות לכולם:** כל החלטת אבטחה ופרטיות מתפרסמת בשפה פשוטה עם הפשרות והמגבלות שלה; דוח שקיפות תקופתי; ביקורות חיצוניות; קוד קריפטוגרפי פתוח וניתן לביקורת ([ADR-0014](docs/decisions/0014-priorities-security-legal-transparency.md)).
+11. **אפליקציה מהירה ונוחה:** יעדי ביצועים מדידים, הצבעה ב-1–2 לחיצות והרשמה בלי חיכוך מיותר – בלי פשרה באבטחה ([ADR-0015](docs/decisions/0015-fast-convenient-app.md)).
 
 **קהלים:** אזרחים מאומתים (18+) ונוער מאומת (13–17, מסומן, קולות בתוצאה נפרדת – [ADR-0006](docs/decisions/0006-teen-track-13-17.md), התקבל; הפעלה מותנית בעו"ד). אימות ברמת ביטחון גבוהה ([ADR-0007](docs/decisions/0007-high-assurance-identity-verification.md), התקבל; בלי שמירת ביומטריה).
 
@@ -48,6 +49,7 @@
 | 08 | עסקי ומימון | [08-business-funding.md](docs/axes/08-business-funding.md) |
 | 09 | שיווק | [09-marketing.md](docs/axes/09-marketing.md) |
 | 10 | עיצוב | [10-design.md](docs/axes/10-design.md) |
+| 11 | צמיחה בקרב צעירים ונוער | [11-youth-growth.md](docs/axes/11-youth-growth.md) |
 | — | **תוכנית MVP ישראל** (מסמך נגזר) | [docs/mvp-israel.md](docs/mvp-israel.md) |
 | — | הצעות לפיצ'רים (מוצע) | [docs/features/proposals.md](docs/features/proposals.md) |
 | — | יומן החלטות | [docs/decisions/](docs/decisions/README.md) |
