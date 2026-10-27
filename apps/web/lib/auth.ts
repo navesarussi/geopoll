@@ -40,7 +40,20 @@ export const authOptions: NextAuthOptions = {
   },
 };
 
+/** Native app (apps/mobile) sends `Authorization: Bearer` instead of the cookie. Outside a request scope → null. */
+async function bearer() {
+  try {
+    const { headers } = await import("next/headers");
+    const { bearerSession } = await import("@/lib/mobile-auth");
+    return await bearerSession((await headers()).get("authorization"));
+  } catch {
+    return null;
+  }
+}
+
 export async function sessionAccount(): Promise<string | null> {
+  const b = await bearer();
+  if (b) return b.acct;
   const { getServerSession } = await import("next-auth");
   const s = await getServerSession(authOptions);
   return (s as { acct?: string } | null)?.acct ?? null;
@@ -48,6 +61,8 @@ export async function sessionAccount(): Promise<string | null> {
 
 /** Name from the sign-in provider, used ONLY to prefill the editable profile name. Email is never read. */
 export async function sessionDisplayName(): Promise<string | null> {
+  const b = await bearer();
+  if (b) return b.name;
   const { getServerSession } = await import("next-auth");
   const s = await getServerSession(authOptions);
   return s?.user?.name ?? null;
