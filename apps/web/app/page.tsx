@@ -3,21 +3,27 @@ import { authOptions, demoLoginEnabled, googleEnabled } from "@/lib/auth";
 import { blackoutFor, config } from "@/lib/config";
 import { pageLang, pollText } from "@/lib/i18n";
 import VoteClient from "./VoteClient";
+import { stores } from "@/lib/store";
+import { isAdminPoll, syncPolls } from "@/lib/polls";
+const shortQ = (q: string) => (q.length > 28 ? q.slice(0, 27) + "…" : q);
+import { polls } from "@/lib/config";
 export const dynamic = "force-dynamic";
 export default async function Page({ searchParams }: { searchParams: Promise<{ poll?: string; lang?: string }> }) {
   const sp = await searchParams;
   const cfg = config();
+  await syncPolls((await stores()).ballots).catch(() => {});
+  const all = polls();
   const { lang, t, dir } = await pageLang(sp.lang);
-  const poll = cfg.polls.find((p) => p.id === sp.poll) ?? cfg.polls[0];
+  const poll = all.find((p) => p.id === sp.poll) ?? all[0];
   const session = await getServerSession(authOptions);
   const providers = [...(googleEnabled() ? ["google"] : []), ...(demoLoginEnabled() ? ["demo"] : [])];
   const q = (o: Record<string, string>) => "?" + new URLSearchParams({ poll: poll.id, lang, ...o }).toString();
   return (
     <div lang={lang} dir={dir}>
       <nav className="tabs" aria-label="polls">
-        {cfg.polls.map((p) => (
+        {all.map((p) => (
           <a key={p.id} href={q({ poll: p.id })} aria-current={p.id === poll.id ? "page" : undefined}>
-            {p.kind === "knesset-election" ? t.kindKnesset : t.kindReferendum}
+            {isAdminPoll(p.id) ? shortQ(pollText(p, lang).question) : p.kind === "knesset-election" ? t.kindKnesset : t.kindReferendum}
           </a>
         ))}
         <span className="langs" aria-label={t.language}>

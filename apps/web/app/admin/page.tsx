@@ -1,6 +1,9 @@
 import { dashboard, sessionAdmin } from "@/lib/admin";
 import { stores } from "@/lib/store";
 import { pageLang, tr, type Dict } from "@/lib/i18n";
+import { isAdminPoll } from "@/lib/polls";
+import { polls } from "@/lib/config";
+import type { PollDef } from "@geopoll/config";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "GeoPoll · Admin", robots: { index: false } };
@@ -20,7 +23,7 @@ function Act({ action, back, pollId, postId, label, danger, reason, t }: { actio
   );
 }
 
-export default async function Admin({ searchParams }: { searchParams: Promise<{ tab?: string; lang?: string }> }) {
+export default async function Admin({ searchParams }: { searchParams: Promise<{ tab?: string; lang?: string; edit?: string; error?: string; saved?: string }> }) {
   const sp = await searchParams;
   const { lang, t, dir } = await pageLang(sp.lang);
   const fmt = mkFmt(lang);
@@ -61,14 +64,7 @@ export default async function Admin({ searchParams }: { searchParams: Promise<{ 
           </tbody></table>
         </section>
       )}
-      {tab === "polls" && (
-        <section>
-          <p className="small">{t.ad_pollsNote}</p>
-          <table><thead><tr><th>{t.ad_id}</th><th>{t.ad_kind}</th><th>{t.ad_question}</th><th>{t.ad_status}</th><th>{t.ad_blackout}</th><th></th></tr></thead>
-            <tbody>{d.polls.map((p) => (<tr key={p.id}><td><code>{p.id}</code></td><td>{p.kind}</td><td>{p.question}</td><td>{p.status === "open" ? t.ad_open : t.ad_closed}</td><td>{p.blackout ? t.ad_active : "—"}</td>
-              <td>{p.status === "open" ? <Act action="poll_close" pollId={p.id} back={back} label={t.ad_close} danger /> : <Act action="poll_open" pollId={p.id} back={back} label={t.ad_openAct} />}</td></tr>))}</tbody></table>
-        </section>
-      )}
+      {tab === "polls" && <Polls back={back} t={t} lang={lang} rows={d.polls} sp={sp} />}
       {tab === "mod" && <Mod back={back} t={t} />}
       {tab === "audit" && <Audit t={t} fmt={fmt} />}
     </main>
@@ -101,5 +97,41 @@ async function Audit({ t, fmt }: { t: Dict; fmt: (s: string | null) => string })
     <section><table><thead><tr><th>{t.ad_when}</th><th>{t.ad_who}</th><th>{t.ad_action}</th><th>{t.ad_target}</th><th>{t.ad_detail}</th></tr></thead>
       <tbody>{rows.map((r) => <tr key={r.id}><td>{fmt(r.at)}</td><td>{r.actor}</td><td>{r.action}</td><td>{r.target}</td><td>{r.detail}</td></tr>)}</tbody></table>
       {!rows.length && <p>{t.ad_auditEmpty}</p>}</section>
+  );
+}
+
+type Row = Awaited<ReturnType<typeof dashboard>>["polls"][number];
+async function Polls({ back, t, lang, rows, sp }: { back: string; t: Dict; lang: string; rows: Row[]; sp: { edit?: string; error?: string; saved?: string } }) {
+  const defs = await (await stores()).ballots.listPollDefs().catch(() => []);
+  const editing: PollDef | undefined = sp.edit ? polls().find((p) => p.id === sp.edit && isAdminPoll(p.id)) : undefined;
+  const version = editing ? defs.find((d) => d.def.id === editing.id)?.version : undefined;
+  const opts = editing ? editing.options.map((o) => `${o.id} | ${o.label.he} | ${o.label.en ?? ""}`).join("\n") : "";
+  const err = sp.error ? (t as Record<string, string>)[`pe_${sp.error}`] ?? sp.error : "";
+  return (
+    <section>
+      <p className="small">{t.ad_pollsNote}</p>
+      {sp.saved && <p className="ok" role="status">{tr(t, "ad_saved", { id: sp.saved })}</p>}
+      {err && <p className="err" role="alert">{err}</p>}
+      <table><thead><tr><th>{t.ad_id}</th><th>{t.ad_kind}</th><th>{t.ad_question}</th><th>{t.ad_status}</th><th>{t.ad_blackout}</th><th></th></tr></thead>
+        <tbody>{rows.map((p) => (<tr key={p.id}><td><code>{p.id}</code> <span className="small">{isAdminPoll(p.id) ? t.ad_fromAdmin : t.ad_fromConfig}</span></td><td>{p.kind}</td><td>{p.question}</td><td>{p.status === "open" ? t.ad_open : t.ad_closed}</td><td>{p.blackout ? t.ad_active : "—"}</td>
+          <td>{p.status === "open" ? <Act action="poll_close" pollId={p.id} back={back} label={t.ad_close} danger /> : <Act action="poll_open" pollId={p.id} back={back} label={t.ad_openAct} />}
+            {isAdminPoll(p.id) && <a href={`/admin?tab=polls&lang=${lang}&edit=${encodeURIComponent(p.id)}`}>{t.ad_edit}</a>}</td></tr>))}</tbody></table>
+      <h2>{editing ? t.ad_editPoll : t.ad_newPoll}</h2>
+      <p className="small">{t.ad_rules}</p>
+      <form method="post" action="/api/admin/polls" className="stack poll-form" key={editing?.id ?? "new"}>
+        <input type="hidden" name="lang" value={lang} />
+        {editing && <input type="hidden" name="version" value={version ?? ""} />}
+        <label>{t.ad_id}<input name="id" required pattern="[a-z0-9][a-z0-9-]{2,47}" defaultValue={editing?.id} readOnly={!!editing} /></label>
+        <label>{t.ad_kind}<select name="kind" defaultValue={editing?.kind ?? "referendum"}>
+          <option value="referendum">{t.kindReferendum}</option><option value="knesset-election">{t.kindKnesset}</option></select></label>
+        <label>{t.ad_question} (he)<input name="question_he" required maxLength={200} defaultValue={editing?.question.he} dir="rtl" /></label>
+        <label>{t.ad_question} (en)<input name="question_en" maxLength={200} defaultValue={editing?.question.en} dir="ltr" /></label>
+        <label>{t.ad_source} (he)<input name="source_he" maxLength={300} defaultValue={editing?.source.he} dir="rtl" /></label>
+        <label>{t.ad_source} (en)<input name="source_en" maxLength={300} defaultValue={editing?.source.en} dir="ltr" /></label>
+        <label>{t.ad_optionsHelp}<textarea name="options" rows={6} required defaultValue={opts} placeholder={"yes | בעד | For\nno | נגד | Against"} /></label>
+        <button>{editing ? t.ad_saveEdit : t.ad_create}</button>
+        {editing && <a href={`/admin?tab=polls&lang=${lang}`}>{t.ad_cancel}</a>}
+      </form>
+    </section>
   );
 }
