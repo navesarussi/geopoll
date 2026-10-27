@@ -5,6 +5,7 @@ module.exports = ({ config }) => {
   const id = process.env.GEOPOLL_BUNDLE_ID || "app.geopoll.beta";
   return {
     ...config,
+    plugins: [...(config.plugins || []), "./plugins/no-push"],
     name: process.env.GEOPOLL_APP_NAME || "GeoPoll Beta",
     ios: { ...config.ios, bundleIdentifier: id },
     android: { ...config.android, package: id },
