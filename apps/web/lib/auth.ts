@@ -39,3 +39,9 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+export async function sessionAccount(): Promise<string | null> {
+  const { getServerSession } = await import("next-auth");
+  const s = await getServerSession(authOptions);
+  return (s as { acct?: string } | null)?.acct ?? null;
+}

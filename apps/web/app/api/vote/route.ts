@@ -6,7 +6,8 @@ export const runtime = "nodejs";
 export async function POST(req: Request) {
   const b = (await req.json().catch(() => null)) as Record<string, string> | null;
   if (!b?.pollId || !b.option || !b.preparedMsg || !b.signature) return Response.json({ ok: false, error: "bad_request" }, { status: 400 });
-  const r = await castVote(stores().ballots, {
+  const s = await stores();
+  const r = await castVote(s.ballots, {
     pollId: b.pollId,
     option: b.option,
     preparedMsg: new Uint8Array(Buffer.from(b.preparedMsg, "base64")),

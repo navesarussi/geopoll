@@ -4,6 +4,7 @@ import { signIn, signOut } from "next-auth/react";
 import { RSABSSA } from "@cloudflare/blindrsa-ts";
 import { DEMO_POLL } from "@/lib/poll";
 import type { PublicResults } from "@/lib/results";
+import Survey from "./Survey";
 
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -55,7 +56,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
       if (!j.ok) { if (j.error === "wrong_epoch" || j.error === "bad_token") localStorage.removeItem(KEY); throw new Error(j.error); }
       localStorage.setItem("geopoll.lastChoice", option); // local only, never sent
       setChoice(option); setState("ok");
-      setMsg(j.status === "replaced" ? "ההצבעה שלך עודכנה ✓ (רק האחרונה נספרת)" : "ההצבעה שלך נקלטה ✓");
+      setMsg(j.status === "replaced" ? "ההצבעה שלך עודכנה ✓ (רק האחרונה נספרת)" : "ההצבעה שלך נקלטה ✓ (תיספר בעדכון האצווה הבא)");
     } catch (e) {
       setState("err"); setMsg(MSG[(e as Error).message] ?? "ההצבעה לא נקלטה. בדקו חיבור ונסו שוב.");
     }
@@ -66,6 +67,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
     <main>
       <div className="badge">{DEMO_POLL.label}</div>
       <h1>{DEMO_POLL.question}</h1>
+      <h2>הצבעה חשאית</h2>
       {!signedIn ? (
         <div className="stack">
           {providers.includes("google") && <button onClick={() => signIn("google")}>כניסה עם Google</button>}
@@ -98,6 +100,8 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
         {res && <p className="small">עודכן: {new Date(res.snapshotAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })}. התוצאות מתעדכנות באצוות, באחוזים מעוגלים ובטווחים. כוללות קולות דמה.</p>}
         <button className="link" onClick={load}>רענון</button>
       </section>
+      <Survey signedIn={signedIn} />
+      <p className="small"><a href="/privacy">מה נשמר עליי? (הודעת פרטיות – טיוטה)</a></p>
     </main>
   );
 }
