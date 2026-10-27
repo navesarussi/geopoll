@@ -2,7 +2,10 @@ import { describe, it, expect } from "vitest";
 import { webcrypto } from "node:crypto";
 import { suite, blindSign, issuerKeys, nullifier, tokenEpoch, accountHash } from "@/lib/crypto";
 import { castVote, results, seedDummy } from "@/lib/service";
-import { MemoryBallotStore, MemoryIdentityStore } from "@/lib/store";
+import { type BallotStore } from "@/lib/store";
+import { freshStores } from "./helpers";
+
+process.env.BATCH_INTERVAL_SECONDS = "0";
 import { DEMO_POLL, currentEpoch } from "@/lib/poll";
 import { bucket, toPublic } from "@/lib/results";
 
@@ -16,7 +19,7 @@ async function clientToken(epoch = currentEpoch()) {
   const signature = await s.finalize(publicKey, prepared, blindSig, inv);
   return { preparedMsg: prepared, signature, blindedMsg };
 }
-const vote = (b: MemoryBallotStore, t: Awaited<ReturnType<typeof clientToken>>, option: string) =>
+const vote = (b: BallotStore, t: Awaited<ReturnType<typeof clientToken>>, option: string) =>
   castVote(b, { pollId: DEMO_POLL.id, option, preparedMsg: t.preparedMsg, signature: t.signature });
 
 describe("blind token", () => {
@@ -26,14 +29,14 @@ describe("blind token", () => {
     expect(tokenEpoch(t.preparedMsg)).toBe(currentEpoch());
   });
   it("rejects forged or tampered tokens", async () => {
-    const b = new MemoryBallotStore();
+    const b = (await freshStores()).ballots;
     const t = await clientToken();
     const bad = new Uint8Array(t.signature); bad[5] ^= 1;
     expect(await castVote(b, { pollId: DEMO_POLL.id, option: "yes", preparedMsg: t.preparedMsg, signature: bad })).toEqual({ ok: false, error: "bad_token" });
   });
   it("rejects token from another epoch", async () => {
     const t = await clientToken("1999-01");
-    expect(await vote(new MemoryBallotStore(), t, "yes")).toEqual({ ok: false, error: "wrong_epoch" });
+    expect(await vote((await freshStores()).ballots, t, "yes")).toEqual({ ok: false, error: "wrong_epoch" });
   });
 });
 
@@ -44,14 +47,19 @@ describe("nullifier / double vote / revote", () => {
     expect(nullifier(t.preparedMsg, "p1")).not.toBe(nullifier(t.preparedMsg, "p2"));
   });
   it("second vote with same token replaces the first (last counts, counted once)", async () => {
-    const b = new MemoryBallotStore();
+    const b = (await freshStores()).ballots;
     const t = await clientToken();
     expect(await vote(b, t, "yes")).toEqual({ ok: true, status: "created" });
     expect(await vote(b, t, "no")).toEqual({ ok: true, status: "replaced" });
+    expect(await b.tally(DEMO_POLL.id)).toEqual({}); // queued, not yet counted
+    await b.flush();
     expect(await b.tally(DEMO_POLL.id)).toEqual({ no: 1 });
+    expect(await vote(b, t, "partial")).toEqual({ ok: true, status: "replaced" });
+    await b.flush();
+    expect(await b.tally(DEMO_POLL.id)).toEqual({ partial: 1 });
   });
   it("identity issues at most one token per account per epoch", async () => {
-    const id = new MemoryIdentityStore();
+    const id = (await freshStores()).identity;
     const a = accountHash("google:123");
     expect(await id.claimIssuance(a, "2026-10")).toBe(true);
     expect(await id.claimIssuance(a, "2026-10")).toBe(false);
@@ -59,7 +67,7 @@ describe("nullifier / double vote / revote", () => {
     expect(a).not.toContain("123");
   });
   it("rejects unknown option", async () => {
-    expect(await vote(new MemoryBallotStore(), await clientToken(), "maybe")).toEqual({ ok: false, error: "bad_option" });
+    expect(await vote((await freshStores()).ballots, await clientToken(), "maybe")).toEqual({ ok: false, error: "bad_option" });
   });
 });
 
@@ -73,7 +81,7 @@ describe("public results (ADR-0012)", () => {
     expect(r.percents).toBeNull();
   });
   it("rounds to whole percents and serves the cached snapshot within interval", async () => {
-    const b = new MemoryBallotStore();
+    const b = (await freshStores()).ballots;
     await seedDummy(b, 200);
     const t0 = new Date("2026-10-27T10:00:00Z");
     const r1 = await results(b, t0);

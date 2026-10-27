@@ -9,3 +9,9 @@ button:disabled{opacity:.6}.ok{color:#0a6b2e;font-weight:600}.err{color:#a40000}
 .results{margin-top:28px;background:#fff;border-radius:12px;padding:12px 16px}
 .bar{position:relative;display:flex;justify-content:space-between;padding:8px;margin:6px 0;border-radius:8px;overflow:hidden;background:#eef1f6}
 .bar span{position:relative;z-index:1}.fill{position:absolute;inset:0 0 0 auto;background:#c9d6f3}
+.beta{background:#7a1f1f;color:#fff;text-align:center;font-size:.85rem;padding:6px 10px;font-weight:600}
+.survey{margin-top:28px;background:#fff;border-radius:12px;padding:12px 16px}
+.badge2{display:inline-block;background:#e8eefc;color:#1d3d8f;border-radius:8px;padding:3px 10px;font-size:.85rem;font-weight:600}
+input,select,textarea{font:inherit;padding:10px;border:1px solid #c5ccd8;border-radius:10px;width:100%}textarea{min-height:80px}
+.post{border-inline-start:3px solid #e1e6ef;padding:6px 10px;margin:10px 0}.post .meta{margin:0;font-size:.9rem}.post .body{margin:4px 0;white-space:pre-wrap}
+.actions{display:flex;gap:8px}a{color:#2b59c3}
