@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "gen-issuer-key": "node scripts/gen-issuer-key.mjs"
+    "gen-issuer-key": "node scripts/gen-issuer-key.mjs",
+    "migrate": "tsx scripts/migrate.ts"
   },
   "dependencies": {
     "@cloudflare/blindrsa-ts": "^0.4.4",
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
+    "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
   },
