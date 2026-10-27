@@ -1,8 +1,16 @@
-import { registerRootComponent } from 'expo';
+import { createElement } from "react";
+import { registerRootComponent } from "expo";
+import { ErrorBoundary, FatalScreen } from "./src/Fatal";
 
-import App from './App';
-
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+// Load the app lazily so a throw while evaluating modules (native module missing, bad config, crypto init)
+// renders a readable error screen instead of a fatal launch crash.
+let Root: () => ReturnType<typeof createElement>;
+try {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const App = require("./App").default;
+  Root = () => createElement(ErrorBoundary, null, createElement(App));
+} catch (error) {
+  console.error("App failed to load", error);
+  Root = () => createElement(FatalScreen, { error });
+}
+registerRootComponent(Root);
