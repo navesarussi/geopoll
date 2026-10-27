@@ -4,9 +4,9 @@
 > **מעמד:** חומר גלם פנימי. **אסור לפרסם למשתמשים** לפני תשובה לשאלה D4 לעורך הדין (זכויות יוצרים על נוסחים), ב-`docs/legal/lawyer-questions.md`.
 > **שיטה:** הטקסט חולץ אוטומטית מקובצי ה-PDF של הנתונים, עם `pdftotext`. ייתכנו שגיאות חילוץ: שורות שנחתכו או אפשרויות חסרות. **דורש אימות:** כל שאלה מול ה-PDF לפני שמשתמשים בה.
 > **היקף נוכחי:** מדד הקול הישראלי (IDI), כ-80 קובצי נתונים מאוגוסט 2019 עד ספטמבר 2026, ומדד הדמוקרטיה הישראלית (IDI, שנתי) לשנים 2022–2025, מנספח 1 ("Questionnaire and Distribution of Responses"). מקורות נוספים יתווספו בהמשך.
-> **ידוע:** בנספח של מדד הדמוקרטיה 2023 חולצו רק 30 שאלות בגלל פריסת העמודים. בחלק מהשאלות האפשרויות חלקיות. **הכול חולץ אוטומטית, וכל שאלה דורשת בדיקה מול המקור.**
+> **ידוע:** מדד הדמוקרטיה 2023 חולץ מחדש בשיטה ייעודית (63 מתוך 64 שאלות). בחלק מהשאלות האפשרויות חלקיות. **הכול חולץ אוטומטית, וכל שאלה דורשת בדיקה מול המקור.**
 
-סה"כ 1280 שאלות: 203 במהדורות 2025–2026, 821 במהדורות ישנות של מדד הקול, ו-256 ממדד הדמוקרטיה.
+סה"כ 1313 שאלות: 203 במהדורות 2025–2026, 821 במהדורות ישנות של מדד הקול, ו-289 ממדד הדמוקרטיה.
 
 מפתח מזהה: `IVI-<קובץ>-<מספר שאלה>` למדד הקול, ו-`IDI-democracy-index-<שנה>-<מספר שאלה>` למדד הדמוקרטיה. השאלות מובאות בשפת המקור (אנגלית), בלי תרגום.
 
@@ -2730,71 +2730,6 @@
 - **IDI-democracy-index-2024-81:** Societies throughout the world are divided into stronger and weaker groups. Which group in Israeli society do you feel you belong to?
   - אפשרויות: Strong group / Quite strong group / Quite weak group / Weak group / Don’t know
 
-## מדד הדמוקרטיה הישראלית: democracy-index-2023
-
-מקור: [democracy-index-2023.pdf](https://en.idi.org.il/media/24389/the-israeli-democracy-index-2023-english.pdf) · נספח 1
-
-- **IDI-democracy-index-2023-8:** The Supreme Court
-  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
-- **IDI-democracy-index-2023-9:** The police
-  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
-- **IDI-democracy-index-2023-10:** The President of Israel
-  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
-- **IDI-democracy-index-2023-11:** The Knesset
-  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
-- **IDI-democracy-index-2023-12:** The IDF
-  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
-- **IDI-democracy-index-2023-17:** What is the greatest existential threat facing Israel from within?
-  - אפשרויות: Israel’s / Socioeconomic / Jewish- / Differences / Low public / Other / Don't
-- **IDI-democracy-index-2023-18:** Which of the following is the most acute social tension in Israel today?
-  - אפשרויות: Between / Between / Between Between / Between / Don’t
-- **IDI-democracy-index-2023-19:** In your opinion, is there a difference today between younger and older
-  - אפשרויות: Israelis in their level of interest in politics?
-- **IDI-democracy-index-2023-24:** Many Israelis feel that they belong to a minority group in Israeli society. Do
-  - אפשרויות: you also feel this way?
-- **IDI-democracy-index-2023-26:** In your opinion, should teachers in junior high and high schools discuss
-  - אפשרויות: burning political issues with their students, in the appropriate classes?
-- **IDI-democracy-index-2023-30:** To what extent do you agree or disagree that human and civil rights
-  - אפשרויות: organizations, such as the Association for Civil Rights in Israel (ACRI) and
-- **IDI-democracy-index-2023-31:** To what extent do you agree or disagree that it would be best to dismantle
-  - אפשרויות: all the country’s political institutions and start over from scratch?
-- **IDI-democracy-index-2023-32:** (Jewish respondents) To what extent do you agree or disagree that
-  - אפשרויות: legislation and legal interpretation in Israel should be based primarily on Jewish
-- **IDI-democracy-index-2023-33:** Which of these statements more accurately represents your views?
-  - אפשרויות: Decisions made by a / Decisions that are opposed to / Don’t Total
-- **IDI-democracy-index-2023-37:** To what extent do you feel that Israel upholds your human and civil rights?
-  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don’t know
-- **IDI-democracy-index-2023-38:** Do you agree or disagree that the Supreme Court intervenes too much in
-  - אפשרויות: decisions made by the government?
-- **IDI-democracy-index-2023-39:** In your opinion, does Israel’s state education system truly offer equal
-  - אפשרויות: opportunity to children from all backgrounds and sectors?
-- **IDI-democracy-index-2023-40:** In your opinion, do the courts in Israel accord equal treatment to
-  - אפשרויות: defendants from all backgrounds and sectors?
-- **IDI-democracy-index-2023-45:** Absence of large income disparities between groups
-  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
-- **IDI-democracy-index-2023-46:** Equality before the law for all, regardless of religion, race, ethnicity, or sex
-  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
-- **IDI-democracy-index-2023-47:** Free and fair elections by secret ballot, as prescribed by law
-  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
-- **IDI-democracy-index-2023-48:** Checks and balances between all three branches of government (legislative,
-  - אפשרויות: executive, and judicial)
-- **IDI-democracy-index-2023-53:** Israel is defined as a Jewish and democratic state. Do you feel there is a
-  - אפשרויות: good balance today between the Jewish and the democratic components?
-- **IDI-democracy-index-2023-54:** Ho w worried are you that you will be unable to maintain your preferred
-  - אפשרויות: lifestyle because of the increasing power of certain groups in Israeli society that
-- **IDI-democracy-index-2023-55:** How worried are you that you will be unable to financially support your
-  - אפשרויות: children in future?
-- **IDI-democracy-index-2023-56:** How worried are you that you will be unable to live in dignity in your old
-  - אפשרויות: age?
-- **IDI-democracy-index-2023-61:** To the best of your knowledge, was there a national consensus among a
-  - אפשרויות: majority of the Israeli public in the past?
-- **IDI-democracy-index-2023-62:** In your opinion, what is the likelihood that Israel’s recent political battles
-  - אפשרויות: will give rise to a “new social-political contract” between citizens and the
-- **IDI-democracy-index-2023-63:** In your opinion, what is the likelihood that Israel’s recent political battles
-  - אפשרויות: will give rise to a “new social-political contract” between the different groups in
-- **IDI-democracy-index-2023-64:** In general, are you optimistic or pessimistic about Israel’s future?
-  - אפשרויות: Very / Quite / Quite / Very / Don't know
-
 ## מדד הדמוקרטיה הישראלית: democracy-index-2022
 
 מקור: [democracy-index-2022.pdf](https://en.idi.org.il/media/19697/the-israeli-democracy-index-2022.pdf) · נספח 1
@@ -2946,3 +2881,136 @@
 - **IDI-democracy-index-2022-74:** How would you define your ethnicity?
   - אפשרויות: Ashkenazi / Mizrahi / Mixed / both / FSU immigrant / Don’t know / / Ethiopian / other
 - **IDI-democracy-index-2022-75:** Nationality
+
+## מדד הדמוקרטיה הישראלית: democracy-index-2023
+
+מקור: [the-israeli-democracy-index-2023-english.pdf](https://en.idi.org.il/media/24389/the-israeli-democracy-index-2023-english.pdf) · נספח 1, עמ' 179–223
+
+> חולץ מחדש ב-2026-10-27 בשיטה ייעודית: `pdftotext -layout` עם ניקוי של שוליים ("Discussion on p.") וזיהוי של שאלות-אם. שאלה 25 לא זוהתה. בחלק מהשאלות האפשרויות קטועות, למשל "Strongly" במקום "Strongly agree". **חולץ אוטומטית, דורש בדיקה מול המקור.**
+
+- **IDI-democracy-index-2023-1:** How would you characterize Israel’s overall situation today?
+  - אפשרויות: Very / Good / So-so / Bad / Very bad / Don’t
+- **IDI-democracy-index-2023-2:** To what extent do you feel part of the State of Israel and its problems?
+  - אפשרויות: Very much / Quite a lot / Not so / Not at all / Don’t know
+- **IDI-democracy-index-2023-3:** How would you rate the level of solidarity (sense of “togetherness”) of Israeli society as a whole (Jews, Arabs, and all other citizens), where 1 = no solidarity at all and 10 = very high level of solidarity?
+  - אפשרויות: 1 – No / 10 – Very / Don't Total Mean
+- **IDI-democracy-index-2023-4:** (Jewish respondents) How would you rate the level of solidarity (sense of “togetherness”) of Jewish society in Israel?
+  - אפשרויות: 1 – No / 10 – Very / Don't Total Mean
+- **IDI-democracy-index-2023-5:** How would you rate Israeli democracy today on a scale of 1 to 5, where 1 = very poor and 5 = excellent?
+  - אפשרויות: 1 – Very / 5– / Don't / Mean rating
+- **IDI-democracy-index-2023-6:** If you could receive American citizenship, or that of another Western country, would you prefer to live there or to remain in Israel?
+  - אפשרויות: I would prefer / I would prefer / Don’t know
+- **IDI-democracy-index-2023-7:** To what extent do you trust each of the following individuals or institutions? — The media
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-8:** To what extent do you trust each of the following individuals or institutions? — The Supreme Court
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-9:** To what extent do you trust each of the following individuals or institutions? — The police
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-10:** To what extent do you trust each of the following individuals or institutions? — The President of Israel
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-11:** To what extent do you trust each of the following individuals or institutions? — The Knesset
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-12:** To what extent do you trust each of the following individuals or institutions? — The IDF
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-13:** To what extent do you trust each of the following individuals or institutions? — The government
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-14:** To what extent do you trust each of the following individuals or institutions? — The political parties
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-15:** To what extent do you trust each of the following individuals or institutions? — Your municipality or local authority
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-16:** To what extent do you trust each of the following individuals or institutions? — The Attorney General
+  - אפשרויות: Not at all / Not so much / Quite a lot / Very much / Don't know
+- **IDI-democracy-index-2023-17:** What is the greatest existential threat facing Israel from within?
+  - אפשרויות: Israel’s / Socioeconomic / Jewish- / Differences / Low public / Other / Don't
+- **IDI-democracy-index-2023-18:** Which of the following is the most acute social tension in Israel today?
+  - אפשרויות: Between / Between / Between Between / Between / Don’t
+- **IDI-democracy-index-2023-19:** In your opinion, is there a difference today between younger and older
+  - אפשרויות: Israelis in their level of interest in politics?
+- **IDI-democracy-index-2023-20:** To what extent do you agree or disagree that Israel is a good place to live?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-21:** To what extent do you agree or disagree that the Opposition in Israel is weak, and is not doing its job?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-22:** (Jewish respondents) To what extent do you agree or disagree that it’s better to cut back on civics and democracy studies, and devote more hours to Jewish history and love of the Land of Israel?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-23:** To what extent do you agree or disagree that democratic rule in Israel is in grave danger?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-24:** Many Israelis feel that they belong to a minority group in Israeli society. Do you also feel this way?
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don’t know
+- **IDI-democracy-index-2023-26:** In your opinion, should teachers in junior high and high schools discuss burning political issues with their students, in the appropriate classes?
+  - אפשרויות: I’m certain / I think they / I think they / I’m certain / Don’t know
+- **IDI-democracy-index-2023-27:** In your opinion, should the state fund cultural and artistic institutions and activities?
+  - אפשרויות: I’m certain / I think it / I think / I’m certain / Don’t know
+- **IDI-democracy-index-2023-28:** At present, the state funds cultural and artistic institutions and activities. In your opinion, does this give it the right to be involved in determining the cultural and artistic content of these institutions and activities?
+  - אפשרויות: I’m certain / I think / I think / I’m certain / Don’t know
+- **IDI-democracy-index-2023-29:** To what extent do you agree or disagree that Jewish citizens of Israel should have more rights than non-Jewish citizens?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-30:** To what extent do you agree or disagree that human and civil rights organizations, such as the Association for Civil Rights in Israel (ACRI) and B’Tselem, cause damage to the state?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know / .Total
+- **IDI-democracy-index-2023-31:** To what extent do you agree or disagree that it would be best to dismantle all the country’s political institutions and start over from scratch?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-32:** (Jewish respondents) To what extent do you agree or disagree that legislation and legal interpretation in Israel should be based primarily on Jewish religious law (mishpat ivri)?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-33:** Which of these statements more accurately represents your views?
+  - אפשרויות: Decisions made by a / Decisions that are opposed to / Don’t Total
+- **IDI-democracy-index-2023-34:** In your opinion, which of these four forms of government is the most suitable for Israel under the present circumstances? Direct democracy Representative Rule by experts A strong leader Don’t Total
+  - אפשרויות: (citizens / democracy / (professional / who makes / know
+- **IDI-democracy-index-2023-35:** Israel has not had a constitution since its founding. In your view, how important is it that Israel have a constitution?
+  - אפשרויות: Very / Quite / Not so / Not at all / Don’t
+- **IDI-democracy-index-2023-36:** In your opinion, what is the likelihood that Israel will have a constitution within ten years?
+  - אפשרויות: Very high / Quite high / Quite low / Very low / Don’t know
+- **IDI-democracy-index-2023-37:** To what extent do you feel that Israel upholds your human and civil rights?
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don’t know
+- **IDI-democracy-index-2023-38:** Do you agree or disagree that the Supreme Court intervenes too much in decisions made by the government?
+  - אפשרויות: Strongly / Somewhat / Somewhat / Strongly / Don't know
+- **IDI-democracy-index-2023-39:** In your opinion, does Israel’s state education system truly offer equal opportunity to children from all backgrounds and sectors?
+  - אפשרויות: I’m certain / I think / I think / I’m certain / Don’t know
+- **IDI-democracy-index-2023-40:** In your opinion, do the courts in Israel accord equal treatment to defendants from all backgrounds and sectors?
+  - אפשרויות: I’m certain / I think they / I think they / I’m certain / Don’t know
+- **IDI-democracy-index-2023-41:** Free and fair elections by secret ballot, as prescribed by law
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-42:** Checks and balances between all three branches of government (legislative, executive, and judicial)
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-43:** To what extent do you trust each of the following individuals or institutions? — Freedom of expression for all opinions
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-44:** To what extent do you trust each of the following individuals or institutions? — Separation of religion and state
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-45:** To what extent do you trust each of the following individuals or institutions? — Absence of large income disparities between groups
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-46:** Equality before the law for all, regardless of religion, race, ethnicity, or sex
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-47:** Free and fair elections by secret ballot, as prescribed by law
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-48:** Checks and balances between all three branches of government (legislative, executive, and judicial)
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-49:** And to what extent are each of the following upheld in practice in Israel? — Freedom of expression for all opinions
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-50:** And to what extent are each of the following upheld in practice in Israel? — Separation of religion and state
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-51:** And to what extent are each of the following upheld in practice in Israel? — Absence of large income disparities between groups
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-52:** Equality before the law for all, regardless of religion, race, ethnicity, or sex
+  - אפשרויות: Very much / Quite a lot / Not so much / Not at all / Don't know
+- **IDI-democracy-index-2023-53:** Israel is defined as a Jewish and democratic state. Do you feel there is a good balance today between the Jewish and the democratic components?
+  - אפשרויות: There is a good / The Jewish / The democratic / Don’t
+- **IDI-democracy-index-2023-54:** Ho w worried are you that you will be unable to maintain your preferred lifestyle because of the increasing power of certain groups in Israeli society that advocate a different way of life from yours?
+  - אפשרויות: Very / Quite / Not so / Not at all / Don’t know
+- **IDI-democracy-index-2023-55:** How worried are you that you will be unable to financially support your children in future?
+  - אפשרויות: Very / Quite / Not so / Not at all / Don’t know
+- **IDI-democracy-index-2023-56:** How worried are you that you will be unable to live in dignity in your old age?
+  - אפשרויות: Very / Quite / Not so / Not at all / Don’t know
+- **IDI-democracy-index-2023-57:** How worried are you that democratic rule in Israel is going to be harmed, and Israel will become a failed state?
+  - אפשרויות: Very / Quite / Not so / Not at all / Don’t know
+- **IDI-democracy-index-2023-58:** In your opinion, since the start of the protests against the judicial reforms, has the Israeli public’s interest in politics:
+  - אפשרויות: Increased / Remained the same / Decreased / Don’t know
+- **IDI-democracy-index-2023-59:** In your opinion, since the start of the protests against the judicial reforms, has politicians’ attentiveness to the demands of the public:
+  - אפשרויות: Increased / Remained the same / Decreased / Don’t know
+- **IDI-democracy-index-2023-60:** Do you feel that there is a common set of values and understandings shared by a majority of Israelis today (a national consensus)?
+  - אפשרויות: I’m certain / I think / I think / I’m certain / Don’t know
+- **IDI-democracy-index-2023-61:** To the best of your knowledge, was there a national consensus among a majority of the Israeli public in the past?
+  - אפשרויות: I’m certain / I think there / I think there / I’m certain / Don’t know
+- **IDI-democracy-index-2023-62:** In your opinion, what is the likelihood that Israel’s recent political battles will give rise to a “new social-political contract” between citizens and the government?
+  - אפשרויות: Very high / Quite high / Quite low / Very low / Don’t know
+- **IDI-democracy-index-2023-63:** In your opinion, what is the likelihood that Israel’s recent political battles will give rise to a “new social-political contract” between the different groups in Israeli society?
+  - אפשרויות: Very high / Quite high / Quite low / Very low / Don’t know
+- **IDI-democracy-index-2023-64:** In general, are you optimistic or pessimistic about Israel’s future?
+  - אפשרויות: Very / Quite / Quite / Very / Don't know
