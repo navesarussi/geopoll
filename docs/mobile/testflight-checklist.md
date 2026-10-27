@@ -33,3 +33,8 @@ Status 2026-10-27: code ready in `apps/mobile` (CI: typecheck, tests, iOS bundle
 
 ## D. Android (later)
 Play Console app `app.geopoll`, service account JSON as `PLAY_SERVICE_ACCOUNT_JSON`, internal track.
+
+## E. Known TODOs after first TestFlight build (2026-10-27)
+- **Push capability:** EAS could not enable Push Notifications on App ID `app.geopoll.beta` via the ASC API (capability patch rejected), so `apps/mobile/plugins/no-push.js` strips `aps-environment`. To enable push: developer.apple.com → Identifiers → app.geopoll.beta → enable *Push Notifications* → rerun the workflow with `GEOPOLL_IOS_PUSH=1` (and regenerate the profile), then delete the plugin.
+- `EXPO_NO_CAPABILITY_SYNC=1` is set in `mobile-eas.yml` for the same reason.
+- iOS credentials (distribution cert, AppStore profile) are EAS-managed; set up once via the expect step in `mobile-eas.yml`.
