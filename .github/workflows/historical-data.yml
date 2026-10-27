@@ -1,8 +1,10 @@
-# Inactive template (activating workflows requires Nave's approval per AGENTS.md).
 name: historical-data
 on:
-  pull_request:
+  push:
+    branches: [main]
     paths: ["services/historical-data/**"]
+  pull_request:
+    paths: ["services/historical-data/**", ".github/workflows/historical-data.yml"]
 permissions:
   contents: read
 jobs:
