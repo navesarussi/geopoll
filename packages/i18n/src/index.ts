@@ -73,6 +73,7 @@ const he = {
   m_walletHas: "יש כרטיס לתקופה {epoch} ({tier})",
   m_signInFailed: "ההתחברות נכשלה. נסו שוב.",
   m_noAds: "בלי פרסומות ובלי מעקב.",
+  m_pollScheduled: "המשאל עוד לא נפתח להצבעה.",
   // web: profile / positions / admin (#71)
   myProfile: "הפרופיל שלי",
   electionBanner: "תקופת בחירות: לפי סעיף 16ה לחוק הבחירות, פרסום תוצאות של סקרי בחירות והצבעה בהם מוקפאים עד סגירת הקלפיות.",
@@ -165,7 +166,7 @@ const en: Dict = {
   m_postPublic: "Will be posted publicly under your profile", m_consent: "I agree that my position is published publicly under my profile",
   m_post: "Post", m_posted: "Posted ✓", m_postFailed: "Posting failed.", m_notifications: "Notify me about new polls", m_notifOn: "Notifications on",
   m_wallet: "Token wallet (secured on device)", m_walletEmpty: "No token for the current period", m_walletHas: "Token for {epoch} ({tier})",
-  m_signInFailed: "Sign-in failed. Please try again.", m_noAds: "No ads, no tracking.",
+  m_signInFailed: "Sign-in failed. Please try again.", m_noAds: "No ads, no tracking.", m_pollScheduled: "This poll is not open for voting yet.",
   electionBanner: "Election period: under Elections Law §16E, election poll results and voting are frozen until the polls close.",
   staleLabel: "Not current – last result from {date}, before the blackout period",
   myProfile: "My profile", anonAlias: "Anonymous {n}", userAlias: "User {n}", back: "Back", needSignIn: "Please sign in.",

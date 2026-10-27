@@ -6,6 +6,7 @@ import { loadConfig, type Locale, type PollDef } from "@geopoll/config";
 import { DICTS, dirOf, pollText, tr, type Dict } from "@geopoll/i18n";
 import { checkVersion, type VersionCheck } from "./src/core/version";
 import { deviceNullifier, getOrIssueToken, loadToken, TOKEN_KEY, TokenError } from "./src/core/token";
+import { fetchPolls, resultsState, type LivePoll } from "./src/core/polls";
 import { castOrQueue, CHOICE_KEY, flushQueue, readQueue } from "./src/core/vote";
 import { API_BASE, APP_VERSION, biometricAvailable, enablePush, http, isOnline, isSignedIn, LOCK_PREF, onReconnect, PLATFORM, secureKV, signIn, signOut, unlock } from "./src/native/platform";
 import { s } from "./src/ui";
@@ -27,6 +28,9 @@ export default function App() {
   const [signed, setSigned] = useState(false);
   const [tab, setTab] = useState<Tab>("polls");
   const [queued, setQueued] = useState(0);
+  const [polls, setPolls] = useState<LivePoll[]>(() => cfg.polls.map((p) => ({ ...p, status: "open", blackout: false })));
+  const reloadPolls = useCallback(() => fetchPolls(http, cfg.polls).then((r) => setPolls(r.polls)).catch(() => {}), []);
+  useEffect(() => { reloadPolls(); }, [reloadPolls]);
 
   const refreshQueue = useCallback(async () => setQueued((await readQueue(secureKV)).length), []);
   const flush = useCallback(async () => { if (await isOnline()) { await flushQueue(secureKV, http, RELAY).catch(() => {}); } await refreshQueue(); }, [refreshQueue]);
@@ -67,8 +71,9 @@ export default function App() {
       {queued > 0 ? <View style={s.warn}><Text style={text}>{tr(t, "m_queuedCount", { n: queued })}</Text><Pressable onPress={flush}><Text style={[s.ok, text]}>{t.m_sendNow}</Text></Pressable></View> : null}
       <ScrollView contentContainerStyle={s.pad}>
         {!signed && tab !== "settings" ? <SignIn ctx={ctx} onDone={() => setSigned(true)} /> : null}
-        {tab === "polls" && cfg.polls.map((p) => <PollCard key={p.id} poll={p} ctx={ctx} signed={signed} onQueued={refreshQueue} />)}
-        {tab === "positions" && cfg.polls.filter((p) => p.publicPositions).map((p) => <Positions key={p.id} poll={p} ctx={ctx} signed={signed} />)}
+        {tab === "polls" && polls.some((p) => p.blackout) ? <View style={s.warn}><Text style={text}>{t.electionBanner}</Text></View> : null}
+        {tab === "polls" && polls.map((p) => <PollCard key={p.id} poll={p} ctx={ctx} signed={signed} onQueued={refreshQueue} />)}
+        {tab === "positions" && polls.filter((p) => p.publicPositions).map((p) => <Positions key={p.id} poll={p} ctx={ctx} signed={signed} />)}
         {tab === "settings" && <Settings ctx={ctx} setLang={setLang} signed={signed} onSignOut={async () => { await signOut(); setSigned(false); }} />}
       </ScrollView>
       <View style={s.tabs}>
@@ -91,8 +96,8 @@ function SignIn({ ctx: { t }, onDone }: { ctx: Ctx; onDone: () => void }) {
     </View>);
 }
 
-type Results = { published: boolean; participants?: string; percents?: Record<string, number>; snapshotAt?: string };
-function PollCard({ poll, ctx: { t, lang, dir }, signed, onQueued }: { poll: PollDef; ctx: Ctx; signed: boolean; onQueued: () => void }) {
+type Results = { published: boolean; blackout?: boolean; participants?: string; percents?: Record<string, number>; snapshotAt?: string };
+function PollCard({ poll, ctx: { t, lang, dir }, signed, onQueued }: { poll: LivePoll; ctx: Ctx; signed: boolean; onQueued: () => void }) {
   const pt = pollText(poll, lang);
   const text = { writingDirection: dir, textAlign: dir === "rtl" ? "right" : "left" } as const;
   const [choice, setChoice] = useState<string | null>(null);
@@ -100,6 +105,7 @@ function PollCard({ poll, ctx: { t, lang, dir }, signed, onQueued }: { poll: Pol
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [res, setRes] = useState<Results | null>(null);
   const [inc, setInc] = useState<string | null>(null);
+  const canVote = signed && poll.status === "open" && !(poll.blackout && poll.kind !== "referendum");
   const load = useCallback(() => http(`/api/results?poll=${encodeURIComponent(poll.id)}`).then((r) => setRes(r.json as Results)).catch(() => {}), [poll.id]);
   useEffect(() => { load(); secureKV.get(CHOICE_KEY(poll.id)).then(setChoice); }, [load, poll.id]);
 
@@ -139,8 +145,10 @@ function PollCard({ poll, ctx: { t, lang, dir }, signed, onQueued }: { poll: Pol
       <Text style={[s.muted, text]}>{poll.kind === "referendum" ? t.kindReferendum : t.kindKnesset} · {t.secretBallot}{poll.dummy ? ` · ${t.dummyBadge}` : ""}</Text>
       <Text style={[s.h2, text]}>{pt.question}</Text>
       <Text style={[s.muted, text]}>{t.secretExplainer}</Text>
+      {poll.status !== "open" ? <Text style={[s.err, text]}>{poll.status === "scheduled" ? t.m_pollScheduled : t.err_closed}</Text> : null}
+      {poll.blackout && poll.kind !== "referendum" ? <Text style={[s.err, text]}>{t.err_blackout}</Text> : null}
       {pt.options.map((o) => (
-        <Pressable key={o.id} disabled={!signed || busy} onPress={() => vote(o.id)} style={[s.opt, choice === o.id && s.optOn, !signed && { opacity: 0.5 }]} accessibilityRole="button">
+        <Pressable key={o.id} disabled={!canVote || busy} onPress={() => vote(o.id)} style={[s.opt, choice === o.id && s.optOn, !canVote && { opacity: 0.5 }]} accessibilityRole="button">
           <Text style={[s.body, text]}>{o.text}{choice === o.id ? " ✓" : ""}</Text>
         </Pressable>))}
       {busy ? <ActivityIndicator /> : null}
@@ -149,7 +157,7 @@ function PollCard({ poll, ctx: { t, lang, dir }, signed, onQueued }: { poll: Pol
       {inc ? <Text style={[s.body, text]}>{inc}</Text> : null}
       {inc ? <Text style={[s.muted, text]}>{t.incNote}</Text> : null}
       <Text style={[s.h2, text]}>{t.results}</Text>
-      {!res ? <Text style={s.muted}>{t.loading}</Text> : !res.published ? <Text style={[s.muted, text]}>{tr(t, "belowK", { k: cfg.jurisdiction.thresholds.kNational })}</Text> : (
+      {resultsState(res) === "loading" ? <Text style={s.muted}>{t.loading}</Text> : resultsState(res) === "blackout" ? <Text style={[s.muted, text]}>{t.blackout}</Text> : resultsState(res) === "belowK" || !res ? <Text style={[s.muted, text]}>{tr(t, "belowK", { k: cfg.jurisdiction.thresholds.kNational })}</Text> : (
         <View style={{ gap: 6 }}>
           <Text style={[s.muted, text]}>{t.participants}: {res.participants}</Text>
           {pt.options.filter((o) => res.percents?.[o.id] != null).map((o) => (

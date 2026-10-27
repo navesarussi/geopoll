@@ -51,5 +51,5 @@ describe("identity tiers (T-107, ADR-0019)", () => {
     process.env.SNAPSHOT_INTERVAL_SECONDS = "0";
     expect((await results(ballots, new Date(Date.now() + 1000))).assurance).toBe("basic");
     delete process.env.SNAPSHOT_INTERVAL_SECONDS;
-  }, 60000);
+  }, 180_000); // 55 blind-RSA signatures; CI coverage runner took >60s (bug-learnings #3)
 });
