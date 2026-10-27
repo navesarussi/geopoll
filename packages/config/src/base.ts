@@ -10,7 +10,7 @@ export const base: GlobalConfig = {
     blackout: { appliesTo: [], startRule: "end-of-friday-before", endsAtLocal: "22:00", freezeVoting: false },
     elections: [],
   },
-  features: { inclusionCheck: true, publicPositions: true, govIdTier: false, demoLogin: false },
+  features: { inclusionCheck: true, publicPositions: true, govIdTier: false, demoLogin: false, publicIdentityDefault: "profile", teenDefaultAnonymous: true },
   services: { relayUrl: "/api/relay" },
   polls: [],
 };

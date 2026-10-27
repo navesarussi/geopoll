@@ -45,3 +45,10 @@ export async function sessionAccount(): Promise<string | null> {
   const s = await getServerSession(authOptions);
   return (s as { acct?: string } | null)?.acct ?? null;
 }
+
+/** Name from the sign-in provider, used ONLY to prefill the editable profile name. Email is never read. */
+export async function sessionDisplayName(): Promise<string | null> {
+  const { getServerSession } = await import("next-auth");
+  const s = await getServerSession(authOptions);
+  return s?.user?.name ?? null;
+}

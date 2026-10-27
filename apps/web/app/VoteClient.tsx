@@ -104,6 +104,7 @@ export default function VoteClient({ signedIn, providers, t, poll, kThreshold, b
           <p className="small">{t.secretExplainer}</p>
           {INCLUSION_CHECK && <button className="link" onClick={checkInclusion}>{t.checkInclusion}</button>}
           {inc && <p className="small" role="status">{inc} {t.incNote}</p>}
+          <a href="/profile">הפרופיל שלי</a>
           <button className="link" onClick={() => signOut()}>{t.signOut}</button>
         </div>
       )}
