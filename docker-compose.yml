@@ -1,0 +1,13 @@
+# Local development database (Postgres 17). Usage: scripts/dev-db up
+services:
+  geopoll-db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: geopoll_owner
+      POSTGRES_PASSWORD: ${GEOPOLL_DB_OWNER_PASSWORD:-dev-owner-only}
+      POSTGRES_DB: geopoll
+    ports: ["127.0.0.1:${GEOPOLL_DB_PORT:-5433}:5432"]
+    volumes: ["geopoll-pg:/var/lib/postgresql/data"]
+    healthcheck: { test: ["CMD", "pg_isready", "-U", "geopoll_owner"], interval: 5s, retries: 10 }
+volumes:
+  geopoll-pg:

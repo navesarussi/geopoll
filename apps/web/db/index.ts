@@ -1,7 +1,8 @@
 import m001 from "./migrations/001_zones";
 import m002 from "./migrations/002_roles";
+import m003 from "./migrations/003_default_privileges";
 
-export const MIGRATIONS: [string, string][] = [["001_zones", m001], ["002_roles", m002]];
+export const MIGRATIONS: [string, string][] = [["001_zones", m001], ["002_roles", m002], ["003_default_privileges", m003]];
 
 /** Minimal adapter so the same SQL runs on Postgres (postgres.js) and PGlite (tests / no-DB fallback). */
 export interface Db {
@@ -39,7 +40,7 @@ export function splitSql(sql: string): string[] {
 
 export async function postgresDb(url: string): Promise<Db> {
   const postgres = (await import("postgres")).default;
-  const sql = postgres(url, { ssl: url.includes("localhost") ? false : "require", max: 3, prepare: false, onnotice: () => {} });
+  const sql = postgres(url, { ssl: /@(localhost|127\.0\.0\.1)[:/]/.test(url) || url.includes("sslmode=disable") ? false : "require", max: 3, prepare: false, onnotice: () => {} });
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wrap = (s: any): Db => ({
     kind: "postgres",

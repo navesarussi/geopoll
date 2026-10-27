@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Local Postgres 17 for GeoPoll dev/agents. Dummy data only — never real user data.
+#   scripts/dev-db up       start DB (docker compose if available, else native Postgres 17 in $GEOPOLL_PG_DIR)
+#   scripts/dev-db setup    migrations + per-zone login roles + writes apps/web/.env.local
+#   scripts/dev-db down     stop DB      scripts/dev-db psql   open psql as owner
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PORT="${GEOPOLL_DB_PORT:-5433}"
+DATA="${GEOPOLL_PG_DIR:-$ROOT/.geopoll-pg}"
+OWNER=geopoll_owner
+OWNER_PW="${GEOPOLL_DB_OWNER_PASSWORD:-dev-owner-only}"
+PGBIN="${PGBIN:-$(ls -d /usr/lib/postgresql/17/bin 2>/dev/null || dirname "$(command -v initdb 2>/dev/null || echo /x/x)")}"
+OWNER_URL="postgres://$OWNER:$OWNER_PW@127.0.0.1:$PORT/geopoll"
+use_docker() { command -v docker >/dev/null && docker info >/dev/null 2>&1 && [ -z "${GEOPOLL_NATIVE:-}" ]; }
+
+up() {
+  if use_docker; then (cd "$ROOT" && GEOPOLL_DB_PORT=$PORT docker compose up -d --wait geopoll-db); return; fi
+  [ -x "$PGBIN/initdb" ] || { echo "Postgres 17 not found (apt install postgresql-17 or use docker)"; exit 1; }
+  if [ ! -f "$DATA/PG_VERSION" ]; then
+    mkdir -p "$DATA"; pwf=$(mktemp); printf %s "$OWNER_PW" > "$pwf"
+    "$PGBIN/initdb" -D "$DATA" -U "$OWNER" --pwfile="$pwf" -A scram-sha-256 >/dev/null; rm -f "$pwf"
+  fi
+  "$PGBIN/pg_ctl" -D "$DATA" -l "$DATA/server.log" -o "-p $PORT -k /tmp -c listen_addresses=127.0.0.1" status >/dev/null 2>&1 ||
+    "$PGBIN/pg_ctl" -D "$DATA" -l "$DATA/server.log" -o "-p $PORT -k /tmp -c listen_addresses=127.0.0.1" -w start >/dev/null
+  PGPASSWORD="$OWNER_PW" psql -h 127.0.0.1 -p "$PORT" -U "$OWNER" -d postgres -tAc "select 1 from pg_database where datname='geopoll'" | grep -q 1 ||
+    PGPASSWORD="$OWNER_PW" psql -h 127.0.0.1 -p "$PORT" -U "$OWNER" -d postgres -qc "create database geopoll"
+  echo "Postgres up on 127.0.0.1:$PORT (data: $DATA)"
+}
+
+setup() {
+  cd "$ROOT/apps/web"
+  DATABASE_URL="$OWNER_URL" npx tsx scripts/migrate.ts
+  ENV=.env.local; touch "$ENV"; chmod 600 "$ENV"
+  for z in a b c; do
+    var="DATABASE_URL_ZONE_$(echo $z | tr a-z A-Z)"
+    pw=$(grep -E "^$var=" "$ENV" | sed -E 's#.*://[^:]+:([^@]+)@.*#\1#' || true)
+    [ -n "$pw" ] || pw=$(openssl rand -hex 16)
+    PGPASSWORD="$OWNER_PW" psql -h 127.0.0.1 -p "$PORT" -U "$OWNER" -d geopoll -qc "alter role gp_zone_$z login password '$pw'"
+    sed -i "/^$var=/d" "$ENV"; echo "$var=postgres://gp_zone_$z:$pw@127.0.0.1:$PORT/geopoll" >> "$ENV"
+  done
+  sed -i '/^DATABASE_URL=/d' "$ENV"; echo "DATABASE_URL=$OWNER_URL" >> "$ENV"
+  echo "Wrote zone connection strings to apps/web/.env.local"
+}
+
+case "${1:-}" in
+  up) up ;;
+  setup) setup ;;
+  down) if use_docker; then (cd "$ROOT" && docker compose stop geopoll-db); else "$PGBIN/pg_ctl" -D "$DATA" stop; fi ;;
+  psql) PGPASSWORD="$OWNER_PW" psql -h 127.0.0.1 -p "$PORT" -U "$OWNER" geopoll ;;
+  *) sed -n 2,6p "$0"; exit 1 ;;
+esac

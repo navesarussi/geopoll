@@ -121,7 +121,7 @@ export class ContentStore {
 /** Demo moderation: posts with this many distinct reports are hidden pending review. */
 export const HIDE_AFTER_REPORTS = 3;
 
-export interface Stores { identity: IdentityStore; ballots: BallotStore; content: ContentStore; kind: Db["kind"] }
+export interface Stores { identity: IdentityStore; ballots: BallotStore; content: ContentStore; kind: Db["kind"]; isolated?: boolean }
 
 export async function makeStores(db: Db): Promise<Stores> {
   await migrate(db);
@@ -129,11 +129,31 @@ export async function makeStores(db: Db): Promise<Stores> {
 }
 
 type G = { __gp?: Promise<Stores> };
+
+/**
+ * Connection modes:
+ *  - DATABASE_URL_ZONE_A/B/C set: each zone store gets its OWN connection as role gp_zone_a/b/c,
+ *    which the DB only allows to touch its own schema (real isolation at DB level).
+ *    Migrations run with DATABASE_URL (owner) if given; otherwise they must be applied beforehand (scripts/dev-db).
+ *  - only DATABASE_URL / POSTGRES_URL: one owner connection for all zones (demo simplification).
+ *  - nothing: in-memory PGlite.
+ */
+export async function connectStores(env = process.env): Promise<Stores> {
+  const a = env.DATABASE_URL_ZONE_A, b = env.DATABASE_URL_ZONE_B, c = env.DATABASE_URL_ZONE_C;
+  const owner = env.DATABASE_URL ?? env.POSTGRES_URL;
+  if (a || b || c) {
+    if (!(a && b && c)) throw new Error("set all of DATABASE_URL_ZONE_A/B/C or none");
+    if (owner) await migrate(await postgresDb(owner));
+    const [da, db, dc] = await Promise.all([postgresDb(a), postgresDb(b), postgresDb(c)]);
+    return { identity: new IdentityStore(da), ballots: new BallotStore(db), content: new ContentStore(dc), kind: "postgres", isolated: true };
+  }
+  return makeStores(owner ? await postgresDb(owner) : await pgliteDb());
+}
+
 export function stores(): Promise<Stores> {
   const g = globalThis as G;
   if (!g.__gp) {
-    const url = process.env.DATABASE_URL ?? process.env.POSTGRES_URL;
-    g.__gp = (url ? postgresDb(url) : pgliteDb()).then(makeStores);
+    g.__gp = connectStores();
     g.__gp.catch(() => { g.__gp = undefined; });
   }
   return g.__gp;
