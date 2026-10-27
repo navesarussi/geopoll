@@ -38,7 +38,7 @@ setup() {
     PGPASSWORD="$OWNER_PW" psql -h 127.0.0.1 -p "$PORT" -U "$OWNER" -d geopoll -qc "alter role gp_zone_$z login password '$pw'"
     sed -i "/^$var=/d" "$ENV"; echo "$var=postgres://gp_zone_$z:$pw@127.0.0.1:$PORT/geopoll" >> "$ENV"
   done
-  sed -i '/^DATABASE_URL=/d' "$ENV"; echo "DATABASE_URL=$OWNER_URL" >> "$ENV"
+  sed -i '/^DATABASE_URL=/d' "$ENV"; echo "DATABASE_URL=$OWNER_URL" >> "$ENV"; sed -i "/^MIGRATE_ON_START=/d" "$ENV"; echo MIGRATE_ON_START=1 >> "$ENV"
   echo "Wrote zone connection strings to apps/web/.env.local"
 }
 

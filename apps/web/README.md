@@ -41,7 +41,7 @@ scripts/dev-db up      # Postgres 17: docker compose, ואם אין docker – P
 scripts/dev-db setup   # מיגרציות + תפקידי login לכל תחום + כתיבת apps/web/.env.local
 cd apps/web && npm run dev
 ```
-במצב הזה האפליקציה מתחברת **בחיבור נפרד לכל תחום** (`DATABASE_URL_ZONE_A/B/C`, תפקידים `gp_zone_a/b/c`), וה-DB עצמו חוסם גישה בין הסכמות (`tests/isolation.test.ts`). `DATABASE_URL` (בעלים) משמש רק להרצת מיגרציות.
+במצב הזה האפליקציה מתחברת **בחיבור נפרד לכל תחום** (`DATABASE_URL_ZONE_A/B/C`, תפקידים `gp_zone_a/b/c`), וה-DB עצמו חוסם גישה בין הסכמות (`tests/isolation.test.ts`). `DATABASE_URL` (בעלים) משמש רק להרצת מיגרציות (`npm run migrate`); בזמן ריצה רק עם `MIGRATE_ON_START=1` (פיתוח מקומי).
 
 ### אצוות מתוזמנות
 `BATCH_MODE=scheduled`: הקליטה והפרסום קורים **רק** ב-`npm run batch-worker` (כל `BATCH_INTERVAL_SECONDS`) או ב-`GET /api/cron/batch` עם `Authorization: Bearer $CRON_SECRET`, ולא בעקבות בקשות משתמשים. ברירת המחדל (`request`) נשארת ב-Vercel, כי ב-Hobby אפשר להריץ cron רק פעם ביום.
