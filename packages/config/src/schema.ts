@@ -42,7 +42,13 @@ export interface Jurisdiction {
   elections: ElectionEvent[];
 }
 
-export interface Features { inclusionCheck: boolean; publicPositions: boolean; govIdTier: boolean; demoLogin: boolean }
+export interface Features {
+  inclusionCheck: boolean; publicPositions: boolean; govIdTier: boolean; demoLogin: boolean;
+  /** ADR-0023: public layer default identity. "profile" = posts appear under the user's profile unless they choose anonymous. */
+  publicIdentityDefault: "profile" | "anonymous";
+  /** ADR-0023 / ADR-0006: users known to be under 18 default to anonymous in the public layer. */
+  teenDefaultAnonymous: boolean;
+}
 export interface Services { relayUrl: string }
 
 export interface GlobalConfig {
@@ -66,6 +72,7 @@ export function validate(c: GlobalConfig): GlobalConfig {
   req(isInt(j.thresholds.kNational, 1) && isInt(j.thresholds.kSmallLocality, 1) && j.thresholds.kSmallLocality >= j.thresholds.kNational, "bad k thresholds");
   req(isInt(j.publication.batchIntervalSeconds, 0) && isInt(j.publication.snapshotIntervalSeconds, 0), "bad publication cadence");
   req(isInt(j.publication.roundingPercent, 1), "bad rounding");
+  req(["profile", "anonymous"].includes(c.features.publicIdentityDefault), "bad publicIdentityDefault");
   req(j.publication.buckets.length > 0 && j.publication.buckets.every((b, i, a) => isInt(b, 1) && (i === 0 || a[i - 1] > b)), "buckets must be descending positive ints");
   req(/^\d{2}:\d{2}$/.test(j.blackout.endsAtLocal), "blackout.endsAtLocal must be HH:MM");
   for (const e of j.elections) req(/^\d{4}-\d{2}-\d{2}$/.test(e.date), `bad election date ${e.date}`);

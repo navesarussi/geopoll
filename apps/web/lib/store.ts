@@ -78,39 +78,53 @@ export class BallotStore {
 export interface Post {
   id: number; parent_id: number | null; display_name: string; option_id: string | null;
   body: string; created_at: string; deleted: boolean; mine?: boolean;
+  anon: boolean; pid: string | null; avatar: string | null;
 }
+export interface Profile { pid: string; display_name: string; bio: string; avatar: string; is_minor: boolean | null; consented: boolean }
 
+/**
+ * Zone C. "Author keys" = the set of hashes a viewer owns: [profileHash, anonHash(poll)].
+ * Non-anon posts: author_hash = profileHash (public link to the profile, by user choice/default).
+ * Anon posts: author_hash = anonHash = HMAC(ANON_HMAC_KEY, account|poll): no join to profiles without that key.
+ */
 export class ContentStore {
   constructor(private db: Db) {}
-  async countRecent(authorHash: string, seconds: number): Promise<number> {
+  async countRecent(keys: string[], seconds: number): Promise<number> {
     const r = await this.db.q<{ c: number }>(
-      `select count(*)::int c from zone_c.posts where author_hash=$1 and created_at > now() - make_interval(secs => $2)`, [authorHash, seconds]);
+      `select count(*)::int c from zone_c.posts where author_hash = any($1::text[]) and created_at > now() - make_interval(secs => $2)`, [keys, seconds]);
     return r[0].c;
   }
-  async hasPosition(pollId: string, authorHash: string): Promise<boolean> {
-    const r = await this.db.q(`select 1 from zone_c.posts where poll_id=$1 and author_hash=$2 and parent_id is null and not deleted`, [pollId, authorHash]);
+  async hasPosition(pollId: string, keys: string[]): Promise<boolean> {
+    const r = await this.db.q(`select 1 from zone_c.posts where poll_id=$1 and author_hash = any($2::text[]) and parent_id is null and not deleted`, [pollId, keys]);
     return r.length > 0;
   }
   async parentExists(pollId: string, id: number): Promise<boolean> {
     const r = await this.db.q(`select 1 from zone_c.posts where id=$1 and poll_id=$2 and not deleted`, [id, pollId]);
     return r.length > 0;
   }
-  async create(p: { pollId: string; parentId: number | null; authorHash: string; displayName: string; option: string | null; body: string }) {
+  async create(p: { pollId: string; parentId: number | null; authorHash: string; displayName: string; option: string | null; body: string; anon?: boolean; modSeal?: string | null }) {
     const r = await this.db.q<{ id: number }>(
-      `insert into zone_c.posts (poll_id,parent_id,author_hash,display_name,option_id,body) values ($1,$2,$3,$4,$5,$6) returning id`,
-      [p.pollId, p.parentId, p.authorHash, p.displayName, p.option, p.body]);
+      `insert into zone_c.posts (poll_id,parent_id,author_hash,display_name,option_id,body,anon,mod_seal) values ($1,$2,$3,$4,$5,$6,$7,$8) returning id`,
+      [p.pollId, p.parentId, p.authorHash, p.displayName, p.option, p.body, !!p.anon, p.modSeal ?? null]);
     return Number(r[0].id);
   }
-  async list(pollId: string, viewerHash: string | null): Promise<Post[]> {
-    const rows = await this.db.q<Post & { author_hash: string }>(
-      `select id, parent_id, display_name, option_id, body, created_at, deleted, author_hash
-       from zone_c.posts where poll_id=$1 and report_count < $2 order by created_at asc limit 500`, [pollId, HIDE_AFTER_REPORTS]);
-    return rows.map(({ author_hash, ...p }) => ({
+  private shape(rows: (Post & { author_hash: string; p_name: string | null })[], viewerKeys: string[]): Post[] {
+    return rows.map(({ author_hash, p_name, ...p }) => ({
       ...p, id: Number(p.id), parent_id: p.parent_id == null ? null : Number(p.parent_id),
       body: p.deleted ? "" : p.body, option_id: p.deleted ? null : p.option_id,
-      display_name: p.deleted ? "" : p.display_name, mine: viewerHash != null && author_hash === viewerHash,
-      created_at: new Date(p.created_at).toISOString(),
+      display_name: p.deleted ? "" : (p.anon ? p.display_name : p_name ?? p.display_name),
+      pid: p.deleted || p.anon ? null : p.pid, avatar: p.deleted || p.anon ? null : p.avatar,
+      mine: viewerKeys.includes(author_hash), created_at: new Date(p.created_at).toISOString(),
     }));
+  }
+  async list(pollId: string, viewerKeys: string[] = []): Promise<Post[]> {
+    const rows = await this.db.q<Post & { author_hash: string; p_name: string | null }>(
+      `select x.id, x.parent_id, x.display_name, x.option_id, x.body, x.created_at, x.deleted, x.anon, x.author_hash,
+              case when x.anon then null else pr.pid end as pid, case when x.anon then null else pr.avatar end as avatar,
+              case when x.anon then null else pr.display_name end as p_name
+       from zone_c.posts x left join zone_c.profiles pr on (not x.anon and pr.profile_hash = x.author_hash)
+       where x.poll_id=$1 and x.report_count < $2 order by x.created_at asc limit 500`, [pollId, HIDE_AFTER_REPORTS]);
+    return this.shape(rows, viewerKeys);
   }
   async positionCounts(pollId: string): Promise<Tally> {
     const rows = await this.db.q<{ option_id: string; c: number }>(
@@ -118,8 +132,8 @@ export class ContentStore {
       [pollId, HIDE_AFTER_REPORTS]);
     return Object.fromEntries(rows.map((r) => [r.option_id, r.c]));
   }
-  async deleteOwn(id: number, authorHash: string): Promise<boolean> {
-    const r = await this.db.q(`update zone_c.posts set deleted=true where id=$1 and author_hash=$2 and not deleted returning 1`, [id, authorHash]);
+  async deleteOwn(id: number, keys: string[]): Promise<boolean> {
+    const r = await this.db.q(`update zone_c.posts set deleted=true where id=$1 and author_hash = any($2::text[]) and not deleted returning 1`, [id, keys]);
     return r.length === 1;
   }
   async report(id: number, reporterHash: string): Promise<boolean> {
@@ -128,6 +142,37 @@ export class ContentStore {
       if (r.length) await t.q(`update zone_c.posts set report_count = report_count + 1 where id=$1`, [id]);
       return r.length === 1;
     });
+  }
+  async pollOf(id: number): Promise<string | null> {
+    const r = await this.db.q<{ poll_id: string }>(`select poll_id from zone_c.posts where id=$1`, [id]);
+    return r[0]?.poll_id ?? null;
+  }
+  // ---- profiles ----
+  async getProfile(profileHash: string): Promise<Profile | null> {
+    const r = await this.db.q<Profile & { consented_at: string | null }>(
+      `select pid, display_name, bio, avatar, is_minor, consented_at from zone_c.profiles where profile_hash=$1`, [profileHash]);
+    return r.length ? { ...r[0], consented: r[0].consented_at != null } : null;
+  }
+  async upsertProfile(profileHash: string, pid: string, p: { displayName: string; bio: string; avatar: string }): Promise<void> {
+    await this.db.q(`insert into zone_c.profiles (profile_hash,pid,display_name,bio,avatar) values ($1,$2,$3,$4,$5)
+      on conflict (profile_hash) do update set display_name=excluded.display_name, bio=excluded.bio, avatar=excluded.avatar, updated_at=now()`,
+      [profileHash, pid, p.displayName, p.bio, p.avatar]);
+  }
+  async consent(profileHash: string): Promise<void> {
+    await this.db.q(`update zone_c.profiles set consented_at = coalesce(consented_at, now()) where profile_hash=$1`, [profileHash]);
+  }
+  /** Public profile page: ONLY non-anonymous, non-deleted, non-hidden posts. */
+  async publicProfile(pid: string): Promise<{ profile: Omit<Profile, "is_minor" | "consented">; posts: (Post & { poll_id: string })[] } | null> {
+    const pr = await this.db.q<{ profile_hash: string; pid: string; display_name: string; bio: string; avatar: string }>(
+      `select profile_hash, pid, display_name, bio, avatar from zone_c.profiles where pid=$1`, [pid]);
+    if (!pr.length) return null;
+    const rows = await this.db.q<Post & { author_hash: string; p_name: string | null; poll_id: string }>(
+      `select id, parent_id, display_name, option_id, body, created_at, deleted, anon, author_hash, poll_id, null as p_name, $2::text as pid, $3::text as avatar
+       from zone_c.posts where author_hash=$1 and not anon and not deleted and report_count < $4 order by created_at desc limit 100`,
+      [pr[0].profile_hash, pr[0].pid, pr[0].avatar, HIDE_AFTER_REPORTS]);
+    const { profile_hash: _h, ...profile } = pr[0];
+    void _h;
+    return { profile, posts: this.shape(rows, []).map((p, i) => ({ ...p, display_name: profile.display_name, poll_id: rows[i].poll_id })) };
   }
 }
 /** Demo moderation: posts with this many distinct reports are hidden pending review. */

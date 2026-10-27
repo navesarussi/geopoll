@@ -2,8 +2,9 @@ import m001 from "./migrations/001_zones";
 import m002 from "./migrations/002_roles";
 import m003 from "./migrations/003_default_privileges";
 import m004 from "./migrations/004_ballot_tier";
+import m005 from "./migrations/005_profiles";
 
-export const MIGRATIONS: [string, string][] = [["001_zones", m001], ["002_roles", m002], ["003_default_privileges", m003], ["004_ballot_tier", m004]];
+export const MIGRATIONS: [string, string][] = [["001_zones", m001], ["002_roles", m002], ["003_default_privileges", m003], ["004_ballot_tier", m004], ["005_profiles", m005]];
 
 /** Minimal adapter so the same SQL runs on Postgres (postgres.js) and PGlite (tests / no-DB fallback). */
 export interface Db {
