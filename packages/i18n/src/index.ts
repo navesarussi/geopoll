@@ -75,6 +75,8 @@ const he = {
   m_noAds: "בלי פרסומות ובלי מעקב.",
   // web: profile / positions / admin (#71)
   myProfile: "הפרופיל שלי",
+  electionBanner: "תקופת בחירות: לפי סעיף 16ה לחוק הבחירות, פרסום תוצאות של סקרי בחירות והצבעה בהם מוקפאים עד סגירת הקלפיות.",
+  staleLabel: "אינו עדכני – תוצאה אחרונה מ-{date}, לפני תקופת האיסור",
   anonAlias: "אנונימי/ת {n}", userAlias: "משתמש/ת {n}",
   back: "חזרה",
   needSignIn: "צריך להתחבר.",
@@ -159,6 +161,8 @@ const en: Dict = {
   m_post: "Post", m_posted: "Posted ✓", m_postFailed: "Posting failed.", m_notifications: "Notify me about new polls", m_notifOn: "Notifications on",
   m_wallet: "Token wallet (secured on device)", m_walletEmpty: "No token for the current period", m_walletHas: "Token for {epoch} ({tier})",
   m_signInFailed: "Sign-in failed. Please try again.", m_noAds: "No ads, no tracking.",
+  electionBanner: "Election period: under Elections Law §16E, election poll results and voting are frozen until the polls close.",
+  staleLabel: "Not current – last result from {date}, before the blackout period",
   myProfile: "My profile", anonAlias: "Anonymous {n}", userAlias: "User {n}", back: "Back", needSignIn: "Please sign in.",
   pf_title: "My public profile",
   pf_intro: "Your profile is shown next to positions and discussions you post under your name. Your email is never shown. The profile is not linked in any way to the secret ballot. The name from Google is only a suggestion and you can change it.",

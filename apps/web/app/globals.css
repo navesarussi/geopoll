@@ -24,3 +24,4 @@ input,select,textarea{font:inherit;padding:10px;border:1px solid var(--gp-color-
 .admin table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.92rem}.admin th,.admin td{border-bottom:1px solid var(--gp-color-border);padding:6px 8px;text-align:start;vertical-align:top}
 .admin .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:12px 0}.admin .card{background:var(--gp-color-surface);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}.admin .card span{font-size:1.3rem}
 .admin form.inline{display:inline-flex;gap:4px;margin:2px}.admin .acts{white-space:nowrap}.admin button.danger{background:#b3261e;color:#fff}.admin .body{white-space:pre-wrap;margin:4px 0}
+.election-banner{background:var(--gp-color-beta-bg);color:var(--gp-color-primary-fg);text-align:center;padding:8px 12px;font-weight:700}

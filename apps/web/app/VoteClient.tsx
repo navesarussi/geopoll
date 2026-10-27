@@ -110,8 +110,9 @@ export default function VoteClient({ signedIn, providers, t, poll, kThreshold, b
       )}
       <section className="results" aria-live="polite">
         <h2>{t.results}</h2>
-        {!res ? <p>{t.loading}</p> : res.blackout ? <p role="note">{t.blackout}</p> : !res.published ? <p>{t.participants}: {res.participants}. {t.belowK.replace("{k}", String(kThreshold))}</p> : (
+        {!res ? <p>{t.loading}</p> : res.blackout && !res.stale ? <p role="note">{t.blackout}</p> : !res.published ? <p>{t.participants}: {res.participants}. {t.belowK.replace("{k}", String(kThreshold))}</p> : (
           <>
+            {res.stale && <p className="badge2" role="note">{t.staleLabel.replace("{date}", new Date(res.snapshotAt).toLocaleDateString(lang, { timeZone: "Asia/Jerusalem" }))}</p>}
             <p>{t.participants}: {res.participants}</p>
             {poll.options.map((o) => (
               <div key={o.id} className="bar"><span>{o.text}</span><span>{res.percents![o.id]}%</span>

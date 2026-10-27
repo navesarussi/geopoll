@@ -48,6 +48,8 @@ export interface Features {
   publicIdentityDefault: "profile" | "anonymous";
   /** ADR-0023 / ADR-0006: users known to be under 18 default to anonymous in the public layer. */
   teenDefaultAnonymous: boolean;
+  /** ADR-0004 / #77: during the §16ה blackout show the last PRE-window snapshot marked "not current". OFF pending lawyer (K7). */
+  blackoutShowStale: boolean;
 }
 export interface Services { relayUrl: string }
 

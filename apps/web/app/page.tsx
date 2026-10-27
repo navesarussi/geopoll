@@ -20,6 +20,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
   const q = (o: Record<string, string>) => "?" + new URLSearchParams({ poll: poll.id, lang, ...o }).toString();
   return (
     <div lang={lang} dir={dir}>
+      {all.some((p) => blackoutFor(p).active) && <div className="election-banner" role="note">{t.electionBanner}</div>}
       <nav className="tabs" aria-label="polls">
         {all.map((p) => (
           <a key={p.id} href={q({ poll: p.id })} aria-current={p.id === poll.id ? "page" : undefined}>
