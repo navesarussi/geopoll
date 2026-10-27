@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "sources": [
+    {
+      "id": "cec-knesset-results",
+      "publisher": "ועדת הבחירות המרכזית לכנסת (via data.gov.il)",
+      "dataset_url": "https://data.gov.il/api/3/action/package_show?id=votes-knesset",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "access": "ckan-datastore",
+      "sync": "manual; elections are immutable after final results",
+      "resources": [
+        {"knesset": 25, "level": "locality", "resource_id": "b392b8ee-ba45-4ea0-bfed-f03a1a36e99c"},
+        {"knesset": 25, "level": "ballot",   "resource_id": "cc223336-07bc-485d-b160-62df92967c0a"},
+        {"knesset": 24, "level": "locality", "resource_id": "9921a347-8466-4ef4-81f9-22523c5c4632"},
+        {"knesset": 24, "level": "ballot",   "resource_id": "419be3b0-fd30-455a-afc0-034ec36be990"},
+        {"knesset": 23, "level": "locality", "resource_id": "3dc36e20-25d6-4496-ba6a-71d9bc917349"},
+        {"knesset": 23, "level": "ballot",   "resource_id": "3b9e911a-2e90-4587-b209-84171664056b"},
+        {"knesset": 22, "level": "locality", "resource_id": "bd22cd14-138c-4917-931a-ef628c2a5a30"},
+        {"knesset": 22, "level": "ballot",   "resource_id": "22f3a195-3a79-436c-be23-cb606bc7b398"},
+        {"knesset": 21, "level": "locality", "resource_id": "1a1c7b2b-e819-4ba9-b159-d68e3566c58b"},
+        {"knesset": 21, "level": "ballot",   "resource_id": "f79f9ba5-fe12-4b90-96cc-916f1b7c1c34"}
+      ]
+    }
+  ]
+}
