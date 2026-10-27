@@ -1,4 +1,5 @@
 import { stores } from "@/lib/store";
+import { viaRelay } from "@/lib/relay";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
  * Like /api/vote: no session/cookies read.
  */
 export async function POST(req: Request) {
+  if (!viaRelay(req)) return Response.json({ ok: false, error: "relay_required" }, { status: 403 });
   const b = (await req.json().catch(() => null)) as { nullifier?: string } | null;
   if (!b?.nullifier || !/^[0-9a-f]{64}$/.test(b.nullifier)) return Response.json({ error: "bad_request" }, { status: 400 });
   const { ballots } = await stores();
