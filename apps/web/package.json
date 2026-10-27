@@ -9,6 +9,7 @@
     "typecheck": "tsc --noEmit",
     "gen-issuer-key": "node scripts/gen-issuer-key.mjs",
     "migrate": "tsx scripts/migrate.ts",
+    "batch-worker": "tsx scripts/batch-worker.ts",
     "seed": "tsx scripts/seed.ts"
   },
   "dependencies": {

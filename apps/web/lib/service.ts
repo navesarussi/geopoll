@@ -30,7 +30,23 @@ export async function maybeFlush(ballots: BallotStore, now = new Date()) {
 }
 
 /** Batch publication: snapshot recomputed only after SNAPSHOT_INTERVAL_SECONDS (default daily). */
+/**
+ * BATCH_MODE=scheduled: flush/snapshot happen ONLY in runBatch() (worker or cron), never on user requests,
+ * so request timing can't influence batch boundaries. Default "request" keeps the serverless demo working.
+ */
+export const scheduledMode = () => process.env.BATCH_MODE === "scheduled";
+
+export async function runBatch(ballots: BallotStore, now = new Date()) {
+  const flushed = await ballots.flush(now);
+  const snap = toPublic(await ballots.tally(DEMO_POLL.id), OPTION_IDS, now);
+  await ballots.saveSnapshot(DEMO_POLL.id, snap);
+  return { flushed, snapshotAt: snap.snapshotAt };
+}
+
 export async function results(ballots: BallotStore, now = new Date()): Promise<PublicResults> {
+  if (scheduledMode()) {
+    return (await ballots.getSnapshot(DEMO_POLL.id)) ?? toPublic({}, OPTION_IDS, now);
+  }
   await maybeFlush(ballots, now);
   const snap = await ballots.getSnapshot(DEMO_POLL.id);
   if (snap && now.getTime() - Date.parse(snap.snapshotAt) < secs("SNAPSHOT_INTERVAL_SECONDS", 86400)) return snap;
