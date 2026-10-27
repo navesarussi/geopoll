@@ -15,7 +15,7 @@ if (demoLoginEnabled()) {
   providers.push(
     CredentialsProvider({
       id: "demo",
-      name: "כניסת הדגמה",
+      name: "Demo · הדגמה",
       credentials: {},
       async authorize() {
         return { id: `demo:${randomUUID()}`, name: "משתמש/ת הדגמה" };

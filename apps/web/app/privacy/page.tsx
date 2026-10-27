@@ -1,7 +1,11 @@
-export const metadata = { title: "הודעת פרטיות (טיוטה) – GeoPoll" };
-export default function Privacy() {
+import { pageLang } from "@/lib/i18n";
+export const metadata = { title: "Privacy (draft) – GeoPoll" };
+export const dynamic = "force-dynamic";
+export default async function Privacy({ searchParams }: { searchParams: Promise<{ lang?: string }> }) {
+  const { lang, dir } = await pageLang((await searchParams).lang);
+  if (lang === "en") return <PrivacyEn />;
   return (
-    <main>
+    <main lang={lang} dir={dir}>
       <div className="badge">טיוטה – ממתינה לבדיקת עורך דין</div>
       <h1>מה נשמר בגרסת הבטא</h1>
       <p>זו גרסת בדיקה. הנתונים עלולים להתאפס, וזו לא הצבעה רשמית.</p>
@@ -16,7 +20,30 @@ export default function Privacy() {
       <p>הפרופיל והפרסומים לא מקושרים בשום צורה להצבעה החשאית. אפשר למחוק כל פרסום בכל עת.</p>
       <h2>מה אין</h2>
       <p>אין פרסומות, אין trackers ואין מכירת מידע.</p>
-      <p><a href="/">חזרה</a></p>
+      <p><a href={`/?lang=${lang}`}>חזרה</a></p>
+    </main>
+  );
+}
+
+/** English translation of the draft notice. The Hebrew text is authoritative (pending lawyer review). */
+function PrivacyEn() {
+  return (
+    <main lang="en" dir="ltr">
+      <div className="badge">Draft – pending legal review. The Hebrew version is authoritative.</div>
+      <h1>What the beta stores</h1>
+      <p>This is a test version. Data may be reset, and this is not an official vote.</p>
+      <h2>Sign-in</h2>
+      <p>Google sign-in is used only to make sure each account gets one ballot token per month. We do not store your Google email or name. Only an encrypted fingerprint (HMAC) of the account ID together with the month is kept. The session is kept in a sign-in cookie in your browser.</p>
+      <h2>Secret ballot</h2>
+      <p>The ballot token is signed with a blind signature: the server that identifies you never sees the token. The vote is sent without the sign-in cookie, and only a one-time identifier (nullifier), the choice, the month and the day are stored. That table contains no user identifier. The token itself is stored only on your device.</p>
+      <p><b>Beta limitations:</b> both parts run in the same deployment and see IP addresses. There is no IP-hiding relay and no zero-knowledge proofs yet, so the operator could in theory link by time or IP. Breakdowns are unverified.</p>
+      <h2>Public positions survey, discussions and profile</h2>
+      <p>Optional. By default posts appear under your profile (display name, short bio and an avatar from a fixed set). The name from Google is suggested and can be changed. Your email is never shown. On your first post you will be asked to confirm that the position will be public. A political position is sensitive information.</p>
+      <p>You can choose to post anonymously for any post. A stable per-discussion alias is then shown, which the public cannot link to your profile, and anonymous posts do not appear on your profile page. <b>Limitation:</b> an operator holding the encryption keys could technically link them. If a sealed moderation envelope is enabled, identifying an anonymous author will only be possible with an offline key and through legal process.</p>
+      <p>The profile and posts are not linked in any way to the secret ballot. You can delete any post at any time.</p>
+      <h2>What we don't do</h2>
+      <p>No ads, no trackers, no selling of data.</p>
+      <p><a href="/?lang=en">Back</a></p>
     </main>
   );
 }

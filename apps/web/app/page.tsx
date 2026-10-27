@@ -1,20 +1,19 @@
 import { getServerSession } from "next-auth";
 import { authOptions, demoLoginEnabled, googleEnabled } from "@/lib/auth";
 import { blackoutFor, config } from "@/lib/config";
-import { DICTS, dirOf, pollText, resolveLocale } from "@/lib/i18n";
+import { pageLang, pollText } from "@/lib/i18n";
 import VoteClient from "./VoteClient";
 export const dynamic = "force-dynamic";
 export default async function Page({ searchParams }: { searchParams: Promise<{ poll?: string; lang?: string }> }) {
   const sp = await searchParams;
   const cfg = config();
-  const lang = resolveLocale(sp.lang, cfg.jurisdiction.locales, cfg.jurisdiction.defaultLocale);
-  const t = DICTS[lang];
+  const { lang, t, dir } = await pageLang(sp.lang);
   const poll = cfg.polls.find((p) => p.id === sp.poll) ?? cfg.polls[0];
   const session = await getServerSession(authOptions);
   const providers = [...(googleEnabled() ? ["google"] : []), ...(demoLoginEnabled() ? ["demo"] : [])];
   const q = (o: Record<string, string>) => "?" + new URLSearchParams({ poll: poll.id, lang, ...o }).toString();
   return (
-    <div lang={lang} dir={dirOf(lang)}>
+    <div lang={lang} dir={dir}>
       <nav className="tabs" aria-label="polls">
         {cfg.polls.map((p) => (
           <a key={p.id} href={q({ poll: p.id })} aria-current={p.id === poll.id ? "page" : undefined}>
@@ -26,7 +25,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ p
         </span>
       </nav>
       <VoteClient key={poll.id} signedIn={!!session} providers={providers} t={t}
-        poll={{ id: poll.id, kind: poll.kind, dummy: poll.dummy, source: poll.source, ...pollText(poll, lang) }}
+        poll={{ id: poll.id, kind: poll.kind, dummy: poll.dummy, ...pollText(poll, lang) }}
         kThreshold={cfg.jurisdiction.thresholds.kNational} blackout={blackoutFor(poll).active}
         relayUrl={cfg.services.relayUrl} inclusionCheck={cfg.features.inclusionCheck} lang={lang} />
     </div>

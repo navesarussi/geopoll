@@ -26,7 +26,7 @@ describe("admin dashboard: aggregates only", () => {
     let d = await dashboard(s);
     const row = d.polls.find((p) => p.id === DEMO_POLL.id)!;
     expect(row.passesK).toBe(false);
-    expect(row.turnout).toMatch(/^פחות מ-/);
+    expect(row.turnout).toMatch(/^</);
     await seedDummy(s.ballots, 120, DEMO_POLL.id);
     d = await dashboard(s);
     const json = JSON.stringify(d);
