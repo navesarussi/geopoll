@@ -10,6 +10,8 @@ export interface PublicResults {
   assurance?: "basic" | "verified";
   /** ADR-0004: §16ה(ח) blackout – publication suppressed. */
   blackout?: boolean;
+  /** #77: pre-window snapshot shown during blackout, explicitly "not current". */
+  stale?: boolean;
 }
 
 /** k-threshold from config (ADR-0012). Small localities use kSmallLocality once locality polls exist. */

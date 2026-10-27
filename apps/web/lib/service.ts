@@ -1,5 +1,6 @@
 import { DEMO_POLL, currentEpoch, optionIds } from "./poll";
 import { blackoutFor, config, getPoll, polls } from "./config";
+import { blackoutWindow } from "@geopoll/config";
 import { nullifier, tokenEpoch, verifyToken } from "./crypto";
 import { blackoutResults, toPublic, type PublicResults } from "./results";
 import type { BallotStore } from "./store";
@@ -10,6 +11,13 @@ export type VoteOutcome =
   | { ok: false; error: "bad_request" | "bad_token" | "wrong_epoch" | "bad_option" | "unknown_poll" | "blackout" | "closed" };
 
 const pub = () => config().jurisdiction.publication;
+
+/** True if the snapshot's local (jurisdiction TZ) date is strictly before the blackout window start. */
+export function snapshotBeforeWindow(snapshotAt: string, electionDate: string) {
+  const tz = config().jurisdiction.timeZone;
+  const local = new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(new Date(snapshotAt));
+  return local < blackoutWindow(electionDate).startDate;
+}
 
 /** Zone B: accepts a ballot with NO identity input. Enqueued; counted at next batch flush. */
 export async function castVote(
@@ -63,7 +71,15 @@ export async function results(ballots: BallotStore, now = new Date(), pollId: st
   const poll = getPoll(pollId);
   if (!poll) throw new Error("unknown_poll");
   // ADR-0004 / §16ה(ח): publication suppressed while the configured blackout window is active.
-  if (blackoutFor(poll, now).active) return blackoutResults(now);
+  const bo = blackoutFor(poll, now);
+  if (bo.active) {
+    // #77: optionally show the last snapshot taken BEFORE the window, marked stale (flag OFF until lawyer K7).
+    if (config().features.blackoutShowStale && bo.election) {
+      const snap = await ballots.getSnapshot(pollId);
+      if (snap?.published && snapshotBeforeWindow(snap.snapshotAt, bo.election)) return { ...snap, stale: true, blackout: true };
+    }
+    return blackoutResults(now);
+  }
   const OPTION_IDS = optionIds(pollId);
   if (scheduledMode()) {
     return (await ballots.getSnapshot(pollId)) ?? toPublic({}, OPTION_IDS, now);
