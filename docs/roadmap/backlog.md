@@ -190,7 +190,7 @@
 
 ### T-208: סקר עמדות פומביות נפרד
 - **phase:** 1
-- **labels:** type:feature, zone:C-app, agent, needs-adr
+- **labels:** type:feature, zone:C-app, needs-adr, needs-lawyer
 - **agent:** no
 - **needs-lawyer:** yes
 - **depends:** T-302
@@ -198,7 +198,7 @@
 
 ### T-209: סקרים פתוחים תמיד – מדד וצילומים תקופתיים
 - **phase:** 1
-- **labels:** type:feature, zone:B-voting, agent, needs-adr
+- **labels:** type:feature, zone:B-voting, needs-adr, needs-lawyer
 - **agent:** no
 - **needs-lawyer:** yes
 - **depends:** T-203, T-206
