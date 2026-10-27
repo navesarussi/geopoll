@@ -16,8 +16,14 @@ export async function POST(req: Request) {
   if (!tier) return Response.json({ error: "no_tier" }, { status: 403 });
   // A mismatch would only yield an unverifiable token; fail early with a clear error instead.
   if (body.tier !== tier) return Response.json({ error: "tier_mismatch", tier }, { status: 409 });
+  // Sign BEFORE claiming, so a malformed request can't burn the account's one token for this epoch.
+  let sig: Uint8Array;
+  try {
+    sig = await blindSign(new Uint8Array(Buffer.from(body.blindedMsg, "base64")), tier);
+  } catch {
+    return Response.json({ error: "bad_request" }, { status: 400 });
+  }
   const first = await (await stores()).identity.claimIssuance(accountHash(acct), currentEpoch());
   if (!first) return Response.json({ error: "already_issued" }, { status: 409 });
-  const sig = await blindSign(new Uint8Array(Buffer.from(body.blindedMsg, "base64")), tier);
   return Response.json({ blindSig: Buffer.from(sig).toString("base64"), epoch: currentEpoch(), tier });
 }

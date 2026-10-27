@@ -12,7 +12,8 @@ async function token(claimed: Tier, signedWith: Tier) {
   const nonce = Buffer.from(webcrypto.getRandomValues(new Uint8Array(32))).toString("hex");
   const prepared = s.prepare(new TextEncoder().encode(`geopoll|v2|${currentEpoch()}|${claimed}|${nonce}`));
   const { blindedMsg, inv } = await s.blind(publicKey, prepared);
-  const blindSig = await blindSign(blindedMsg, signedWith);
+  let blindSig: Uint8Array;
+  try { blindSig = await blindSign(blindedMsg, signedWith); } catch { return null; } // out of range for other key
   try { return { preparedMsg: prepared, signature: await s.finalize(publicKey, prepared, blindSig, inv) }; }
   catch { return null; } // finalize verifies; wrong-key signature fails here
 }
@@ -35,7 +36,7 @@ describe("identity tiers (T-107, ADR-0019)", () => {
     expect(await verifyToken(ok!.preparedMsg, ok!.signature)).toBe("T0");
     expect(parseToken(ok!.preparedMsg)?.tier).toBe("T0");
     const forged = await token("T2", "T0"); // client writes T2, issuer signed with T0 key
-    if (forged) expect(await verifyToken(forged.preparedMsg, forged.signature)).toBeNull();
+    expect(forged === null || (await verifyToken(forged.preparedMsg, forged.signature)) === null).toBe(true);
   });
   it("tier travels with the ballot and labels results basic vs verified", async () => {
     const { ballots } = await freshStores();
