@@ -8,4 +8,4 @@
 - dismiss stale approvals; שיחות חייבות להיפתר.
 - Secret scanning + push protection; Dependabot alerts.
 - כשיהיה קוד: 2 אישורים לשינויים בתחומי A/B/crypto.
-- ענפי סוכנים: `agent/<task-id>-<slug>`; לסוכנים אין הרשאת merge.
+- ענפי סוכנים: `agent/<task-id>-<slug>`. רק סוכן ה-CTO ממזג, ורק כש-CI ירוק (AGENTS.md §3א, החלטת נוה 2026-10-27); סוכנים אחרים לא ממזגים.
