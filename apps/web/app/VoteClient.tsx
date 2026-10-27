@@ -5,6 +5,7 @@ import { RSABSSA } from "@cloudflare/blindrsa-ts";
 import { DEMO_POLL } from "@/lib/poll";
 import type { PublicResults } from "@/lib/results";
 import Survey from "./Survey";
+import { deviceNullifier } from "@/lib/nullifier-client";
 
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
@@ -62,6 +63,17 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
     }
   }
 
+  const [inc, setInc] = useState("");
+  async function checkInclusion() {
+    setInc("בודק…");
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (!saved) return setInc("אין במכשיר כרטיס הצבעה לתקופה הזו.");
+      const n = await deviceNullifier(DEMO_POLL.id, unb64((JSON.parse(saved) as Token).preparedMsg));
+      const r = await (await fetch("/api/vote/status", { method: "POST", credentials: "omit", headers: { "content-type": "application/json" }, body: JSON.stringify({ nullifier: n }) })).json();
+      setInc(r.status === "counted" ? "ההצבעה שלך נכללת בספירה ✓" : r.status === "queued" ? "ההצבעה שלך בתור ותיספר באצווה הבאה." : "לא נמצאה הצבעה מהמכשיר הזה.");
+    } catch { setInc("הבדיקה נכשלה. נסו שוב."); }
+  }
   const label = (id: string) => DEMO_POLL.options.find((o) => o.id === id)?.text;
   return (
     <main>
@@ -83,6 +95,8 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
           {state === "ok" && <p className="ok" role="status">{msg}{choice && <> · בחרת: {label(choice)}</>}</p>}
           {state === "err" && <p className="err" role="alert">{msg} <button className="link" onClick={() => choice && vote(choice)}>נסו שוב</button></p>}
           <p className="small">ההצבעה חשאית: השרת שמזהה אותך חותם על כרטיס בלי לראות אותו, ושרת ההצבעות מקבל רק את הכרטיס. אפשר לשנות הצבעה עד הסגירה.</p>
+          <button className="link" onClick={checkInclusion}>האם ההצבעה שלי נספרה?</button>
+          {inc && <p className="small" role="status">{inc} הבדיקה לא מציגה את הבחירה ואינה הוכחה שאפשר להראות לאחרים.</p>}
           <button className="link" onClick={() => signOut()}>יציאה</button>
         </div>
       )}

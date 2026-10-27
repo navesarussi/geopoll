@@ -36,6 +36,13 @@ export class BallotStore {
       return rows[0]?.n ?? 0;
     });
   }
+  /** Device-side inclusion check (T-207): status only, NEVER the choice (no transferable receipt). */
+  async status(nullifier: string): Promise<"counted" | "queued" | "not_found"> {
+    const q = await this.db.q(`select 1 from zone_b.ballot_queue where nullifier=$1 limit 1`, [nullifier]);
+    if (q.length) return "queued";
+    const b = await this.db.q(`select 1 from zone_b.ballots where nullifier=$1`, [nullifier]);
+    return b.length ? "counted" : "not_found";
+  }
   async lastFlush(): Promise<Date | null> {
     const r = await this.db.q<{ v: string }>(`select v from zone_b.meta where k='last_flush'`);
     return r.length ? new Date(r[0].v) : null;
