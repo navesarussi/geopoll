@@ -146,7 +146,7 @@ type G = { __gp?: Promise<Stores> };
  * Connection modes:
  *  - DATABASE_URL_ZONE_A/B/C set: each zone store gets its OWN connection as role gp_zone_a/b/c,
  *    which the DB only allows to touch its own schema (real isolation at DB level).
- *    Migrations run with DATABASE_URL (owner) if given; otherwise they must be applied beforehand (scripts/dev-db).
+ *    The owner URL is NOT used at runtime (unless MIGRATE_ON_START=1); apply migrations with `npm run migrate`.
  *  - only DATABASE_URL / POSTGRES_URL: one owner connection for all zones (demo simplification).
  *  - nothing: in-memory PGlite.
  */
@@ -155,7 +155,8 @@ export async function connectStores(env = process.env): Promise<Stores> {
   const owner = env.DATABASE_URL ?? env.POSTGRES_URL;
   if (a || b || c) {
     if (!(a && b && c)) throw new Error("set all of DATABASE_URL_ZONE_A/B/C or none");
-    if (owner) await migrate(await postgresDb(owner));
+    // Owner credentials are for migrations only: used at runtime ONLY if MIGRATE_ON_START=1 (dev). Otherwise run `npm run migrate`.
+    if (owner && env.MIGRATE_ON_START === "1") await migrate(await postgresDb(owner));
     const [da, db, dc] = await Promise.all([postgresDb(a), postgresDb(b), postgresDb(c)]);
     return { identity: new IdentityStore(da), ballots: new BallotStore(db), content: new ContentStore(dc), kind: "postgres", isolated: true };
   }
