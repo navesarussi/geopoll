@@ -7,7 +7,7 @@
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "bundleIdentifier": "app.geopoll.beta",
       "supportsTablet": false,
@@ -109,7 +109,21 @@
         {
           "faceIDPermission": "GeoPoll uses Face ID to lock your ballot-token wallet on this device."
         }
-      ]
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 160,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff",
+          "dark": {
+            "image": "./assets/splash-icon.png",
+            "backgroundColor": "#0b1420"
+          }
+        }
+      ],
+      "expo-font"
     ],
     "extra": {
       "supportsRTL": true,

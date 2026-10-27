@@ -12,6 +12,8 @@ const { RN, registerRootComponent } = vi.hoisted(() => ({ registerRootComponent:
     I18nManager: { isRTL: false, allowRTL() {}, forceRTL() {} },
     ActivityIndicator: C("ActivityIndicator"), Pressable: C("Pressable"), SafeAreaView: C("SafeAreaView"),
     ScrollView: C("ScrollView"), Switch: C("Switch"), Text: C("Text"), TextInput: C("TextInput"), View: C("View"),
+    Image: C("Image"), RefreshControl: C("RefreshControl"), Alert: { alert: vi.fn() }, useColorScheme: () => "light",
+    Animated: { View: C("Animated.View"), Value: class { constructor(public v: number) {} }, loop: () => ({ start() {}, stop() {} }), sequence: vi.fn(), timing: vi.fn() },
   };
 } }));
 vi.mock("react-native", RN);
@@ -25,6 +27,11 @@ vi.mock("expo-application", () => ({ nativeApplicationVersion: "0.1.0" }));
 vi.mock("expo-constants", () => ({ default: { expoConfig: { version: "0.1.0", extra: {} } } }));
 vi.mock("expo-status-bar", () => ({ StatusBar: () => null }));
 vi.mock("@react-native-community/netinfo", () => ({ default: { fetch: vi.fn(), addEventListener: () => () => {} } }));
+vi.mock("expo-splash-screen", () => ({ preventAutoHideAsync: vi.fn(() => Promise.resolve()), hideAsync: vi.fn(() => Promise.resolve()) }));
+vi.mock("expo-haptics", () => ({ selectionAsync: vi.fn(() => Promise.resolve()), notificationAsync: vi.fn(() => Promise.resolve()), NotificationFeedbackType: { Success: "s", Error: "e" } }));
+vi.mock("@expo/vector-icons/Ionicons", () => ({ default: () => null }));
+vi.mock("react-native-safe-area-context", () => ({ SafeAreaProvider: ({ children }: { children: unknown }) => children, useSafeAreaInsets: () => ({ top: 0, bottom: 0, left: 0, right: 0 }) }));
+vi.mock("@react-native-async-storage/async-storage", () => ({ default: { getItem: vi.fn(() => Promise.resolve(null)), setItem: vi.fn(() => Promise.resolve()) } }));
 vi.mock("expo", () => ({ registerRootComponent }));
 
 describe("module graph loads without throwing", () => {
