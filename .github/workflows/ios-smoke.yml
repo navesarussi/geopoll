@@ -34,7 +34,7 @@ jobs:
           set -o pipefail
           xcodebuild -workspace "$WS" -scheme "$SCHEME" -configuration Release -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO \
-            COMPILER_INDEX_STORE_ENABLE=NO build | tail -n 80
+            COMPILER_INDEX_STORE_ENABLE=NO build > /tmp/xcb.log 2>&1 || { grep -E "error:|\*\* BUILD FAILED|fatal" -A3 /tmp/xcb.log | head -n 80; tail -n 40 /tmp/xcb.log; exit 1; }
       - name: Boot simulator, install, launch, watch 25s
         run: |
           APP=$(ls -d build/Build/Products/Release-iphonesimulator/*.app | head -1)
