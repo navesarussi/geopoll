@@ -17,20 +17,20 @@ export class IdentityStore {
 export class BallotStore {
   constructor(private db: Db) {}
   /** Enqueue only; counted after the next flush. Returns whether this nullifier already voted (revote). */
-  async enqueue(pollId: string, nullifier: string, option: string, epoch: string): Promise<"created" | "replaced"> {
+  async enqueue(pollId: string, nullifier: string, option: string, epoch: string, tier = "T0"): Promise<"created" | "replaced"> {
     const prior = await this.db.q(
       `select 1 from zone_b.ballots where nullifier=$1 union all select 1 from zone_b.ballot_queue where nullifier=$1 limit 1`, [nullifier]);
-    await this.db.q(`insert into zone_b.ballot_queue (nullifier, poll_id, option_id, epoch) values ($1,$2,$3,$4)`, [nullifier, pollId, option, epoch]);
+    await this.db.q(`insert into zone_b.ballot_queue (nullifier, poll_id, option_id, epoch, tier) values ($1,$2,$3,$4,$5)`, [nullifier, pollId, option, epoch, tier]);
     return prior.length ? "replaced" : "created";
   }
   /** Moves the queue into ballots (last queued choice per nullifier wins), then empties the queue. */
   async flush(now = new Date()): Promise<number> {
     return this.db.tx(async (t) => {
       const rows = await t.q<{ n: number }>(`with q as (
-          delete from zone_b.ballot_queue returning seq, nullifier, poll_id, option_id, epoch),
-        last as (select distinct on (nullifier) nullifier, poll_id, option_id, epoch from q order by nullifier, seq desc),
-        up as (insert into zone_b.ballots select nullifier, poll_id, option_id, epoch, $1::date from last
-          on conflict (nullifier) do update set option_id = excluded.option_id, day_bucket = excluded.day_bucket returning 1)
+          delete from zone_b.ballot_queue returning seq, nullifier, poll_id, option_id, epoch, tier),
+        last as (select distinct on (nullifier) nullifier, poll_id, option_id, epoch, tier from q order by nullifier, seq desc),
+        up as (insert into zone_b.ballots (nullifier, poll_id, option_id, epoch, day_bucket, tier) select nullifier, poll_id, option_id, epoch, $1::date, tier from last
+          on conflict (nullifier) do update set option_id = excluded.option_id, day_bucket = excluded.day_bucket, tier = excluded.tier returning 1)
         select count(*)::int as n from up`, [now.toISOString().slice(0, 10)]);
       await t.q(`insert into zone_b.meta values ('last_flush',$1) on conflict (k) do update set v = excluded.v`, [now.toISOString()]);
       return rows[0]?.n ?? 0;
@@ -52,6 +52,11 @@ export class BallotStore {
       `select option_id, count(*)::int as c from zone_b.ballots where poll_id=$1 group by option_id`, [pollId]);
     return Object.fromEntries(rows.map((r) => [r.option_id, r.c]));
   }
+  /** Distinct tiers among counted ballots (for the "basic assurance" label). */
+  async tiers(pollId: string): Promise<string[]> {
+    const r = await this.db.q<{ tier: string }>(`select distinct tier from zone_b.ballots where poll_id=$1`, [pollId]);
+    return r.map((x) => x.tier).sort();
+  }
   async getSnapshot(pollId: string): Promise<PublicResults | null> {
     const r = await this.db.q<{ body: PublicResults | string }>(`select body from zone_b.snapshots where poll_id=$1`, [pollId]);
     if (!r.length) return null;
@@ -64,7 +69,7 @@ export class BallotStore {
   async seed(pollId: string, items: { nullifier: string; option: string; epoch: string }[]) {
     if (!items.length) return;
     const day = new Date().toISOString().slice(0, 10);
-    await this.db.q(`insert into zone_b.ballots select n, $2, o, e, $3::date from
+    await this.db.q(`insert into zone_b.ballots (nullifier, poll_id, option_id, epoch, day_bucket) select n, $2, o, e, $3::date from
       unnest($1::text[], $4::text[], $5::text[]) as x(n,o,e) on conflict do nothing`,
       [items.map((i) => i.nullifier), pollId, day, items.map((i) => i.option), items.map((i) => i.epoch)]);
   }

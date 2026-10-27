@@ -9,25 +9,29 @@ import { deviceNullifier } from "@/lib/nullifier-client";
 
 const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
-type Token = { epoch: string; preparedMsg: string; signature: string };
-const KEY = "geopoll.token";
+type Token = { epoch: string; tier?: string; preparedMsg: string; signature: string };
+const KEY = "geopoll.token.v2";
 
 /** Gets (or reuses) this epoch's anonymous token. Server signs blindly; we unblind locally. */
 async function getToken(): Promise<Token> {
-  const { spki, epoch } = await (await fetch("/api/identity/pubkey")).json();
+  const { keys, epoch } = await (await fetch("/api/identity/pubkey")).json();
   const saved = localStorage.getItem(KEY);
-  if (saved) { const t = JSON.parse(saved) as Token; if (t.epoch === epoch) return t; }
+  if (saved) { const t = JSON.parse(saved) as Token; if (t.epoch === epoch && t.tier) return t; }
+  const tr = await fetch("/api/identity/tier");
+  if (!tr.ok) throw new Error("issue_failed");
+  const { tier } = await tr.json();
+  if (!tier) throw new Error("no_tier");
   const suite = RSABSSA.SHA384.PSS.Randomized();
-  const pk = await crypto.subtle.importKey("spki", unb64(spki), { name: "RSA-PSS", hash: "SHA-384" }, true, ["verify"]);
+  const pk = await crypto.subtle.importKey("spki", unb64(keys[tier]), { name: "RSA-PSS", hash: "SHA-384" }, true, ["verify"]);
   const nonce = Array.from(crypto.getRandomValues(new Uint8Array(32)), (x) => x.toString(16).padStart(2, "0")).join("");
-  const prepared = suite.prepare(new TextEncoder().encode(`geopoll|v1|${epoch}|${nonce}`));
+  const prepared = suite.prepare(new TextEncoder().encode(`geopoll|v2|${epoch}|${tier}|${nonce}`));
   const { blindedMsg, inv } = await suite.blind(pk, prepared);
-  const res = await fetch("/api/identity/issue", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ blindedMsg: b64(blindedMsg) }) });
-  if (res.status === 409) throw new Error("already_issued");
+  const res = await fetch("/api/identity/issue", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ blindedMsg: b64(blindedMsg), tier }) });
+  if (res.status === 409) throw new Error((await res.json()).error ?? "already_issued");
   if (!res.ok) throw new Error("issue_failed");
   const { blindSig } = await res.json();
   const sig = await suite.finalize(pk, prepared, unb64(blindSig), inv);
-  const t = { epoch, preparedMsg: b64(prepared), signature: b64(sig) };
+  const t = { epoch, tier, preparedMsg: b64(prepared), signature: b64(sig) };
   localStorage.setItem(KEY, JSON.stringify(t));
   return t;
 }
@@ -35,6 +39,8 @@ async function getToken(): Promise<Token> {
 const MSG: Record<string, string> = {
   already_issued: "כבר הונפק לחשבון הזה כרטיס הצבעה בתקופה הנוכחית, אבל הוא לא נמצא במכשיר הזה. בגרסת ההדגמה אי אפשר לשחזר אותו.",
   bad_token: "כרטיס ההצבעה לא תקין.",
+  no_tier: "לחשבון הזה אין עדיין רמת אימות שמאפשרת הצבעה.",
+  tier_mismatch: "רמת האימות שלך השתנתה. נסו שוב.",
   wrong_epoch: "כרטיס ההצבעה פג תוקף (תקופה חדשה). נסו שוב.",
 };
 
@@ -111,7 +117,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
             ))}
           </>
         )}
-        {res && <p className="small">עודכן: {new Date(res.snapshotAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })}. התוצאות מתעדכנות באצוות, באחוזים מעוגלים ובטווחים. כוללות קולות דמה.</p>}
+        {res && <p className="small">עודכן: {new Date(res.snapshotAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })}. התוצאות מתעדכנות באצוות, באחוזים מעוגלים ובטווחים. כוללות קולות דמה.{res.assurance === "basic" && " רמת אימות בסיסית (Google) – לא אדם אחד = קול אחד."}</p>}
         <button className="link" onClick={load}>רענון</button>
       </section>
       <Survey signedIn={signedIn} />

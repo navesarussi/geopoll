@@ -11,7 +11,7 @@ async function obtainToken(stores: Stores, accountId: string, epoch: string) {
   const s = suite();
   const { publicKey } = await issuerKeys();
   const nonce = Buffer.from(webcrypto.getRandomValues(new Uint8Array(32))).toString("hex");
-  const prepared = s.prepare(new TextEncoder().encode(`geopoll|v1|${epoch}|${nonce}`));
+  const prepared = s.prepare(new TextEncoder().encode(`geopoll|v2|${epoch}|T0|${nonce}`));
   const { blindedMsg, inv } = await s.blind(publicKey, prepared);
   const signature = await s.finalize(publicKey, prepared, await blindSign(blindedMsg), inv);
   return { preparedMsg: prepared, signature };
@@ -39,7 +39,7 @@ export async function runScenario(stores: Stores, sc: Scenario, now = new Date()
       reject("already_issued");
     } else if (a.kind === "forged_token") {
       const fake = webcrypto.getRandomValues(new Uint8Array(256));
-      const msg = new TextEncoder().encode(`${"x".repeat(32)}geopoll|v1|${epoch}|${"0".repeat(64)}`);
+      const msg = new TextEncoder().encode(`${"x".repeat(32)}geopoll|v2|${epoch}|T0|${"0".repeat(64)}`);
       const r = await castVote(stores.ballots, { pollId: DEMO_POLL.id, option: a.option, preparedMsg: msg, signature: fake }, now);
       if (r.ok) throw new Error("SECURITY: forged token accepted");
       reject(r.error);
