@@ -10,7 +10,8 @@
     "gen-issuer-key": "node scripts/gen-issuer-key.mjs",
     "migrate": "tsx scripts/migrate.ts",
     "batch-worker": "tsx scripts/batch-worker.ts",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "relay": "tsx scripts/relay-server.ts"
   },
   "dependencies": {
     "@cloudflare/blindrsa-ts": "^0.4.4",

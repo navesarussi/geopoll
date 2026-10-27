@@ -11,6 +11,10 @@ const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 type Token = { epoch: string; tier?: string; preparedMsg: string; signature: string };
 const KEY = "geopoll.token.v2";
+/** Votes go through the relay (T-110). NEXT_PUBLIC_RELAY_URL = external relay; default same-deployment beta relay. */
+/** Beta-only feature flag (default on in beta): device-side "was my vote counted" check. */
+const INCLUSION_CHECK = process.env.NEXT_PUBLIC_BETA_INCLUSION_CHECK !== "0";
+const RELAY = process.env.NEXT_PUBLIC_RELAY_URL ?? "/api/relay";
 
 /** Gets (or reuses) this epoch's anonymous token. Server signs blindly; we unblind locally. */
 async function getToken(): Promise<Token> {
@@ -57,7 +61,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
     try {
       const t = await getToken();
       // credentials:"omit" — no session cookie reaches the vote API.
-      const r = await fetch("/api/vote", { method: "POST", credentials: "omit", headers: { "content-type": "application/json" },
+      const r = await fetch(`${RELAY}/vote`, { method: "POST", credentials: "omit", headers: { "content-type": "application/json" },
         body: JSON.stringify({ pollId: DEMO_POLL.id, option, preparedMsg: t.preparedMsg, signature: t.signature }) });
       const j = await r.json();
       if (!j.ok) { if (j.error === "wrong_epoch" || j.error === "bad_token") localStorage.removeItem(KEY); throw new Error(j.error); }
@@ -76,7 +80,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
       const saved = localStorage.getItem(KEY);
       if (!saved) return setInc("אין במכשיר כרטיס הצבעה לתקופה הזו.");
       const n = await deviceNullifier(DEMO_POLL.id, unb64((JSON.parse(saved) as Token).preparedMsg));
-      const r = await (await fetch("/api/vote/status", { method: "POST", credentials: "omit", headers: { "content-type": "application/json" }, body: JSON.stringify({ nullifier: n }) })).json();
+      const r = await (await fetch(`${RELAY}/vote-status`, { method: "POST", credentials: "omit", headers: { "content-type": "application/json" }, body: JSON.stringify({ nullifier: n }) })).json();
       setInc(r.status === "counted" ? "ההצבעה שלך נכללת בספירה ✓" : r.status === "queued" ? "ההצבעה שלך בתור ותיספר באצווה הבאה." : "לא נמצאה הצבעה מהמכשיר הזה.");
     } catch { setInc("הבדיקה נכשלה. נסו שוב."); }
   }
@@ -101,7 +105,7 @@ export default function VoteClient({ signedIn, providers }: { signedIn: boolean;
           {state === "ok" && <p className="ok" role="status">{msg}{choice && <> · בחרת: {label(choice)}</>}</p>}
           {state === "err" && <p className="err" role="alert">{msg} <button className="link" onClick={() => choice && vote(choice)}>נסו שוב</button></p>}
           <p className="small">ההצבעה חשאית: השרת שמזהה אותך חותם על כרטיס בלי לראות אותו, ושרת ההצבעות מקבל רק את הכרטיס. אפשר לשנות הצבעה עד הסגירה.</p>
-          <button className="link" onClick={checkInclusion}>האם ההצבעה שלי נספרה?</button>
+          {INCLUSION_CHECK && <button className="link" onClick={checkInclusion}>האם ההצבעה שלי נספרה?</button>}
           {inc && <p className="small" role="status">{inc} הבדיקה לא מציגה את הבחירה ואינה הוכחה שאפשר להראות לאחרים.</p>}
           <button className="link" onClick={() => signOut()}>יציאה</button>
         </div>
