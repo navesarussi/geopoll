@@ -8,8 +8,19 @@ module.exports = ({ config }) => {
     plugins: [
       ...(config.plugins || []),
       "./plugins/no-push",
-      // Source-map/dSYM upload only when SENTRY_AUTH_TOKEN is present (EAS secret); otherwise builds stay token-free.
-      ...(process.env.SENTRY_AUTH_TOKEN ? [["@sentry/react-native/expo", { organization: process.env.SENTRY_ORG, project: process.env.SENTRY_PROJECT || "geopoll-mobile" }]] : []),
+      // Sentry (ADR-0026). Native SDK starts in AppDelegate before JS (useNativeInit) so launch/native crashes are captured.
+      // dSYM + source-map upload only when SENTRY_AUTH_TOKEN is set (EAS env secret); otherwise uploads are disabled.
+      ["@sentry/react-native/expo", {
+        organization: process.env.SENTRY_ORG || "kupay-hb",
+        project: process.env.SENTRY_PROJECT || "geopoll-mobile",
+        url: process.env.SENTRY_URL || "https://de.sentry.io/",
+        useNativeInit: !!process.env.EXPO_PUBLIC_SENTRY_DSN,
+        disableAutoUpload: !process.env.SENTRY_AUTH_TOKEN,
+        options: process.env.EXPO_PUBLIC_SENTRY_DSN ? {
+          dsn: process.env.EXPO_PUBLIC_SENTRY_DSN, sendDefaultPii: false, attachScreenshot: false, attachViewHierarchy: false,
+          tracesSampleRate: 0, maxBreadcrumbs: 30,
+        } : undefined,
+      }],
     ],
     name: process.env.GEOPOLL_APP_NAME || "GeoPoll Beta",
     ios: { ...config.ios, bundleIdentifier: id },
