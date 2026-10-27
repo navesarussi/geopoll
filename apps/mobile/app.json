@@ -114,7 +114,10 @@
     "extra": {
       "supportsRTL": true,
       "forcesRTL": false,
-      "apiBase": "https://geopoll-demo.vercel.app"
+      "apiBase": "https://geopoll-demo.vercel.app",
+      "eas": {
+        "projectId": "6f98bcbe-d87f-4b64-90d9-f7613351ff5e"
+      }
     }
   }
 }

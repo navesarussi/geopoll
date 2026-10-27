@@ -15,6 +15,7 @@ const { RN, registerRootComponent } = vi.hoisted(() => ({ registerRootComponent:
   };
 } }));
 vi.mock("react-native", RN);
+vi.mock("@sentry/react-native", () => ({ init: vi.fn(), wrap: (c: unknown) => c, captureException: vi.fn() }));
 vi.mock("react-native-quick-crypto", () => ({ install: vi.fn() }));
 vi.mock("expo-secure-store", () => ({ WHEN_UNLOCKED_THIS_DEVICE_ONLY: 1, getItemAsync: vi.fn(), setItemAsync: vi.fn(), deleteItemAsync: vi.fn() }));
 vi.mock("expo-local-authentication", () => ({ hasHardwareAsync: vi.fn(), isEnrolledAsync: vi.fn(), authenticateAsync: vi.fn() }));
