@@ -82,7 +82,7 @@
     "android": {
       "package": "app.geopoll.beta",
       "adaptiveIcon": {
-        "backgroundColor": "#2b59c3",
+        "backgroundColor": "#0098e3",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
