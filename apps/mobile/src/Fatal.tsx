@@ -1,6 +1,7 @@
 /** Last-resort error UI: a JS error shows a readable screen (screenshot-able for bug reports) instead of a hard crash. */
 import { Component, type ReactNode } from "react";
 import { ScrollView, Text, View } from "react-native";
+import { report } from "./native/sentry";
 
 export function FatalScreen({ error }: { error: unknown }) {
   const msg = error instanceof Error ? `${error.name}: ${error.message}\n\n${error.stack ?? ""}` : String(error);
@@ -16,6 +17,6 @@ export function FatalScreen({ error }: { error: unknown }) {
 export class ErrorBoundary extends Component<{ children: ReactNode }, { error: unknown }> {
   state = { error: null as unknown };
   static getDerivedStateFromError(error: unknown) { return { error }; }
-  componentDidCatch(error: unknown) { console.error("ErrorBoundary", error); }
+  componentDidCatch(error: unknown) { console.error("ErrorBoundary", error); report(error); }
   render() { return this.state.error ? <FatalScreen error={this.state.error} /> : this.props.children; }
 }
