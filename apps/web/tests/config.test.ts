@@ -7,10 +7,10 @@ import { KNESSET_POLL, DEMO_POLL } from "@/lib/poll";
 import { freshStores } from "./helpers";
 
 describe("packages/config (ADR-0022)", () => {
-  it("IL config: Hebrew default, 4 locales, ADR-0012 k values, both poll kinds", () => {
+  it("IL config: Hebrew default, he+en launch locales, ADR-0012 k values, both poll kinds", () => {
     const c = loadConfig("IL");
     expect(c.jurisdiction.defaultLocale).toBe("he");
-    expect(c.jurisdiction.locales).toEqual(["he", "en", "ar", "ru"]);
+    expect(c.jurisdiction.locales).toEqual(["he", "en"]);
     expect(c.jurisdiction.thresholds).toMatchObject({ kNational: 50, kSmallLocality: 100 });
     expect(c.jurisdiction.publication).toMatchObject({ batchIntervalSeconds: 3600, snapshotIntervalSeconds: 86400 });
     expect(c.polls.map((p) => p.kind).sort()).toEqual(["knesset-election", "referendum"]);
@@ -83,5 +83,14 @@ describe("i18n + tokens", () => {
   it("tokens flatten to CSS vars", () => {
     expect(toCssVars()).toContain(`--gp-color-primary:${tokens.color.primary}`);
     expect(toCssVars()).toContain("--gp-layout-max-width:480px");
+  });
+});
+
+describe("i18n en complete (launch locale)", () => {
+  it("every en string is translated (no Hebrew letters except party letters)", async () => {
+    const { DICTS } = await import("@/lib/i18n");
+    for (const [k, v] of Object.entries(DICTS.en)) expect([k, /[\u0590-\u05FF]/.test(v)]).toEqual([k, false]);
+    const { IL_POLLS } = await import("@geopoll/config");
+    for (const p of IL_POLLS) { expect(p.question.en).toBeTruthy(); for (const o of p.options) expect(o.label.en).toBeTruthy(); }
   });
 });

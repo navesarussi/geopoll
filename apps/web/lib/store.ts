@@ -12,6 +12,21 @@ export class IdentityStore {
     const r = await this.db.q(`insert into zone_a.token_issuance values ($1,$2) on conflict do nothing returning 1`, [accountHash, epoch]);
     return r.length === 1;
   }
+  /** ADR-0024: record a T2 pass. "duplicate" if this document already backs another account. */
+  async recordT2(accountHash: string, docDedupeHash: string, provider: string): Promise<"ok" | "duplicate"> {
+    const r = await this.db.q<{ account_hash: string }>(`insert into zone_a.t2_verifications (account_hash, doc_dedupe_hash, provider) values ($1,$2,$3)
+      on conflict do nothing returning account_hash`, [accountHash, docDedupeHash, provider]);
+    if (r.length) return "ok";
+    const same = await this.db.q(`select 1 from zone_a.t2_verifications where account_hash=$1 and doc_dedupe_hash=$2`, [accountHash, docDedupeHash]);
+    return same.length ? "ok" : "duplicate";
+  }
+  async isT2(accountHash: string): Promise<boolean> {
+    return (await this.db.q(`select 1 from zone_a.t2_verifications where account_hash=$1`, [accountHash])).length === 1;
+  }
+  /** Aggregate only (admin dashboard). */
+  async t2Count(): Promise<number> {
+    return (await this.db.q<{ c: number }>(`select count(*)::int c from zone_a.t2_verifications`))[0]?.c ?? 0;
+  }
 }
 
 export class BallotStore {
