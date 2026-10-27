@@ -112,6 +112,13 @@ const he = {
   ad_modNote: "פוסטים עם דיווחים. הרחקה חלה על מפתח הכותב בתחום C (בפוסט אנונימי: הכינוי של אותו משאל בלבד). לא חושפים זהות.",
   ad_noReports: "אין דיווחים פתוחים.", ad_anon: "אנונימי", ad_reports: "דיווחים", ad_hidden: "מוסתר", ad_visible: "גלוי", ad_deleted: "נמחק",
   ad_banned: "כותב מורחק", ad_show: "הצגה", ad_hide: "הסתרה", ad_clear: "דחיית דיווחים", ad_delete: "מחיקה", ad_unban: "ביטול הרחקה", ad_ban: "הרחקת כותב",
+  ad_newPoll: "משאל חדש", ad_editPoll: "עריכת משאל", ad_edit: "עריכה", ad_source: "מקור / הערה", ad_optionsHelp: "אפשרות בכל שורה: מזהה | עברית | English",
+  ad_create: "יצירה (נפתח סגור)", ad_saveEdit: "שמירת שינויים", ad_cancel: "ביטול", ad_fromConfig: "תצורה", ad_fromAdmin: "פורטל", ad_saved: "נשמר ✓ {id}",
+  ad_rules: "כללים: מזהה באותיות קטנות לטיניות, 2–20 אפשרויות, עברית חובה. אחרי שיש הצבעות אי אפשר לשנות אפשרויות או סוג. בתקופת האיסור (16ה) אי אפשר ליצור או לערוך סקרי בחירות. ספי k חלים אוטומטית.",
+  pe_bad_id: "מזהה לא תקין.", pe_reserved_id: "המזהה שמור למשאל מהתצורה.", pe_bad_kind: "סוג לא תקין.", pe_bad_text: "טקסט חסר או ארוך מדי (עברית חובה).",
+  pe_bad_options: "אפשרויות לא תקינות (2–20, מזהה + עברית).", pe_exists: "כבר קיים משאל עם המזהה הזה.", pe_not_found: "המשאל לא נמצא.",
+  pe_conflict: "מישהו אחר ערך את המשאל בינתיים. טענו מחדש.", pe_blackout: "בתקופת האיסור (סעיף 16ה) אי אפשר ליצור או לערוך סקרי בחירות.",
+  pe_options_locked: "יש כבר הצבעות, ולכן אי אפשר לשנות את האפשרויות.", pe_kind_locked: "אי אפשר לשנות סוג של משאל קיים.", pe_schema: "התצורה נדחתה בבדיקת הסכמה.",
   ad_when: "מתי", ad_who: "מי", ad_action: "פעולה", ad_target: "יעד", ad_detail: "פרטים", ad_auditEmpty: "היומן ריק.",
 };
 export type Dict = typeof he;
@@ -187,6 +194,13 @@ const en: Dict = {
   ad_modNote: "Reported posts. A ban applies to the author's zone C key (for an anonymous post: that poll's alias only). Identity is never revealed.",
   ad_noReports: "No open reports.", ad_anon: "anonymous", ad_reports: "reports", ad_hidden: "hidden", ad_visible: "visible", ad_deleted: "deleted",
   ad_banned: "author banned", ad_show: "Show", ad_hide: "Hide", ad_clear: "Dismiss reports", ad_delete: "Delete", ad_unban: "Unban", ad_ban: "Ban author",
+  ad_newPoll: "New poll", ad_editPoll: "Edit poll", ad_edit: "Edit", ad_source: "Source / note", ad_optionsHelp: "One option per line: id | Hebrew | English",
+  ad_create: "Create (starts closed)", ad_saveEdit: "Save changes", ad_cancel: "Cancel", ad_fromConfig: "config", ad_fromAdmin: "portal", ad_saved: "Saved ✓ {id}",
+  ad_rules: "Rules: lowercase Latin id, 2–20 options, Hebrew required. Once votes exist, options and kind are locked. During the §16E blackout election polls can't be created or edited. k-thresholds apply automatically.",
+  pe_bad_id: "Invalid id.", pe_reserved_id: "That id is reserved for a config poll.", pe_bad_kind: "Invalid kind.", pe_bad_text: "Text missing or too long (Hebrew required).",
+  pe_bad_options: "Invalid options (2–20, id + Hebrew).", pe_exists: "A poll with this id already exists.", pe_not_found: "Poll not found.",
+  pe_conflict: "Someone else edited this poll meanwhile. Reload.", pe_blackout: "During the blackout (§16E) election polls can't be created or edited.",
+  pe_options_locked: "Votes already exist, so options can't change.", pe_kind_locked: "A poll's kind can't change.", pe_schema: "Rejected by the config schema check.",
   ad_when: "When", ad_who: "Who", ad_action: "Action", ad_target: "Target", ad_detail: "Details", ad_auditEmpty: "The log is empty.",
 };
 const stub: Dict = { ...he }; // ar, ru: keys present, values fall back to Hebrew until translated (T-3xx).

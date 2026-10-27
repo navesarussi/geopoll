@@ -1,6 +1,7 @@
 import { config, blackoutFor, polls } from "./config";
 import { bucket, kThreshold } from "./results";
 import type { Stores } from "./store";
+import { syncPolls } from "./polls";
 import type { Locale } from "@geopoll/config";
 
 /**
@@ -26,6 +27,7 @@ export async function sessionAdmin(): Promise<{ email: string } | null> {
 
 /** Aggregate-only dashboard. Counts are shown as k-gated buckets, never exact below k. */
 export async function dashboard(s: Stores, now = new Date(), lang: Locale = "he") {
+  await syncPolls(s.ballots);
   const k = kThreshold();
   const lastFlush = await s.ballots.lastFlush();
   const rows = [];
@@ -63,6 +65,7 @@ export type AdminAction =
 export async function runAdminAction(s: Stores, actor: string, a: AdminAction): Promise<boolean> {
   let ok = false;
   if ("pollId" in a) {
+    await syncPolls(s.ballots);
     if (!polls().some((p) => p.id === a.pollId)) return false;
     await s.ballots.setPollStatus(a.pollId, a.action === "poll_open" ? "open" : "closed"); ok = true;
     await s.content.audit(actor, a.action, a.pollId);
