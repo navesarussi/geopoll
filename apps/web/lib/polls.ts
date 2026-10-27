@@ -16,8 +16,8 @@ export async function syncPolls(ballots: BallotStore, force = false) {
   catch { /* table missing (not migrated yet): keep config-only polls */ }
 }
 
-export type PollInput = { id: string; kind: string; question: Record<string, string>; source?: Record<string, string>; options: { id: string; label: Record<string, string> }[] };
-export type PollError = "bad_id" | "reserved_id" | "bad_kind" | "bad_text" | "bad_options" | "exists" | "not_found" | "conflict" | "blackout" | "options_locked" | "kind_locked" | "schema";
+export type PollInput = { id: string; kind: string; opensAt?: string; closesAt?: string; question: Record<string, string>; source?: Record<string, string>; options: { id: string; label: Record<string, string> }[] };
+export type PollError = "bad_id" | "reserved_id" | "bad_kind" | "bad_text" | "bad_options" | "exists" | "not_found" | "conflict" | "blackout" | "options_locked" | "kind_locked" | "schema" | "bad_schedule";
 
 const KINDS: PollKind[] = ["knesset-election", "referendum"];
 const ID = /^[a-z0-9][a-z0-9-]{2,47}$/, OPT = /^[a-z0-9_-]{1,24}$/;
@@ -39,10 +39,14 @@ export function normalizePoll(i: PollInput): { ok: true; def: PollDef } | { ok: 
   if (!q || !src) return { ok: false, error: "bad_text" };
   const opts = (i.options ?? []).map((o) => ({ id: String(o.id ?? "").trim(), label: text(o.label, 80) }));
   if (opts.length < 2 || opts.length > 20 || opts.some((o) => !OPT.test(o.id) || !o.label) || new Set(opts.map((o) => o.id)).size !== opts.length) return { ok: false, error: "bad_options" };
+  const ts = (v?: string) => { const x = (v ?? "").trim(); if (!x) return undefined; const d = Date.parse(x); return Number.isNaN(d) ? null : new Date(d).toISOString(); };
+  const opensAt = ts(i.opensAt), closesAt = ts(i.closesAt);
+  if (opensAt === null || closesAt === null || (opensAt && closesAt && opensAt >= closesAt)) return { ok: false, error: "bad_schedule" };
   const def: PollDef = {
     id: i.id, kind: i.kind as PollKind, dummy: false, publicPositions: true,
     question: q as PollDef["question"], source: (src.he ? src : { ...src, he: "" }) as PollDef["source"],
     options: opts.map((o) => ({ id: o.id, label: o.label as PollDef["options"][number]["label"] })),
+    ...(opensAt || closesAt ? { schedule: { ...(opensAt && { opensAt }), ...(closesAt && { closesAt }) } } : {}),
   };
   return { ok: true, def };
 }
@@ -78,6 +82,15 @@ export async function savePoll(s: Stores, actor: string, input: PollInput, expec
   return { ok: true, version };
 }
 
+/** Effective voting status: manual "closed" wins; otherwise the optional schedule window applies (#79). */
+export async function effectiveStatus(ballots: BallotStore, p: PollDef, now = new Date()): Promise<"open" | "closed" | "scheduled"> {
+  if ((await ballots.pollStatus(p.id)) === "closed") return "closed";
+  const sc = p.schedule;
+  if (sc?.opensAt && now < new Date(sc.opensAt)) return "scheduled";
+  if (sc?.closesAt && now >= new Date(sc.closesAt)) return "closed";
+  return "open";
+}
+
 export const isAdminPoll = (id: string) => !config().polls.some((p) => p.id === id);
 
 /** Parse "id | עברית | English" lines into options. */
@@ -88,3 +101,25 @@ export function parseOptions(raw: string): PollInput["options"] {
   });
 }
 
+
+/** "YYYY-MM-DDTHH:MM" (datetime-local, wall time in tz) → ISO UTC. Empty → "". Invalid → "invalid". */
+export function localToIso(v: string, tz: string): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(v.trim());
+  if (!v.trim()) return "";
+  if (!m) return "invalid";
+  const wall = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+  const off = (t: number) => {
+    const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })
+      .formatToParts(new Date(t)).map((x) => [x.type, x.value]));
+    return Date.UTC(+p.year, +p.month - 1, +p.day, +p.hour, +p.minute) - t;
+  };
+  let t = wall - off(wall); t = wall - off(t);
+  return new Date(t).toISOString();
+}
+/** ISO UTC → datetime-local value in tz (for prefilling the form). */
+export function isoToLocal(iso: string | undefined, tz: string): string {
+  if (!iso) return "";
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-US", { timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })
+    .formatToParts(new Date(iso)).map((x) => [x.type, x.value]));
+  return `${p.year}-${p.month}-${p.day}T${p.hour}:${p.minute}`;
+}

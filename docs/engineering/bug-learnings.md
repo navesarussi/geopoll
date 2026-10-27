@@ -19,7 +19,7 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 ## 1. TestFlight build 5 crashes on launch (iOS)
 
 - **Symptom:** GeoPoll Beta 0.1.0 (5) closed immediately on Nave's iPhone; crash dialog shown. No crash report was shared.
-- **Root cause:** **verified** by the new iOS smoke test (Release simulator build, crash report `.ips`): dyld aborted at launch,
+- **Root cause:** **verified** on device (TestFlight crash report for 0.1.0 (7), iOS 26.5.2: `DYLD 4 Symbol missing`, same symbol) and by the new iOS smoke test (Release simulator build, crash report `.ips`): dyld aborted at launch,
   before any JS ran: `Symbol not found: ExpoModulesCore.EventEmitter.eventRuntime(for:)`, referenced from `ExpoFileSystem.framework`.
   The lockfile had `expo@58.0.19` → `expo-modules-core@58.0.26`, but `expo-file-system@58.0.12` needs an API added in
   `expo-modules-core@58.0.27`. `npx expo install --check` already flagged `expo` (~58.0.20) and `expo-dev-client` (~58.0.16) as outdated.

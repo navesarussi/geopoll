@@ -4,7 +4,7 @@ import { blackoutWindow } from "@geopoll/config";
 import { nullifier, tokenEpoch, verifyToken } from "./crypto";
 import { blackoutResults, toPublic, type PublicResults } from "./results";
 import type { BallotStore } from "./store";
-import { syncPolls } from "./polls";
+import { effectiveStatus, syncPolls } from "./polls";
 
 export type VoteOutcome =
   | { ok: true; status: "created" | "replaced" }
@@ -31,7 +31,7 @@ export async function castVote(
   if (!poll.options.some((o) => o.id === input.option)) return { ok: false, error: "bad_option" };
   // ADR-0004: voting on election polls is frozen during the §16ה(ח) window (when configured).
   if (config().jurisdiction.blackout.freezeVoting && blackoutFor(poll, now).active) return { ok: false, error: "blackout" };
-  if ((await ballots.pollStatus(input.pollId)) === "closed") return { ok: false, error: "closed" };
+  if ((await effectiveStatus(ballots, poll, now)) !== "open") return { ok: false, error: "closed" };
   const tier = await verifyToken(input.preparedMsg, input.signature);
   if (!tier) return { ok: false, error: "bad_token" };
   if (tokenEpoch(input.preparedMsg) !== currentEpoch(now)) return { ok: false, error: "wrong_epoch" };

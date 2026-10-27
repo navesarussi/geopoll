@@ -1,8 +1,9 @@
 // Monorepo: let Metro see packages/* (dependency-free TS sources, ADR-0022). Aliases mirror tsconfig paths.
-const { getDefaultConfig } = require("expo/metro-config");
+// getSentryExpoConfig = Expo defaults + Debug IDs so uploaded source maps match bundles (readable stacks).
+const { getSentryExpoConfig } = require("@sentry/react-native/metro");
 const path = require("path");
 const root = path.resolve(__dirname, "../..");
-const config = getDefaultConfig(__dirname);
+const config = getSentryExpoConfig(__dirname);
 config.watchFolders = [path.join(root, "packages")];
 config.resolver.nodeModulesPaths = [path.join(__dirname, "node_modules")];
 config.resolver.extraNodeModules = {
