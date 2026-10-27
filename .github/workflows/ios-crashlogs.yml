@@ -1,0 +1,20 @@
+# Manual only: download TestFlight crash submissions + crash logs via ASC API (scripts/ops/asc-crashlogs.mjs).
+name: iOS crash logs
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  pull:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+      - run: node scripts/ops/asc-crashlogs.mjs
+        env:
+          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+          ASC_API_KEY_P8: ${{ secrets.ASC_API_KEY_P8 }}
+          ASC_APP_ID: ${{ secrets.ASC_APP_ID }}
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: crashlogs, path: crashlogs, if-no-files-found: ignore }

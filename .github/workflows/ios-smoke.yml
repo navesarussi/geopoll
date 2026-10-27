@@ -1,0 +1,59 @@
+# iOS launch smoke test (bug-learnings #1). Release build for the iOS Simulator, boot, install, launch, wait,
+# fail if the app process died, a crash report appeared, or the ErrorBoundary/FatalScreen was shown.
+# macOS runners are free for public repos. Called by Mobile EAS before any TestFlight submit, and on mobile PRs.
+name: iOS smoke
+on:
+  workflow_call:
+  workflow_dispatch:
+  pull_request:
+    paths: ["apps/mobile/**", "packages/**", ".github/workflows/ios-smoke.yml"]
+permissions: { contents: read }
+concurrency: { group: ios-smoke-${{ github.ref }}, cancel-in-progress: true }
+jobs:
+  smoke:
+    runs-on: macos-15
+    timeout-minutes: 90
+    defaults: { run: { working-directory: apps/mobile } }
+    env: { BUNDLE_ID: app.geopoll.beta, CI: "1" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "20", cache: npm, cache-dependency-path: apps/mobile/package-lock.json }
+      - run: npm ci
+      - run: npx vitest run
+      - name: expo prebuild (iOS)
+        run: npx expo prebuild --platform ios --clean --no-install
+      - name: pod install
+        run: cd ios && pod install
+      - name: xcodebuild Release for simulator (JS bundle embedded, same as TestFlight)
+        run: |
+          WS=$(ls -d ios/*.xcworkspace | head -1); SCHEME=$(basename "$WS" .xcworkspace)
+          echo "SCHEME=$SCHEME" >> "$GITHUB_ENV"
+          set -o pipefail
+          xcodebuild -workspace "$WS" -scheme "$SCHEME" -configuration Release -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO \
+            COMPILER_INDEX_STORE_ENABLE=NO build | tail -n 80
+      - name: Boot simulator, install, launch, watch 25s
+        run: |
+          APP=$(ls -d build/Build/Products/Release-iphonesimulator/*.app | head -1)
+          DEV=$(xcrun simctl list devices available -j | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const r=JSON.parse(d).devices;for(const k of Object.keys(r).reverse())for(const x of r[k])if(/iPhone/.test(x.name)){console.log(x.udid);return}})')
+          xcrun simctl boot "$DEV"; xcrun simctl bootstatus "$DEV" -b
+          xcrun simctl install "$DEV" "$APP"
+          mkdir -p /tmp/smoke; : > /tmp/smoke/before; ls ~/Library/Logs/DiagnosticReports > /tmp/smoke/before 2>/dev/null || true
+          xcrun simctl spawn "$DEV" log stream --level debug --style compact --predicate 'process CONTAINS "GeoPoll" OR subsystem == "com.facebook.react.log"' > /tmp/smoke/app.log 2>&1 &
+          LOGPID=$!
+          xcrun simctl launch --terminate-running-process "$DEV" "$BUNDLE_ID" | tee /tmp/smoke/launch.txt
+          PID=$(awk -F': ' '{print $2}' /tmp/smoke/launch.txt | tr -d ' ')
+          sleep 25
+          xcrun simctl io "$DEV" screenshot /tmp/smoke/screen.png || true
+          kill $LOGPID || true
+          fail=0
+          if ! xcrun simctl spawn "$DEV" launchctl list | grep -q "$BUNDLE_ID"; then echo "::error::app process ($PID) is not running after 25s – crashed on launch"; fail=1; fi
+          if ls ~/Library/Logs/DiagnosticReports 2>/dev/null | grep -v -x -F -f /tmp/smoke/before | grep -i geopoll; then echo "::error::new crash report"; fail=1; fi
+          if grep -E "App failed to load|ErrorBoundary|Unhandled JS Exception|RCTFatal|Something went wrong" /tmp/smoke/app.log; then echo "::error::JS fatal / error-boundary shown"; fail=1; fi
+          echo "--- last app log lines ---"; tail -n 120 /tmp/smoke/app.log
+          cp ~/Library/Logs/DiagnosticReports/*GeoPoll* /tmp/smoke/ 2>/dev/null || true
+          exit $fail
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with: { name: ios-smoke, path: /tmp/smoke, if-no-files-found: ignore }
