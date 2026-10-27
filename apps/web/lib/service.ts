@@ -6,7 +6,7 @@ import type { BallotStore } from "./store";
 
 export type VoteOutcome =
   | { ok: true; status: "created" | "replaced" }
-  | { ok: false; error: "bad_request" | "bad_token" | "wrong_epoch" | "bad_option" | "unknown_poll" | "blackout" };
+  | { ok: false; error: "bad_request" | "bad_token" | "wrong_epoch" | "bad_option" | "unknown_poll" | "blackout" | "closed" };
 
 const pub = () => config().jurisdiction.publication;
 
@@ -21,6 +21,7 @@ export async function castVote(
   if (!poll.options.some((o) => o.id === input.option)) return { ok: false, error: "bad_option" };
   // ADR-0004: voting on election polls is frozen during the §16ה(ח) window (when configured).
   if (config().jurisdiction.blackout.freezeVoting && blackoutFor(poll, now).active) return { ok: false, error: "blackout" };
+  if ((await ballots.pollStatus(input.pollId)) === "closed") return { ok: false, error: "closed" };
   const tier = await verifyToken(input.preparedMsg, input.signature);
   if (!tier) return { ok: false, error: "bad_token" };
   if (tokenEpoch(input.preparedMsg) !== currentEpoch(now)) return { ok: false, error: "wrong_epoch" };

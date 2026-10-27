@@ -80,6 +80,20 @@ export class BallotStore {
   async saveSnapshot(pollId: string, body: PublicResults) {
     await this.db.q(`insert into zone_b.snapshots values ($1,$2::jsonb) on conflict (poll_id) do update set body=excluded.body`, [pollId, JSON.stringify(body)]);
   }
+  /** Admin: open/closed override per poll (default open). */
+  async pollStatus(pollId: string): Promise<"open" | "closed"> {
+    const r = await this.db.q<{ status: "open" | "closed" }>(`select status from zone_b.poll_state where poll_id=$1`, [pollId]);
+    return r[0]?.status ?? "open";
+  }
+  async setPollStatus(pollId: string, status: "open" | "closed") {
+    await this.db.q(`insert into zone_b.poll_state (poll_id,status) values ($1,$2) on conflict (poll_id) do update set status=excluded.status, updated_at=now()`, [pollId, status]);
+  }
+  /** Admin: aggregate counts only (no nullifier, no option). */
+  async totals(pollId: string): Promise<{ counted: number; queued: number }> {
+    const r = await this.db.q<{ c: number; q: number }>(`select (select count(*)::int from zone_b.ballots where poll_id=$1) c,
+      (select count(*)::int from zone_b.ballot_queue where poll_id=$1) q`, [pollId]);
+    return { counted: r[0]?.c ?? 0, queued: r[0]?.q ?? 0 };
+  }
   /** Dummy ballots ("seed-" nullifiers), idempotent. */
   async seed(pollId: string, items: { nullifier: string; option: string; epoch: string }[]) {
     if (!items.length) return;
@@ -138,12 +152,12 @@ export class ContentStore {
               case when x.anon then null else pr.pid end as pid, case when x.anon then null else pr.avatar end as avatar,
               case when x.anon then null else pr.display_name end as p_name
        from zone_c.posts x left join zone_c.profiles pr on (not x.anon and pr.profile_hash = x.author_hash)
-       where x.poll_id=$1 and x.report_count < $2 order by x.created_at asc limit 500`, [pollId, HIDE_AFTER_REPORTS]);
+       where x.poll_id=$1 and x.report_count < $2 and not x.hidden order by x.created_at asc limit 500`, [pollId, HIDE_AFTER_REPORTS]);
     return this.shape(rows, viewerKeys);
   }
   async positionCounts(pollId: string): Promise<Tally> {
     const rows = await this.db.q<{ option_id: string; c: number }>(
-      `select option_id, count(*)::int c from zone_c.posts where poll_id=$1 and parent_id is null and not deleted and option_id is not null and report_count < $2 group by option_id`,
+      `select option_id, count(*)::int c from zone_c.posts where poll_id=$1 and parent_id is null and not deleted and option_id is not null and report_count < $2 and not hidden group by option_id`,
       [pollId, HIDE_AFTER_REPORTS]);
     return Object.fromEntries(rows.map((r) => [r.option_id, r.c]));
   }
@@ -161,6 +175,43 @@ export class ContentStore {
   async pollOf(id: number): Promise<string | null> {
     const r = await this.db.q<{ poll_id: string }>(`select poll_id from zone_c.posts where id=$1`, [id]);
     return r[0]?.poll_id ?? null;
+  }
+  // ---- moderation (admin) ----
+  async isBanned(keys: string[]): Promise<boolean> {
+    return (await this.db.q(`select 1 from zone_c.bans where author_hash = any($1::text[]) limit 1`, [keys])).length > 0;
+  }
+  async reportedQueue(limit = 100) {
+    return this.db.q<{ id: number; poll_id: string; display_name: string; body: string; report_count: number; hidden: boolean; deleted: boolean; anon: boolean; created_at: string; banned: boolean }>(
+      `select p.id, p.poll_id, p.display_name, p.body, p.report_count, p.hidden, p.deleted, p.anon, p.created_at,
+              exists (select 1 from zone_c.bans b where b.author_hash = p.author_hash) as banned
+       from zone_c.posts p where p.report_count > 0 order by p.report_count desc, p.created_at desc limit $1`, [limit]);
+  }
+  async moderate(id: number, action: "hide" | "unhide" | "delete" | "clear"): Promise<boolean> {
+    const set = { hide: "hidden=true", unhide: "hidden=false", delete: "deleted=true", clear: "report_count=0, hidden=false" }[action];
+    return (await this.db.q(`update zone_c.posts set ${set} where id=$1 returning 1`, [id])).length === 1;
+  }
+  /** Ban the author KEY of a post (profile hash, or per-poll anon hash for anonymous posts). Never resolves identity. */
+  async banAuthorOf(id: number, reason: string): Promise<boolean> {
+    const r = await this.db.q(`insert into zone_c.bans (author_hash, reason) select author_hash, $2 from zone_c.posts where id=$1 on conflict do nothing returning 1`, [id, reason]);
+    await this.db.q(`update zone_c.posts set hidden=true where author_hash=(select author_hash from zone_c.posts where id=$1)`, [id]);
+    return r.length === 1;
+  }
+  async unbanAuthorOf(id: number): Promise<boolean> {
+    return (await this.db.q(`delete from zone_c.bans where author_hash=(select author_hash from zone_c.posts where id=$1) returning 1`, [id])).length === 1;
+  }
+  async stats() {
+    const r = await this.db.q<{ posts: number; reported: number; hidden: number; bans: number; profiles: number }>(`select
+      (select count(*)::int from zone_c.posts) posts, (select count(*)::int from zone_c.posts where report_count>0 and not deleted) reported,
+      (select count(*)::int from zone_c.posts where hidden) hidden, (select count(*)::int from zone_c.bans) bans,
+      (select count(*)::int from zone_c.profiles) profiles`);
+    return r[0];
+  }
+  async audit(actor: string, action: string, target = "", detail = "") {
+    await this.db.q(`insert into zone_c.admin_audit (actor, action, target, detail) values ($1,$2,$3,$4)`, [actor, action, target, detail.slice(0, 500)]);
+  }
+  async auditLog(limit = 200) {
+    return this.db.q<{ id: number; at: string; actor: string; action: string; target: string; detail: string }>(
+      `select id, at, actor, action, target, detail from zone_c.admin_audit order by id desc limit $1`, [limit]);
   }
   // ---- profiles ----
   async getProfile(profileHash: string): Promise<Profile | null> {
@@ -183,7 +234,7 @@ export class ContentStore {
     if (!pr.length) return null;
     const rows = await this.db.q<Post & { author_hash: string; p_name: string | null; poll_id: string }>(
       `select id, parent_id, display_name, option_id, body, created_at, deleted, anon, author_hash, poll_id, null as p_name, $2::text as pid, $3::text as avatar
-       from zone_c.posts where author_hash=$1 and not anon and not deleted and report_count < $4 order by created_at desc limit 100`,
+       from zone_c.posts where author_hash=$1 and not anon and not deleted and not hidden and report_count < $4 order by created_at desc limit 100`,
       [pr[0].profile_hash, pr[0].pid, pr[0].avatar, HIDE_AFTER_REPORTS]);
     const { profile_hash: _h, ...profile } = pr[0];
     void _h;
