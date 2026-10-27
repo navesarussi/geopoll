@@ -30,8 +30,13 @@ export const T1GoogleId: TierAdapter = {
   satisfies: async (c) => c.provider === "google" && c.flags.idNumberVerified === true,
 };
 
-/** T2 (document + liveness, ADR-0007) and T3 (ZK passport, ADR-0018): stubs, never satisfied yet. */
-export const T2Document: TierAdapter = { tier: "T2", enabled: () => false, satisfies: async () => false };
+/** T2 (document + liveness, ADR-0007/0024): behind FEATURE_T2_KYC; satisfied by a zone-A verification record. */
+export const T2Document: TierAdapter = {
+  tier: "T2",
+  enabled: (env) => env.FEATURE_T2_KYC === "1",
+  satisfies: async (c) => c.flags.t2Verified === true,
+};
+/** T3 (ZK passport / NFC, ADR-0018): stub. */
 export const T3Zk: TierAdapter = { tier: "T3", enabled: () => false, satisfies: async () => false };
 
 export const ADAPTERS: TierAdapter[] = [T3Zk, T2Document, T1GoogleId, T0Google];
@@ -45,7 +50,12 @@ export async function resolveTier(ctx: IdentityContext, env = process.env, adapt
 export const BASIC_TIERS: Tier[] = ["T0", "T1"];
 
 /** Session account id is "<provider>:<providerAccountId>". */
-export function tierForAccount(acct: string, env = process.env) {
+export async function tierForAccount(acct: string, env = process.env) {
   const [provider, ...rest] = acct.split(":");
-  return resolveTier({ provider, accountId: rest.join(":"), flags: {} }, env);
+  const flags: Record<string, boolean> = {};
+  if (env.FEATURE_T2_KYC === "1") {
+    const [{ stores }, { accountHash }] = await Promise.all([import("../store"), import("../crypto")]);
+    flags.t2Verified = await (await stores()).identity.isT2(accountHash(acct));
+  }
+  return resolveTier({ provider, accountId: rest.join(":"), flags }, env);
 }
