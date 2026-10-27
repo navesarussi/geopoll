@@ -109,12 +109,6 @@
         {
           "faceIDPermission": "GeoPoll uses Face ID to lock your ballot-token wallet on this device."
         }
-      ],
-      [
-        "expo-notifications",
-        {
-          "color": "#2b59c3"
-        }
       ]
     ],
     "extra": {
