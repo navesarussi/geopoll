@@ -1,0 +1,21 @@
+name: historical-data
+on:
+  push:
+    branches: [main]
+    paths: ["services/historical-data/**"]
+  pull_request:
+    paths: ["services/historical-data/**", ".github/workflows/historical-data.yml"]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/historical-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest discover -s tests -t . -v
