@@ -64,7 +64,7 @@ jobs:
         run: |
           curl -fsSL "https://get.maestro.mobile.dev" | bash
           export PATH="$HOME/.maestro/bin:$PATH"
-          maestro test .maestro/launch.yaml --format junit --output /tmp/smoke/maestro.xml
+          MAESTRO_CLI_NO_ANALYTICS=1 maestro test .maestro/launch.yaml --format junit --output /tmp/smoke/maestro.xml --test-output-dir /tmp/smoke/maestro
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: ios-smoke, path: /tmp/smoke, if-no-files-found: ignore }

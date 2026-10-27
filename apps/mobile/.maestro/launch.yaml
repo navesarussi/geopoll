@@ -14,4 +14,4 @@ appId: app.geopoll.beta
     id: "tab-settings"
 - assertVisible:
     id: "tab-polls"
-- takeScreenshot: /tmp/smoke/first-screen
+- takeScreenshot: first-screen
