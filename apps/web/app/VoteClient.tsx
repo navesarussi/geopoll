@@ -41,7 +41,7 @@ async function getToken(): Promise<Token> {
 export default function VoteClient({ signedIn, providers, t, poll, kThreshold, blackout, relayUrl: RELAY, inclusionCheck: INCLUSION_CHECK, lang }:
   { signedIn: boolean; providers: string[]; t: Dict; poll: ClientPoll; kThreshold: number; blackout: boolean; relayUrl: string; inclusionCheck: boolean; lang: string }) {
   const MSG: Record<string, string> = { already_issued: t.err_already_issued, bad_token: t.err_bad_token, no_tier: t.err_no_tier,
-    tier_mismatch: t.err_tier_mismatch, wrong_epoch: t.err_wrong_epoch, blackout: t.err_blackout };
+    tier_mismatch: t.err_tier_mismatch, wrong_epoch: t.err_wrong_epoch, blackout: t.err_blackout, closed: t.err_closed };
   const CHOICE = `geopoll.lastChoice.${poll.id}`;
   const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [msg, setMsg] = useState("");

@@ -70,7 +70,7 @@ export function pseudonym(seed: string): string {
   return `משתמש/ת ${(h.readUInt32BE(0) % 9000) + 1000}`;
 }
 
-export type PostError = "bad_request" | "too_long" | "profanity" | "rate_limited" | "duplicate_position" | "no_parent" | "bad_option" | "no_profile" | "consent_required";
+export type PostError = "bad_request" | "too_long" | "profanity" | "rate_limited" | "duplicate_position" | "no_parent" | "bad_option" | "no_profile" | "consent_required" | "banned";
 
 export async function createPost(
   store: ContentStore,
@@ -87,6 +87,7 @@ export async function createPost(
   if (!isReply && (!input.option || !optionIds(pollId).includes(input.option))) return { ok: false, error: "bad_option" };
   const profileHash = authorHash(accountId);
   const keys = authorKeys(accountId, pollId);
+  if (await store.isBanned(keys)) return { ok: false, error: "banned" };
   const profile = await store.getProfile(profileHash);
   const anonymous = resolveAnonymous(input.anonymous, profile);
   if (!anonymous) {
