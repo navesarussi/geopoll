@@ -21,8 +21,10 @@
   "submit": {
     "production": {
       "ios": {
-        "ascAppId": "SET_AFTER_APP_RECORD_EXISTS",
-        "appleTeamId": "SET_FROM_APPLE_ACCOUNT"
+        "ascAppId": "SET_BY_WORKFLOW_FROM_ASC_APP_ID",
+        "ascApiKeyPath": "./asc_api_key.p8",
+        "ascApiKeyIssuerId": "SET_BY_WORKFLOW",
+        "ascApiKeyId": "SET_BY_WORKFLOW"
       },
       "android": {
         "track": "internal",

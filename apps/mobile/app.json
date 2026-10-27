@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "GeoPoll",
+    "name": "GeoPoll Beta",
     "slug": "geopoll",
     "owner": "saussilberg",
     "scheme": "geopoll",
@@ -9,7 +9,7 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "bundleIdentifier": "app.geopoll",
+      "bundleIdentifier": "app.geopoll.beta",
       "supportsTablet": false,
       "config": {
         "usesNonExemptEncryption": false
@@ -80,7 +80,7 @@
       }
     },
     "android": {
-      "package": "app.geopoll",
+      "package": "app.geopoll.beta",
       "adaptiveIcon": {
         "backgroundColor": "#2b59c3",
         "foregroundImage": "./assets/android-icon-foreground.png",
