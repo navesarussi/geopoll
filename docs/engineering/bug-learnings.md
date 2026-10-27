@@ -10,7 +10,7 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 | 2 | 2026-10-27 | mobile | §16ה blackout shown as "results once k participants" |
 | 3 | 2026-10-27 | CI | flaky timeout in tiers.test.ts under coverage |
 
-## 2. Launch spinner never ends (iOS Release simulator)
+## 4. Launch spinner never ends (iOS Release simulator)
 
 - **Symptom:** after the #1 fix the smoke screenshot showed only the loading spinner after 25s.
 - **Root cause:** **suspected**: App waited on `checkVersion` (no timeout) and on `secureKV.get` with no catch; any throw/hang there
