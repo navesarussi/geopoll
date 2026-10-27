@@ -12,7 +12,7 @@ import { makeHttp, SESSION_KEY } from "../core/http";
 import { codeFromRedirect, makePkce } from "../core/pkce";
 import type { KV } from "../core/types";
 
-install(); // WebCrypto (subtle, getRandomValues) backed by native OpenSSL – required by blindrsa-ts.
+try { install(); } catch (e) { console.error("quick-crypto install failed", e); } // WebCrypto (subtle, getRandomValues) backed by native OpenSSL – required by blindrsa-ts.
 
 export const API_BASE: string = (Constants.expoConfig?.extra as { apiBase?: string } | undefined)?.apiBase ?? "https://geopoll-demo.vercel.app";
 export const APP_VERSION: string = Application.nativeApplicationVersion ?? Constants.expoConfig?.version ?? "0.0.0";
@@ -61,9 +61,12 @@ export const signOut = () => secureKV.del(SESSION_KEY);
 export const isSignedIn = async () => !!(await secureKV.get(SESSION_KEY));
 
 // --- push-ready: permission + token only on explicit opt-in; NOT sent to any server yet (no backend endpoint). ---
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
-});
+// Push entitlement is stripped for now (plugins/no-push); never let notification setup take down launch.
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({ shouldShowBanner: true, shouldShowList: true, shouldPlaySound: false, shouldSetBadge: false }),
+  });
+} catch (e) { console.error("notification handler setup failed", e); }
 export async function enablePush(): Promise<string | null> {
   const { status } = await Notifications.requestPermissionsAsync();
   if (status !== "granted") return null;
