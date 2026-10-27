@@ -4,6 +4,7 @@ import { merge, validate, type Deep, type GlobalConfig, type PollDef } from "./s
 export * from "./schema";
 export * from "./blackout";
 export { IL_POLLS } from "./il";
+export * from "./app-version";
 
 const COUNTRIES: Record<string, Deep<GlobalConfig>> = { IL: il };
 
