@@ -54,9 +54,9 @@ describe("nullifier / double vote / revote", () => {
     expect(await b.tally(DEMO_POLL.id)).toEqual({}); // queued, not yet counted
     await b.flush();
     expect(await b.tally(DEMO_POLL.id)).toEqual({ no: 1 });
-    expect(await vote(b, t, "partial")).toEqual({ ok: true, status: "replaced" });
+    expect(await vote(b, t, "yes")).toEqual({ ok: true, status: "replaced" });
     await b.flush();
-    expect(await b.tally(DEMO_POLL.id)).toEqual({ partial: 1 });
+    expect(await b.tally(DEMO_POLL.id)).toEqual({ yes: 1 });
   });
   it("identity issues at most one token per account per epoch", async () => {
     const id = (await freshStores()).identity;
@@ -87,7 +87,7 @@ describe("public results (ADR-0012)", () => {
     const r1 = await results(b, t0);
     expect(r1.published).toBe(true);
     expect(Object.values(r1.percents!).every(Number.isInteger)).toBe(true);
-    await vote(b, await clientToken(), "unsure");
+    await vote(b, await clientToken(), "no");
     const r2 = await results(b, new Date(t0.getTime() + 1000));
     expect(r2).toEqual(r1); // batched: no live update
   });

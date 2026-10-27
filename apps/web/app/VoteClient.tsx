@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { signIn, signOut } from "next-auth/react";
 import { RSABSSA } from "@cloudflare/blindrsa-ts";
-import { DEMO_POLL } from "@/lib/poll";
+import type { Dict } from "@/lib/i18n";
 import type { PublicResults } from "@/lib/results";
 import Survey from "./Survey";
 import { deviceNullifier } from "@/lib/nullifier-client";
@@ -11,10 +11,7 @@ const b64 = (u: Uint8Array) => btoa(String.fromCharCode(...u));
 const unb64 = (s: string) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
 type Token = { epoch: string; tier?: string; preparedMsg: string; signature: string };
 const KEY = "geopoll.token.v2";
-/** Votes go through the relay (T-110). NEXT_PUBLIC_RELAY_URL = external relay; default same-deployment beta relay. */
-/** Beta-only feature flag (default on in beta): device-side "was my vote counted" check. */
-const INCLUSION_CHECK = process.env.NEXT_PUBLIC_BETA_INCLUSION_CHECK !== "0";
-const RELAY = process.env.NEXT_PUBLIC_RELAY_URL ?? "/api/relay";
+export type ClientPoll = { id: string; kind: string; dummy: boolean; source: string; question: string; options: { id: string; text: string }[] };
 
 /** Gets (or reuses) this epoch's anonymous token. Server signs blindly; we unblind locally. */
 async function getToken(): Promise<Token> {
@@ -40,92 +37,92 @@ async function getToken(): Promise<Token> {
   return t;
 }
 
-const MSG: Record<string, string> = {
-  already_issued: "כבר הונפק לחשבון הזה כרטיס הצבעה בתקופה הנוכחית, אבל הוא לא נמצא במכשיר הזה. בגרסת ההדגמה אי אפשר לשחזר אותו.",
-  bad_token: "כרטיס ההצבעה לא תקין.",
-  no_tier: "לחשבון הזה אין עדיין רמת אימות שמאפשרת הצבעה.",
-  tier_mismatch: "רמת האימות שלך השתנתה. נסו שוב.",
-  wrong_epoch: "כרטיס ההצבעה פג תוקף (תקופה חדשה). נסו שוב.",
-};
-
-export default function VoteClient({ signedIn, providers }: { signedIn: boolean; providers: string[] }) {
+/** Relay URL, inclusion-check flag, k and blackout come from packages/config via the server page (ADR-0022). */
+export default function VoteClient({ signedIn, providers, t, poll, kThreshold, blackout, relayUrl: RELAY, inclusionCheck: INCLUSION_CHECK, lang }:
+  { signedIn: boolean; providers: string[]; t: Dict; poll: ClientPoll; kThreshold: number; blackout: boolean; relayUrl: string; inclusionCheck: boolean; lang: string }) {
+  const MSG: Record<string, string> = { already_issued: t.err_already_issued, bad_token: t.err_bad_token, no_tier: t.err_no_tier,
+    tier_mismatch: t.err_tier_mismatch, wrong_epoch: t.err_wrong_epoch, blackout: t.err_blackout };
+  const CHOICE = `geopoll.lastChoice.${poll.id}`;
   const [state, setState] = useState<"idle" | "sending" | "ok" | "err">("idle");
   const [msg, setMsg] = useState("");
   const [choice, setChoice] = useState<string | null>(null);
   const [res, setRes] = useState<PublicResults | null>(null);
-  const load = () => fetch("/api/results").then((r) => r.json()).then(setRes).catch(() => {});
-  useEffect(() => { load(); setChoice(localStorage.getItem("geopoll.lastChoice")); }, []);
+  const load = () => fetch(`/api/results?poll=${encodeURIComponent(poll.id)}`).then((r) => r.json()).then(setRes).catch(() => {});
+  useEffect(() => { load(); setChoice(localStorage.getItem(CHOICE)); }, []);
 
   async function vote(option: string) {
     setState("sending"); setMsg("");
     try {
-      const t = await getToken();
+      const tok = await getToken();
       // credentials:"omit" — no session cookie reaches the vote API.
       const r = await fetch(`${RELAY}/vote`, { method: "POST", credentials: "omit", headers: { "content-type": "application/json" },
-        body: JSON.stringify({ pollId: DEMO_POLL.id, option, preparedMsg: t.preparedMsg, signature: t.signature }) });
+        body: JSON.stringify({ pollId: poll.id, option, preparedMsg: tok.preparedMsg, signature: tok.signature }) });
       const j = await r.json();
       if (!j.ok) { if (j.error === "wrong_epoch" || j.error === "bad_token") localStorage.removeItem(KEY); throw new Error(j.error); }
-      localStorage.setItem("geopoll.lastChoice", option); // local only, never sent
+      localStorage.setItem(CHOICE, option); // local only, never sent
       setChoice(option); setState("ok");
-      setMsg(j.status === "replaced" ? "ההצבעה שלך עודכנה ✓ (רק האחרונה נספרת)" : "ההצבעה שלך נקלטה ✓ (תיספר בעדכון האצווה הבא)");
+      setMsg(j.status === "replaced" ? t.voteReplaced : t.voteCreated);
     } catch (e) {
-      setState("err"); setMsg(MSG[(e as Error).message] ?? "ההצבעה לא נקלטה. בדקו חיבור ונסו שוב.");
+      setState("err"); setMsg(MSG[(e as Error).message] ?? t.voteFailed);
     }
   }
 
   const [inc, setInc] = useState("");
   async function checkInclusion() {
-    setInc("בודק…");
+    setInc(t.incChecking);
     try {
       const saved = localStorage.getItem(KEY);
-      if (!saved) return setInc("אין במכשיר כרטיס הצבעה לתקופה הזו.");
-      const n = await deviceNullifier(DEMO_POLL.id, unb64((JSON.parse(saved) as Token).preparedMsg));
+      if (!saved) return setInc(t.incNoToken);
+      const n = await deviceNullifier(poll.id, unb64((JSON.parse(saved) as Token).preparedMsg));
       const r = await (await fetch(`${RELAY}/vote-status`, { method: "POST", credentials: "omit", headers: { "content-type": "application/json" }, body: JSON.stringify({ nullifier: n }) })).json();
-      setInc(r.status === "counted" ? "ההצבעה שלך נכללת בספירה ✓" : r.status === "queued" ? "ההצבעה שלך בתור ותיספר באצווה הבאה." : "לא נמצאה הצבעה מהמכשיר הזה.");
-    } catch { setInc("הבדיקה נכשלה. נסו שוב."); }
+      setInc(r.status === "counted" ? t.incCounted : r.status === "queued" ? t.incQueued : t.incNone);
+    } catch { setInc(t.incFailed); }
   }
-  const label = (id: string) => DEMO_POLL.options.find((o) => o.id === id)?.text;
+  const label = (id: string) => poll.options.find((o) => o.id === id)?.text;
+  const voting = signedIn && !(blackout && poll.kind === "knesset-election");
   return (
     <main>
-      <div className="badge">{DEMO_POLL.label}</div>
-      <h1>{DEMO_POLL.question}</h1>
-      <h2>הצבעה חשאית</h2>
+      <div className="badge">{poll.kind === "knesset-election" ? t.kindKnesset : t.kindReferendum}{poll.dummy && <> · {t.dummyBadge}</>}</div>
+      <h1>{poll.question}</h1>
+      <p className="small">{poll.source}</p>
+      {poll.kind === "knesset-election" && <p className="small" role="note">{t.electionLabel}</p>}
+      <h2>{t.secretBallot}</h2>
       {!signedIn ? (
         <div className="stack">
-          {providers.includes("google") && <button onClick={() => signIn("google")}>כניסה עם Google</button>}
-          {providers.includes("demo") && <button className="secondary" onClick={() => signIn("demo")}>כניסת הדגמה (ללא אימות)</button>}
-          {providers.length === 0 && <p>אין ספק התחברות מוגדר.</p>}
+          {providers.includes("google") && <button onClick={() => signIn("google")}>{t.signInGoogle}</button>}
+          {providers.includes("demo") && <button className="secondary" onClick={() => signIn("demo")}>{t.signInDemo}</button>}
+          {providers.length === 0 && <p>{t.noProvider}</p>}
         </div>
-      ) : (
+      ) : !voting ? <p className="err" role="alert">{t.err_blackout}</p> : (
         <div className="stack">
-          {DEMO_POLL.options.map((o) => (
-            <button key={o.id} disabled={state === "sending"} className={choice === o.id ? "chosen" : ""} onClick={() => vote(o.id)}>{o.text}</button>
+          {poll.options.map((o) => (
+            <button key={o.id} disabled={state === "sending"} aria-pressed={choice === o.id} className={choice === o.id ? "chosen" : ""} onClick={() => vote(o.id)}>{o.text}</button>
           ))}
-          {state === "sending" && <p className="info">שולח…</p>}
-          {state === "ok" && <p className="ok" role="status">{msg}{choice && <> · בחרת: {label(choice)}</>}</p>}
-          {state === "err" && <p className="err" role="alert">{msg} <button className="link" onClick={() => choice && vote(choice)}>נסו שוב</button></p>}
-          <p className="small">ההצבעה חשאית: השרת שמזהה אותך חותם על כרטיס בלי לראות אותו, ושרת ההצבעות מקבל רק את הכרטיס. אפשר לשנות הצבעה עד הסגירה.</p>
-          {INCLUSION_CHECK && <button className="link" onClick={checkInclusion}>האם ההצבעה שלי נספרה?</button>}
-          {inc && <p className="small" role="status">{inc} הבדיקה לא מציגה את הבחירה ואינה הוכחה שאפשר להראות לאחרים.</p>}
-          <button className="link" onClick={() => signOut()}>יציאה</button>
+          {state === "sending" && <p className="info">{t.sending}</p>}
+          {state === "ok" && <p className="ok" role="status">{msg}{choice && <> · {t.youChose}: {label(choice)}</>}</p>}
+          {state === "err" && <p className="err" role="alert">{msg} <button className="link" onClick={() => choice && vote(choice)}>{t.retry}</button></p>}
+          <p className="small">{t.secretExplainer}</p>
+          {INCLUSION_CHECK && <button className="link" onClick={checkInclusion}>{t.checkInclusion}</button>}
+          {inc && <p className="small" role="status">{inc} {t.incNote}</p>}
+          <button className="link" onClick={() => signOut()}>{t.signOut}</button>
         </div>
       )}
-      <section className="results">
-        <h2>תוצאות (צילום מצב)</h2>
-        {!res ? <p>טוען…</p> : !res.published ? <p>משתתפים: {res.participants}. התוצאות יוצגו כשיהיו לפחות 50 משתתפים.</p> : (
+      <section className="results" aria-live="polite">
+        <h2>{t.results}</h2>
+        {!res ? <p>{t.loading}</p> : res.blackout ? <p role="note">{t.blackout}</p> : !res.published ? <p>{t.participants}: {res.participants}. {t.belowK.replace("{k}", String(kThreshold))}</p> : (
           <>
-            <p>משתתפים: {res.participants}</p>
-            {DEMO_POLL.options.map((o) => (
+            <p>{t.participants}: {res.participants}</p>
+            {poll.options.map((o) => (
               <div key={o.id} className="bar"><span>{o.text}</span><span>{res.percents![o.id]}%</span>
                 <div className="fill" style={{ width: `${res.percents![o.id]}%` }} /></div>
             ))}
           </>
         )}
-        {res && <p className="small">עודכן: {new Date(res.snapshotAt).toLocaleString("he-IL", { timeZone: "Asia/Jerusalem" })}. התוצאות מתעדכנות באצוות, באחוזים מעוגלים ובטווחים. כוללות קולות דמה.{res.assurance === "basic" && " רמת אימות בסיסית (Google) – לא אדם אחד = קול אחד."}</p>}
-        <button className="link" onClick={load}>רענון</button>
+        {res && !res.blackout && <p className="small">{t.updated}: {new Date(res.snapshotAt).toLocaleString(lang, { timeZone: "Asia/Jerusalem" })}. {t.resultsNote}{res.assurance === "basic" && t.basicAssurance}</p>}
+        <button className="link" onClick={load}>{t.refresh}</button>
       </section>
-      <Survey signedIn={signedIn} />
-      <p className="small"><a href="/privacy">מה נשמר עליי? (הודעת פרטיות – טיוטה)</a></p>
+      <Survey signedIn={signedIn} poll={poll} />
+      <p className="small"><a href="/privacy">{t.privacy}</a></p>
     </main>
   );
 }

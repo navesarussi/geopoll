@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import { DEMO_POLL } from "@/lib/poll";
+import type { ClientPoll } from "./VoteClient";
 
 type Post = { id: number; parent_id: number | null; display_name: string; option_id: string | null; body: string; created_at: string; deleted: boolean; mine?: boolean };
 type Data = { label: string; counts: Record<string, number>; posts: Post[] };
@@ -9,9 +9,9 @@ const ERR: Record<string, string> = {
   duplicate_position: "כבר פרסמת עמדה. אפשר למחוק אותה ולפרסם חדשה.", no_parent: "התגובה כבר לא קיימת.", bad_option: "בחרו עמדה.",
   unauthenticated: "צריך להתחבר.", bad_request: "חסר טקסט.",
 };
-const optText = (id: string | null) => DEMO_POLL.options.find((o) => o.id === id)?.text ?? "";
 
-export default function Survey({ signedIn }: { signedIn: boolean }) {
+export default function Survey({ signedIn, poll }: { signedIn: boolean; poll: ClientPoll }) {
+  const optText = (id: string | null) => poll.options.find((o) => o.id === id)?.text ?? "";
   const [d, setD] = useState<Data | null>(null);
   const [open, setOpen] = useState(false);
   const [option, setOption] = useState<string>("");
@@ -20,13 +20,13 @@ export default function Survey({ signedIn }: { signedIn: boolean }) {
   const [msg, setMsg] = useState("");
   const [replyTo, setReplyTo] = useState<number | null>(null);
   const [reply, setReply] = useState("");
-  const load = () => fetch("/api/posts").then((r) => r.json()).then(setD).catch(() => {});
+  const load = () => fetch(`/api/posts?poll=${encodeURIComponent(poll.id)}`).then((r) => r.json()).then(setD).catch(() => {});
   useEffect(() => { load(); }, []);
 
   async function send(payload: object, after: () => void) {
     setMsg("");
     try {
-      const r = await fetch("/api/posts", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(payload) });
+      const r = await fetch("/api/posts", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ pollId: poll.id, ...payload }) });
       const j = await r.json();
       if (!j.ok) return setMsg(ERR[j.error] ?? "הפרסום נכשל. נסו שוב.");
       after(); setMsg("פורסם ✓"); load();
@@ -65,13 +65,13 @@ export default function Survey({ signedIn }: { signedIn: boolean }) {
       <h2>סקר עמדות פומבי</h2>
       <p className="badge2">{d?.label ?? "עמדות פומביות - לא התוצאה הרשמית"}</p>
       <p className="small">רשות בלבד. מה שתכתבו כאן גלוי לכולם, בשם שתבחרו. אין שום קשר להצבעה החשאית, ואי אפשר לבדוק אם העמדה תואמת את ההצבעה.</p>
-      {total > 0 && <p className="small">{total} עמדות פומביות: {DEMO_POLL.options.map((o) => `${o.text} ${d!.counts[o.id] ?? 0}`).join(" · ")}</p>}
+      {total > 0 && <p className="small">{total} עמדות פומביות: {poll.options.map((o) => `${o.text} ${d!.counts[o.id] ?? 0}`).join(" · ")}</p>}
       {signedIn && !open && <button className="secondary" onClick={() => setOpen(true)}>לפרסם עמדה פומבית</button>}
       {signedIn && open && (
         <div className="stack">
           <select value={option} onChange={(e) => setOption(e.target.value)}>
             <option value="">בחרו עמדה…</option>
-            {DEMO_POLL.options.map((o) => <option key={o.id} value={o.id}>{o.text}</option>)}
+            {poll.options.map((o) => <option key={o.id} value={o.id}>{o.text}</option>)}
           </select>
           <input maxLength={40} value={name} onChange={(e) => setName(e.target.value)} placeholder="שם תצוגה (ריק = כינוי אקראי)" />
           <textarea maxLength={500} value={body} onChange={(e) => setBody(e.target.value)} placeholder="למה? (עד 500 תווים)" />
