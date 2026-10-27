@@ -102,6 +102,13 @@ jobs:
         run: |
           $EAS build --platform ios --profile production --non-interactive --wait --json > /tmp/ios.json
           node -e 'const b=JSON.parse(require("fs").readFileSync("/tmp/ios.json","utf8"))[0]; console.log("buildId=" + b.id, "status=" + b.status, "url=https://expo.dev/accounts/saussilberg/projects/geopoll/builds/" + b.id)'
+      - name: Diagnose failed build (error + log tail)
+        if: failure()
+        run: |
+          id=$(npx --yes eas-cli@latest build:list --platform ios --limit 1 --json --non-interactive | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>console.log(JSON.parse(d)[0].id))')
+          npx --yes eas-cli@latest build:view "$id" --json > /tmp/bv.json
+          node -e 'const b=require("/tmp/bv.json");console.log(JSON.stringify(b.error));for(const u of b.logFiles||[])console.log(u)' > /tmp/bv.txt; head -1 /tmp/bv.txt
+          for u in $(tail -n +2 /tmp/bv.txt); do curl -sL "$u" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const l=d.split("\n").map(x=>{try{return JSON.parse(x).msg}catch{return x}});console.log(l.filter(Boolean).slice(-60).join("\n"))})'; done
       - name: Submit to TestFlight
         run: $EAS submit --platform ios --profile production --latest --non-interactive
       - if: always()
