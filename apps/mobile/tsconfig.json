@@ -1,0 +1,14 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@geopoll/config": ["../../packages/config/src/index.ts"],
+      "@geopoll/design-tokens": ["../../packages/design-tokens/src/index.ts"],
+      "@geopoll/i18n": ["../../packages/i18n/src/index.ts"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", "../../packages/config/src/**/*.ts", "../../packages/design-tokens/src/**/*.ts", "../../packages/i18n/src/**/*.ts"],
+  "exclude": ["node_modules", "tests", "vitest.config.mts"]
+}

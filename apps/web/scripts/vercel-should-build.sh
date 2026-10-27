@@ -11,6 +11,6 @@ if [[ "$REF" != "main" && "${GEOPOLL_PREVIEW_BUILDS:-0}" != "1" ]]; then echo "s
 PREV="${VERCEL_GIT_PREVIOUS_SHA:-}"
 if [[ -z "$PREV" ]] || ! git cat-file -e "$PREV" 2>/dev/null; then echo "build: no previous SHA to diff"; exit 1; fi
 ROOT="$(git rev-parse --show-toplevel)"
-CHANGED="$(git -C "$ROOT" diff --name-only "$PREV" HEAD -- apps/web packages/config packages/design-tokens packages/shared-types packages/crypto)"
+CHANGED="$(git -C "$ROOT" diff --name-only "$PREV" HEAD -- apps/web packages/config packages/design-tokens packages/i18n packages/shared-types packages/crypto)"
 if [[ -z "$CHANGED" ]]; then echo "skip: no app-relevant changes since $PREV"; exit 0; fi
 echo "build: changes:"; echo "$CHANGED" | head -20; exit 1

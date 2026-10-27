@@ -1,0 +1,14 @@
+{
+  "cli": { "version": ">= 16.0.0", "appVersionSource": "remote" },
+  "build": {
+    "development": { "developmentClient": true, "distribution": "internal" },
+    "preview": { "distribution": "internal" },
+    "production": { "autoIncrement": true }
+  },
+  "submit": {
+    "production": {
+      "ios": { "ascAppId": "SET_AFTER_APP_RECORD_EXISTS", "appleTeamId": "SET_FROM_APPLE_ACCOUNT" },
+      "android": { "track": "internal", "releaseStatus": "draft" }
+    }
+  }
+}
