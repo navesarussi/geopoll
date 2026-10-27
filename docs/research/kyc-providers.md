@@ -68,3 +68,30 @@
 - T1 לא מוכיח בעלות על הת"ז, ולכן הוא חלש. המשקל שלו בתוצאות מוצג בנפרד מ-T2, וכשמשתמש עולה ל-T2, אותו HMAC של מספר המסמך מקשר את החשבון ומונע כפילות.
 - הגבלת קצב לניסיונות הזנה, כדי למנוע מניית ת"ז.
 - מפתח החתימה של T1 נפרד מזה של T2, ושדרוג נכנס לתוקף מה-epoch הבא (ADR-0019).
+
+## 7. אימות מול מקורות רשמיים: ארבעת הספקים המובילים (27/10/2026)
+רק ספקים מוכרים. כל עובדה מגיעה עם קישור, ומה שלא נמצא מסומן "לא נמצא בפומבי". לא נעשתה פנייה במייל.
+
+| | Persona | Veriff | Onfido (Entrust) | AU10TIX |
+| --- | --- | --- | --- | --- |
+| דרכון IL | כן, דרכון עם NFC ([רשימה ב-LinkedIn Help](https://www.linkedin.com/help/linkedin/answer/a1714080)) | כן ([supported-countries](https://www.veriff.com/supported-countries)) | כן ([NFC docs](https://documentation.onfido.com/guide/supported-documents-nfc)) | לא נמצא בפומבי (רשימה לפי מדינה) |
+| ת"ז ביומטרית IL | לא מופיעה ברשימה, רק דרכון ([LinkedIn Help](https://www.linkedin.com/help/linkedin/answer/a1714080)) | נתמכת **בכתב לא-לטיני רק לפי בקשה ובתוכנית Enterprise** ([supported-countries](https://www.veriff.com/supported-countries)) | ת"ז מופיעה ברשימת המסמכים לבדיקה בצילום (רשימה ישנה של צד שלישי: [PDF](https://crepartnersupport.blob.core.windows.net/credas-knowledgebase/Onfido_Supported_Documents.pdf); לא אומת ברשימה הרשמית) | לא נמצא בפומבי |
+| NFC | כן, לדרכון IL | לא נמצא בפומבי ל-IL | **דרכון IL בלבד**, לא ת"ז ([NFC docs](https://documentation.onfido.com/guide/supported-documents-nfc)) | כן, ePassport ו"מסמכים ממשלתיים נתמכים" ([NFC](https://www.au10tix.com/solutions/nfc-verification/)); ת"ז IL לא נמצא |
+| liveness / התאמת פנים | Selfie ([startups](https://withpersona.com/startups/)) | iBeta liveness ([pricing](https://www.veriff.com/pricing)) | Motion + Facial Similarity ([ETSI](https://documentation.onfido.com/guide/etsi-certified-idv/)) | כן, כולל רצף מחוות אקראי ([IDV policy](https://www.au10tix.com/wp-content/uploads/2024/03/AU10TIX-Credential-IDV-Policy-March-2024.pdf)) |
+| מיקום נתונים | US ו-EU ([security](https://withpersona.com/security/)) | אחסון באירלנד; עיבוד ב-EEA, UK, US, ברזיל ([sub-processors](https://veriff.my.site.com/cs/s/article/Sub-processors-used-by-Veriff)) | סביבות לפי אזור ([SDK regions](https://documentation.onfido.com/sdk/ios/26.0.0/)) | EU, US, UK, יפן, **וגם ישראל** ([DPA §7.1](https://www.au10tix.com/wp-content/uploads/2021/12/AU10TIX-Tech-DPA-Data-Protection-Agreement-Processor-December-2025.pdf)) |
+| שמירה ומחיקה | redaction דרך API, הדשבורד ומדיניות אוטומטית, מ-2 ימים עד שנתיים ([redaction](https://help.withpersona.com/articles/42ubXB5lJPWNaITI0uJfrI/)) | ברירת מחדל: 90 יום בשירות ועוד 3 שנים בארכיון ([retention](https://www.veriff.com/data-retention/ver-vdr-2301)); מחיקה ב-API רק ב-Premium ([pricing](https://www.veriff.com/pricing)) | מדיניות מחיקה של applicant ([ETSI](https://documentation.onfido.com/guide/etsi-certified-idv/)); חלון מדויק לא נמצא | חוזי לפי ה-DPA; חלון לא נמצא בפומבי |
+| מחיר / חינם | Startup Program: 500 בחודש ל-12 חודשים, אחר כך 1$; Sandbox ל-60 יום; Essential מ-250$ בחודש ([startups](https://withpersona.com/startups/), [plans](https://help.withpersona.com/articles/6oZbzp7jb7AWGClF5vpY3K.md)) | ניסיון ל-15 יום; 0.80–1.89$ לאימות, מינימום 49–209$ בחודש ([pricing](https://www.veriff.com/pricing)) | Sandbox חינמי ([sandbox](https://onfido.my.site.com/clientportal/s/article/Sandbox)); מחיר לא נמצא בפומבי | הערכה ל-14 יום ([evaluation](https://www.au10tix.com/wp-content/uploads/2023/09/Au10tix-Evaluation-Subscription-Services.pdf)); מחיר לא נמצא |
+| לקוחות בולטים | LinkedIn ([LinkedIn Help](https://www.linkedin.com/help/linkedin/answer/a1714080)) | לא נמצא בפומבי בסבב הזה | Revolut ([LinkedIn product page](https://www.linkedin.com/products/onfido-real-identity-platform/)) | לא אומת (Uber מופיע רק בדיווח משני) |
+
+### 7.1 המלצה ל-T2 (לאישור נוה)
+**Persona.** הנימוקים:
+- יש תוכנית חינמית לסטארטאפים.
+- בקרת המחיקה הכי טובה ומתועדת (redaction אוטומטי אפשרי כבר אחרי יומיים).
+- אחסון ב-EU.
+- דרכון IL נתמך עם NFC, שזה האימות החזק ביותר.
+- לקוח בולט: LinkedIn.
+
+החיסרון: לא מצאתי במקורות הפומביים תמיכה בת"ז ישראלית. לכן **בבטא, T2 יעבוד על דרכון ביומטרי**, ולמי שאין דרכון נשאר T1.
+- **אפשרות לשלב הבא:** AU10TIX, אם נדרשת ת"ז ועיבוד נתונים בישראל. היא היחידה שמציינת עיבוד בישראל, אבל אין מחיר פומבי וההתקשרות היא חוזה ארגוני.
+- **Veriff:** פחות מתאים. ת"ז רק ב-Enterprise, וברירת המחדל לשמירה ארוכה (90 יום ועוד 3 שנים).
+- **Onfido:** NFC לדרכון בלבד, ואין מחיר פומבי.
