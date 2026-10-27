@@ -1,0 +1,125 @@
+{
+  "entries": {
+    "21/ballot": {
+      "fetched_at": "2026-10-27T12:02:18+00:00",
+      "file": "knesset21_ballot.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 462895,
+      "resource_id": "f79f9ba5-fe12-4b90-96cc-916f1b7c1c34",
+      "sha256": "8cc0e7684d4a709ffd01d00f6733e2ef4103daa0ad664ae0f417e36ee1e43c86",
+      "source_records": 10765,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "21/locality": {
+      "fetched_at": "2026-10-27T12:02:14+00:00",
+      "file": "knesset21_locality.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 52202,
+      "resource_id": "1a1c7b2b-e819-4ba9-b159-d68e3566c58b",
+      "sha256": "136c87fcc80b8585bc86e1d49e89f8d3bfdfe101d6c65a2365dfa609e281c52a",
+      "source_records": 1214,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "22/ballot": {
+      "fetched_at": "2026-10-27T12:02:12+00:00",
+      "file": "knesset22_ballot.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 348832,
+      "resource_id": "22f3a195-3a79-436c-be23-cb606bc7b398",
+      "sha256": "7ae1ccbb10bb26419350ec69aedd8822fd36715f310c0a2a948b7c90ca667383",
+      "source_records": 10901,
+      "validation_warnings": 2,
+      "version": 1
+    },
+    "22/locality": {
+      "fetched_at": "2026-10-27T12:02:06+00:00",
+      "file": "knesset22_locality.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 38848,
+      "resource_id": "bd22cd14-138c-4917-931a-ef628c2a5a30",
+      "sha256": "7f896ac6a9598c2319173f22d323d54683fe79b68399ee30b640b9723a01bbba",
+      "source_records": 1214,
+      "validation_warnings": 2,
+      "version": 1
+    },
+    "23/ballot": {
+      "fetched_at": "2026-10-27T12:02:05+00:00",
+      "file": "knesset23_ballot.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 335370,
+      "resource_id": "3b9e911a-2e90-4587-b209-84171664056b",
+      "sha256": "077ae2914678a196ca0d688ac1cf5c83bd6a0bc1d9853271d85df58d9c3f875c",
+      "source_records": 11179,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "23/locality": {
+      "fetched_at": "2026-10-27T12:02:02+00:00",
+      "file": "knesset23_locality.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 36420,
+      "resource_id": "3dc36e20-25d6-4496-ba6a-71d9bc917349",
+      "sha256": "7bac20f0b070dc826288de4774fab01bd0bbad4510f191d27c8598794a710809",
+      "source_records": 1214,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "24/ballot": {
+      "fetched_at": "2026-10-27T12:02:01+00:00",
+      "file": "knesset24_ballot.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 504114,
+      "resource_id": "419be3b0-fd30-455a-afc0-034ec36be990",
+      "sha256": "945016537415a755a7c5797747d758acc08af5c8c9b168ca765b439d9945c0f2",
+      "source_records": 12926,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "24/locality": {
+      "fetched_at": "2026-10-27T12:01:53+00:00",
+      "file": "knesset24_locality.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 47385,
+      "resource_id": "9921a347-8466-4ef4-81f9-22523c5c4632",
+      "sha256": "27d84d66d5bca6ffd84950589b5da8c5a5ae99ff1a84347fe5b3f04319d3f859",
+      "source_records": 1215,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "25/ballot": {
+      "fetched_at": "2026-10-27T12:01:51+00:00",
+      "file": "knesset25_ballot.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 501800,
+      "resource_id": "cc223336-07bc-485d-b160-62df92967c0a",
+      "sha256": "f1ef7f4f1c2cae2ca41cc12ec44b2021fe1d81d5fcc224cd103852fe1e291a81",
+      "source_records": 12545,
+      "validation_warnings": 0,
+      "version": 1
+    },
+    "25/locality": {
+      "fetched_at": "2026-10-27T12:01:45+00:00",
+      "file": "knesset25_locality.csv",
+      "license_declared": "Other (Open)",
+      "license_status": "unknown – needs lawyer (docs/legal/lawyer-questions.md D1)",
+      "normalized_rows": 48640,
+      "resource_id": "b392b8ee-ba45-4ea0-bfed-f03a1a36e99c",
+      "sha256": "a25b4cf099a3e5b0da37e34ad8b7bde1c9d0337b53093a1e03f61a95fd505ad1",
+      "source_records": 1216,
+      "validation_warnings": 0,
+      "version": 1
+    }
+  },
+  "source": "cec-knesset-results"
+}
