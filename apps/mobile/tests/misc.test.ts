@@ -48,8 +48,8 @@ describe("app config + i18n", () => {
   });
   it("app.json: bundle ids, no tracking, RTL", () => {
     const e = appJson.expo;
-    expect(e.ios.bundleIdentifier).toBe("app.geopoll");
-    expect(e.android.package).toBe("app.geopoll");
+    expect(e.ios.bundleIdentifier).toBe("app.geopoll.beta");
+    expect(e.android.package).toBe("app.geopoll.beta");
     expect(e.ios.privacyManifests.NSPrivacyTracking).toBe(false);
     expect(e.extra.supportsRTL).toBe(true);
     expect(JSON.stringify(appJson)).not.toMatch(/admob|google-mobile-ads|posthog|sentry|facebook|ATTrackingManager/i);

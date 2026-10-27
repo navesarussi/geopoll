@@ -1,10 +1,14 @@
 # TestFlight checklist – GeoPoll iOS (apps/mobile)
 
+> Working name **GeoPoll Beta**, bundle id **app.geopoll.beta** (override: `GEOPOLL_APP_NAME` / `GEOPOLL_BUNDLE_ID`, `app.config.ts`).
+> Pipeline: `.github/workflows/mobile-eas.yml` (dispatch on main or push `ops/**`): eas init → iOS production build (free tier) → `eas submit` to TestFlight.
+> Required secrets: `EXPO_TOKEN` ✅, `ASC_API_KEY_ID`, `ASC_API_ISSUER_ID`, `ASC_API_KEY_P8`, `APPLE_TEAM_ID`, `ASC_APP_ID`.
+
 Status 2026-10-27: code ready in `apps/mobile` (CI: typecheck, tests, iOS bundle). **No EAS build has been run** – there is no `EXPO_TOKEN` for GeoPoll in the repo secrets, and KupaPay tokens are deliberately not reused.
 
 ## A. Nave must provide (owner-only)
 1. **Expo robot token for GeoPoll** – expo.dev → account `saussilberg` → Access tokens → create a robot (e.g. `geopoll-ci`) → add as GitHub secret `EXPO_TOKEN` in `navesarussi/geopoll`. Free tier only (~30 builds/month); no paid plan.
-2. **App Store Connect app record** – My Apps → + New App → iOS, name "GeoPoll" (see name risk below), primary language Hebrew, Bundle ID `app.geopoll` (register it under Identifiers first), SKU `geopoll-ios`. Then send me the **Apple ID (ascAppId)** of the app and the **Team ID**.
+2. **App Store Connect app record** – My Apps → + New App → iOS, name "GeoPoll" (see name risk below), primary language Hebrew, Bundle ID `app.geopoll.beta` (register it under Identifiers first), SKU `geopoll-ios`. Then send me the **Apple ID (ascAppId)** of the app and the **Team ID**.
 3. **ASC API key** – Users and Access → Integrations → App Store Connect API → new key, role *App Manager*. Add as secrets `ASC_API_KEY_ID`, `ASC_API_ISSUER_ID`, `ASC_API_KEY_P8` (contents of the .p8). Never paste in chat.
 4. **TestFlight internal testers** – add your Apple IDs as internal testers (no Beta App Review needed for internal).
 5. Decide the store **name** (see C).

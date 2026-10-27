@@ -41,3 +41,4 @@ yarn-error.*
 /android
 /android
 coverage/
+asc_api_key.p8
