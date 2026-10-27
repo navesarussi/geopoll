@@ -9,6 +9,12 @@ export const config = () => loadConfig(process.env.GEOPOLL_COUNTRY ?? "IL", {
   NEXT_PUBLIC_RELAY_URL: process.env.NEXT_PUBLIC_RELAY_URL,
   DEMO_LOGIN: process.env.DEMO_LOGIN,
 });
-export const polls = (): PollDef[] => config().polls;
-export const getPoll = (id: string) => pollById(config(), id);
+/** Admin-created polls (DB, zone B), cached per instance and refreshed by syncPolls() in lib/polls. Config polls win on id. */
+const g = globalThis as { __gpDbPolls?: PollDef[] };
+export const setDbPolls = (ps: PollDef[]) => { g.__gpDbPolls = ps; };
+export const polls = (): PollDef[] => {
+  const base = config().polls;
+  return [...base, ...(g.__gpDbPolls ?? []).filter((p) => !base.some((b) => b.id === p.id))];
+};
+export const getPoll = (id: string) => polls().find((p) => p.id === id) ?? pollById(config(), id);
 export const blackoutFor = (p: PollDef, now = new Date()) => isBlackout(config().jurisdiction, p.kind, now);

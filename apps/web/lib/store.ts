@@ -1,3 +1,4 @@
+import type { PollDef } from "@geopoll/config";
 import { migrate, pgliteDb, postgresDb, type Db } from "@/db";
 import type { PublicResults, Tally } from "./results";
 
@@ -79,6 +80,19 @@ export class BallotStore {
   }
   async saveSnapshot(pollId: string, body: PublicResults) {
     await this.db.q(`insert into zone_b.snapshots values ($1,$2::jsonb) on conflict (poll_id) do update set body=excluded.body`, [pollId, JSON.stringify(body)]);
+  }
+  /** Admin-created poll definitions (validated before write by lib/polls). */
+  async listPollDefs(): Promise<{ def: PollDef; version: number; created_by: string; updated_at: string }[]> {
+    const r = await this.db.q<{ def: PollDef | string; version: number; created_by: string; updated_at: Date | string }>(`select def, version, created_by, updated_at from zone_b.poll_defs order by created_at`);
+    return r.map((x) => ({ def: typeof x.def === "string" ? JSON.parse(x.def) : x.def, version: x.version, created_by: x.created_by, updated_at: new Date(x.updated_at).toISOString() }));
+  }
+  async upsertPollDef(def: PollDef, actor: string, expectedVersion: number | null): Promise<number | null> {
+    if (expectedVersion === null) {
+      const r = await this.db.q<{ version: number }>(`insert into zone_b.poll_defs (id, def, created_by) values ($1,$2::jsonb,$3) on conflict (id) do nothing returning version`, [def.id, JSON.stringify(def), actor]);
+      return r[0]?.version ?? null;
+    }
+    const r = await this.db.q<{ version: number }>(`update zone_b.poll_defs set def=$2::jsonb, version=version+1, updated_at=now() where id=$1 and version=$3 returning version`, [def.id, JSON.stringify(def), expectedVersion]);
+    return r[0]?.version ?? null;
   }
   /** Admin: open/closed override per poll (default open). */
   async pollStatus(pollId: string): Promise<"open" | "closed"> {

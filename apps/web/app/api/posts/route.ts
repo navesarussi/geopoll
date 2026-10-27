@@ -4,11 +4,13 @@ import { config } from "@/lib/config";
 import { DEMO_POLL } from "@/lib/poll";
 import { getPoll } from "@/lib/config";
 import { stores } from "@/lib/store";
+import { syncPolls } from "@/lib/polls";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /** Zone C: public positions & replies. Separate from the secret ballot; never joined with it. */
 export async function GET(req: Request) {
+  await syncPolls((await stores()).ballots);
   const pollId = new URL(req.url).searchParams.get("poll") ?? DEMO_POLL.id;
   if (!getPoll(pollId)) return Response.json({ error: "unknown_poll" }, { status: 404 });
   const acct = await sessionAccount();
@@ -23,6 +25,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  await syncPolls((await stores()).ballots);
   const acct = await sessionAccount();
   if (!acct) return Response.json({ ok: false, error: "unauthenticated" }, { status: 401 });
   const b = (await req.json().catch(() => null)) as Record<string, unknown> | null;

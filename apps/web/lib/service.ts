@@ -3,6 +3,7 @@ import { blackoutFor, config, getPoll, polls } from "./config";
 import { nullifier, tokenEpoch, verifyToken } from "./crypto";
 import { blackoutResults, toPublic, type PublicResults } from "./results";
 import type { BallotStore } from "./store";
+import { syncPolls } from "./polls";
 
 export type VoteOutcome =
   | { ok: true; status: "created" | "replaced" }
@@ -16,6 +17,7 @@ export async function castVote(
   input: { pollId: string; option: string; preparedMsg: Uint8Array; signature: Uint8Array },
   now = new Date(),
 ): Promise<VoteOutcome> {
+  await syncPolls(ballots);
   const poll = getPoll(input.pollId);
   if (!poll) return { ok: false, error: "unknown_poll" };
   if (!poll.options.some((o) => o.id === input.option)) return { ok: false, error: "bad_option" };
@@ -43,6 +45,7 @@ export async function maybeFlush(ballots: BallotStore, now = new Date()) {
 export const scheduledMode = () => process.env.BATCH_MODE === "scheduled";
 
 export async function runBatch(ballots: BallotStore, now = new Date()) {
+  await syncPolls(ballots);
   const flushed = await ballots.flush(now);
   let snapshotAt = now.toISOString();
   for (const p of polls()) {
@@ -56,6 +59,7 @@ export async function runBatch(ballots: BallotStore, now = new Date()) {
 }
 
 export async function results(ballots: BallotStore, now = new Date(), pollId: string = DEMO_POLL.id): Promise<PublicResults> {
+  await syncPolls(ballots);
   const poll = getPoll(pollId);
   if (!poll) throw new Error("unknown_poll");
   // ADR-0004 / §16ה(ח): publication suppressed while the configured blackout window is active.
