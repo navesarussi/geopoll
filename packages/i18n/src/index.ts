@@ -121,6 +121,11 @@ const he = {
   pe_bad_options: "אפשרויות לא תקינות (2–20, מזהה + עברית).", pe_exists: "כבר קיים משאל עם המזהה הזה.", pe_not_found: "המשאל לא נמצא.",
   pe_conflict: "מישהו אחר ערך את המשאל בינתיים. טענו מחדש.", pe_blackout: "בתקופת האיסור (סעיף 16ה) אי אפשר ליצור או לערוך סקרי בחירות.",
   pe_options_locked: "יש כבר הצבעות, ולכן אי אפשר לשנות את האפשרויות.", pe_kind_locked: "אי אפשר לשנות סוג של משאל קיים.", pe_schema: "התצורה נדחתה בבדיקת הסכמה.",
+  ad_scheduled: "מתוזמן", ad_opensAt: "פתיחה אוטומטית (שעון ישראל, רשות)", ad_closesAt: "סגירה אוטומטית (שעון ישראל, רשות)",
+  pe_bad_schedule: "זמני פתיחה/סגירה לא תקינים (הפתיחה חייבת להיות לפני הסגירה).",
+  ad_bank: "בנק שאלות", ad_bankOff: "ייבוא מבנק השאלות כבוי עד תשובת עורך הדין לשאלה D4 (זכויות יוצרים על נוסחים).",
+  ad_bankNote: "{n} שאלות שחולצו אוטומטית ממדד הקול ומדד הדמוקרטיה (IDI). חומר גלם: יש לאמת מול המקור, לנסח בעברית ולשמור. הייבוא רק ממלא את הטופס.",
+  ad_bankSearch: "חיפוש", ad_bankUse: "שימוש", ad_bankPrefilled: "הטופס מולא מהבנק. חובה להוסיף עברית ולבדוק מול המקור:",
   ad_when: "מתי", ad_who: "מי", ad_action: "פעולה", ad_target: "יעד", ad_detail: "פרטים", ad_auditEmpty: "היומן ריק.",
 };
 export type Dict = typeof he;
@@ -205,6 +210,11 @@ const en: Dict = {
   pe_bad_options: "Invalid options (2–20, id + Hebrew).", pe_exists: "A poll with this id already exists.", pe_not_found: "Poll not found.",
   pe_conflict: "Someone else edited this poll meanwhile. Reload.", pe_blackout: "During the blackout (§16E) election polls can't be created or edited.",
   pe_options_locked: "Votes already exist, so options can't change.", pe_kind_locked: "A poll's kind can't change.", pe_schema: "Rejected by the config schema check.",
+  ad_scheduled: "Scheduled", ad_opensAt: "Auto-open (Israel time, optional)", ad_closesAt: "Auto-close (Israel time, optional)",
+  pe_bad_schedule: "Invalid open/close times (open must be before close).",
+  ad_bank: "Question bank", ad_bankOff: "Question-bank import is off until the lawyer answers D4 (copyright on wording).",
+  ad_bankNote: "{n} questions auto-extracted from the IDI Voice and Democracy indices. Raw material: verify against the source, write Hebrew text and save. Import only prefills the form.",
+  ad_bankSearch: "Search", ad_bankUse: "Use", ad_bankPrefilled: "Form prefilled from the bank. Add Hebrew and verify against the source:",
   ad_when: "When", ad_who: "Who", ad_action: "Action", ad_target: "Target", ad_detail: "Details", ad_auditEmpty: "The log is empty.",
 };
 const stub: Dict = { ...he }; // ar, ru: keys present, values fall back to Hebrew until translated (T-3xx).
