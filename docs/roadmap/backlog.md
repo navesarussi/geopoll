@@ -172,6 +172,38 @@
 - **depends:** T-203, T-107
 - **acceptance:** T0/T1 מסומנים "רמה בסיסית / לא מאומת"; לא מוצג כאדם אחד קול אחד.
 
+### T-206: הצבעה מחדש עד סגירה (nullifier מחליף) – ADR-0020
+- **phase:** 0
+- **labels:** type:feature, zone:B-voting, agent, security-review, needs-adr
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-201
+- **acceptance:** הקול האחרון קובע; אין קבלה שאפשר להעביר; בדיקות.
+
+### T-207: משוב הצבעה ואימות אישי שלא אפשר להעביר
+- **phase:** 0
+- **labels:** type:feature, zone:B-voting, agent, security-review, needs-adr
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-201, T-501
+- **acceptance:** חיווי הצלחה/כישלון + ניסיון חוזר; המכשיר בודק שהקול נכלל; אין הוכחה לצד שלישי.
+
+### T-208: סקר עמדות פומביות נפרד
+- **phase:** 1
+- **labels:** type:feature, zone:C-app, agent, needs-adr
+- **agent:** no
+- **needs-lawyer:** yes
+- **depends:** T-302
+- **acceptance:** נספר ומתויג בנפרד; אין קישור לקלפי החשאית; אישור עו"ד.
+
+### T-209: סקרים פתוחים תמיד – מדד וצילומים תקופתיים
+- **phase:** 1
+- **labels:** type:feature, zone:B-voting, agent, needs-adr
+- **agent:** no
+- **needs-lawyer:** yes
+- **depends:** T-203, T-206
+- **acceptance:** פרסום רק בצילומים קבועים, טווחים וספי k; הקפאה לפי 16ה אחרי עו"ד.
+
 ## E3 · תוכן ומודרציה (תחום C)
 
 ### T-301: ingestion מ-OData של הכנסת

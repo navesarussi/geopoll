@@ -25,3 +25,4 @@
 | [0017](0017-anonymous-credential-scheme.md) | סכמת אישורים אנונימיים ל-MVP (כולל מסלול בדיקת Rarimo) | 2026-10-22 | התקבל – אושר ע"י נוה 2026-10-22 |
 | [0018](0018-document-zk-identity-complement-kyc.md) | זהות מבוססת מסמך עם ZK כמסלול משלים ל-KYC | 2026-10-22 | מוצע |
 | [0019](0019-modular-identity-tiers-anonymous-vote-core.md) | רמות אמינות זהות מודולריות + ליבת מניעת הצבעה כפולה | 2026-10-27 | התקבל |
+| [0020](0020-dual-referendum-secret-ballot-public-positions.md) | משאל כפול: קלפי חשאית + עמדות פומביות; סקרים פתוחים תמיד | 2026-10-27 | מוצע |
