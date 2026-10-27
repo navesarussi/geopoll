@@ -12,7 +12,7 @@ export interface PollDef {
   id: string;
   kind: PollKind;
   question: Partial<Record<Locale, string>> & { he: string };
-  source: string;
+  source: Partial<Record<Locale, string>> & { he: string };
   options: PollOption[];
   /** ADR-0020: every poll has a secret ballot + a public-positions survey. */
   publicPositions: boolean;

@@ -74,9 +74,9 @@ describe("nullifier / double vote / revote", () => {
 describe("public results (ADR-0012)", () => {
   it("hides percentages below k and uses buckets", () => {
     expect(toPublic({ yes: 49 }, ["yes", "no"], new Date()).published).toBe(false);
-    expect(bucket(49)).toBe("פחות מ-50");
-    expect(bucket(120)).toBe("מעל 100");
-    expect(bucket(1500)).toBe("מעל 1,000");
+    expect(bucket(49)).toBe("<50");
+    expect(bucket(120)).toBe("100+");
+    expect(bucket(1500)).toBe("1,000+");
     const r = toPublic({ yes: 2, no: 1 }, ["yes", "no"], new Date());
     expect(r.percents).toBeNull();
   });

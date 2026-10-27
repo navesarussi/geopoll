@@ -1,6 +1,7 @@
 import { config, blackoutFor, polls } from "./config";
 import { bucket, kThreshold } from "./results";
 import type { Stores } from "./store";
+import type { Locale } from "@geopoll/config";
 
 /**
  * T-323 admin portal. Access = Google sign-in + email in ADMIN_EMAILS (comma-separated) + role "admin".
@@ -24,7 +25,7 @@ export async function sessionAdmin(): Promise<{ email: string } | null> {
 }
 
 /** Aggregate-only dashboard. Counts are shown as k-gated buckets, never exact below k. */
-export async function dashboard(s: Stores, now = new Date()) {
+export async function dashboard(s: Stores, now = new Date(), lang: Locale = "he") {
   const k = kThreshold();
   const lastFlush = await s.ballots.lastFlush();
   const rows = [];
@@ -32,10 +33,10 @@ export async function dashboard(s: Stores, now = new Date()) {
     const t = await s.ballots.totals(p.id);
     const snap = await s.ballots.getSnapshot(p.id);
     rows.push({
-      id: p.id, kind: p.kind, dummy: !!p.dummy, question: p.question.he,
+      id: p.id, kind: p.kind, dummy: !!p.dummy, question: p.question[lang] ?? p.question.he,
       status: await s.ballots.pollStatus(p.id),
       turnout: bucket(t.counted), passesK: t.counted >= k,
-      queued: t.queued >= k ? bucket(t.queued) : t.queued > 0 ? `פחות מ-${k}` : "0",
+      queued: t.queued >= k ? bucket(t.queued) : t.queued > 0 ? `<${k}` : "0",
       snapshotAt: snap?.snapshotAt ?? null, published: snap?.published ?? false,
       blackout: blackoutFor(p, now).active,
     });

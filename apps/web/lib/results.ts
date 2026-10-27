@@ -16,11 +16,12 @@ export interface PublicResults {
 export const kThreshold = () => config().jurisdiction.thresholds.kNational;
 export const K_THRESHOLD = kThreshold();
 
+/** Language-neutral bucket label ("<50", "1,000+"); rendered as-is in every locale (#71). */
 export function bucket(n: number): string {
   const k = kThreshold();
-  if (n < k) return `פחות מ-${k}`;
-  for (const s of config().jurisdiction.publication.buckets) if (n >= s) return `מעל ${s.toLocaleString("en-US")}`;
-  return `מעל ${k}`;
+  if (n < k) return `<${k}`;
+  for (const s of config().jurisdiction.publication.buckets) if (n >= s) return `${s.toLocaleString("en-US")}+`;
+  return `${k}+`;
 }
 
 /** Rounding per config (ADR-0012 working assumption: whole percent). */

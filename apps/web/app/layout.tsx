@@ -1,12 +1,11 @@
 import "./globals.css";
 import { toCssVars } from "@geopoll/design-tokens";
-import { dirOf, DICTS } from "@/lib/i18n";
-import { config } from "@/lib/config";
+import { pageLang } from "@/lib/i18n";
 import Providers from "./providers";
-export const metadata = { title: "GeoPoll – הדגמה", robots: { index: false } };
+export const metadata = { title: "GeoPoll (beta)", robots: { index: false } };
 export const viewport = { width: "device-width", initialScale: 1 };
 const THEME = `:root{${toCssVars()}}`;
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const l = config().jurisdiction.defaultLocale;
-  return (<html lang={l} dir={dirOf(l)}><head><style id="gp-tokens">{THEME}</style></head><body><div className="beta" role="note">{DICTS[l].beta}</div><Providers>{children}</Providers></body></html>);
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const { lang, t, dir } = await pageLang();
+  return (<html lang={lang} dir={dir}><head><style id="gp-tokens">{THEME}</style></head><body><div className="beta" role="note">{t.beta}</div><Providers>{children}</Providers></body></html>);
 }

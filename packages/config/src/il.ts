@@ -15,13 +15,13 @@ export const IL_POLLS: PollDef[] = [
   {
     id: "il-knesset-dummy-1", kind: "knesset-election", dummy: true, publicPositions: true,
     question: { he: "אילו הבחירות לכנסת היו מתקיימות היום, לאיזו רשימה היית מצביע/ה?", en: "If Knesset elections were held today, which list would you vote for?" },
-    source: "סקר דמה. הרשימות: רשימות שעברו את אחוז החסימה בכנסת ה-25 (נתוני דמה בלבד)",
+    source: { he: "סקר דמה. הרשימות: רשימות שעברו את אחוז החסימה בכנסת ה-25 (נתוני דמה בלבד)", en: "Dummy poll. Lists: those that passed the electoral threshold in the 25th Knesset (dummy data only)" },
     options: [...K25.map(([id, letters, name]) => ({ id, label: { he: `${name} (${letters})`, en: K25_EN[id] } })), { id: "other", label: { he: "רשימה אחרת", en: "Other list" } }, { id: "none", label: { he: "לא אצביע / לא יודע/ת", en: "Won't vote / unsure" } }],
   },
   {
     id: "il-referendum-dummy-1", kind: "referendum", dummy: true, publicPositions: true,
     question: { he: "האם לדעתך כדאי להפעיל תחבורה ציבורית בסופי שבוע בעירך?", en: "Should public transport run on weekends in your city?" },
-    source: "משאל הדגמה בלבד – לא משאל אמיתי",
+    source: { he: "משאל הדגמה בלבד – לא משאל אמיתי", en: "Demo referendum only – not a real referendum" },
     options: [{ id: "yes", label: { he: "כן", en: "Yes" } }, { id: "no", label: { he: "לא", en: "No" } }],
   },
 ];

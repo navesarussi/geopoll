@@ -104,7 +104,7 @@ export default function VoteClient({ signedIn, providers, t, poll, kThreshold, b
           <p className="small">{t.secretExplainer}</p>
           {INCLUSION_CHECK && <button className="link" onClick={checkInclusion}>{t.checkInclusion}</button>}
           {inc && <p className="small" role="status">{inc} {t.incNote}</p>}
-          <a href="/profile">הפרופיל שלי</a>
+          <a href={`/profile?lang=${lang}`}>{t.myProfile}</a>
           <button className="link" onClick={() => signOut()}>{t.signOut}</button>
         </div>
       )}
@@ -122,8 +122,8 @@ export default function VoteClient({ signedIn, providers, t, poll, kThreshold, b
         {res && !res.blackout && <p className="small">{t.updated}: {new Date(res.snapshotAt).toLocaleString(lang, { timeZone: "Asia/Jerusalem" })}. {t.resultsNote}{res.assurance === "basic" && t.basicAssurance}</p>}
         <button className="link" onClick={load}>{t.refresh}</button>
       </section>
-      <Survey signedIn={signedIn} poll={poll} />
-      <p className="small"><a href="/privacy">{t.privacy}</a></p>
+      <Survey signedIn={signedIn} poll={poll} t={t} lq={`?lang=${lang}`} />
+      <p className="small"><a href={`/privacy?lang=${lang}`}>{t.privacy}</a></p>
     </main>
   );
 }
