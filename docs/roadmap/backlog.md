@@ -90,6 +90,46 @@
 - **depends:** T-105
 - **acceptance:** חתימה עיוורת לפי ADR-0017; הנפקה באצוות עם השהיה אקראית; מפתח לא יוצא מ-HSM; ביקורת אנושית.
 
+### T-107: ממשק זהות נשלף ורמות אמינות (ADR-0019)
+- **phase:** 0
+- **labels:** type:feature, zone:A-identity, agent, security-review
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** —
+- **acceptance:** ממשק מתאם שמחזיר רק tier ודליים גסים; בדיקות; אין מזהה משתמש בפלט.
+
+### T-108: מתאם Google OAuth (T0)
+- **phase:** 0
+- **labels:** type:feature, zone:A-identity, agent, security-review
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-107
+- **acceptance:** OIDC עם PKCE; tier T0; שמירת מייל כבויה עד אישור עו"ד (feature flag).
+
+### T-109: ת"ז: ספרת ביקורת + HMAC לדה-דופליקציה (T1)
+- **phase:** 0
+- **labels:** type:security, zone:A-identity, needs-lawyer, security-review
+- **agent:** no
+- **needs-lawyer:** yes
+- **depends:** T-107, T-601
+- **acceptance:** אין שמירת ת"ז גלוי; HMAC עם מפתח KMS; חסום עד חוות דעת עו"ד.
+
+### T-110: relay בין המכשיר לתחום B
+- **phase:** 0
+- **labels:** type:infra, zone:B-voting, agent, security-review
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-002
+- **acceptance:** מסיר IP ומטא-דאטה; אין לוג מזהה; אין נתיב A↔B.
+
+### T-111: מחולל נתוני דמה סינתטיים
+- **phase:** 0
+- **labels:** type:infra, agent
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-107
+- **acceptance:** מייצר משתמשים, tiers, הצבעות, דמוגרפיה ומקרי קצה (ניסיונות הצבעה כפולה, גבולות סף k); בלי נתונים אמיתיים; seed דטרמיניסטי.
+
 ## E2 · הצבעה ותוצאות (תחום B)
 
 ### T-201: שירות הצבעה – אימות הוכחה ו-nullifier
@@ -123,6 +163,14 @@
 - **needs-lawyer:** yes
 - **depends:** T-203, P3 אושר
 - **acceptance:** ספרייה מבוקרת; תקציב ε מוגדר ב-ADR; בדיקות.
+
+### T-205: תיוג רמת אמינות בתוצאות
+- **phase:** 0
+- **labels:** type:feature, zone:B-voting, agent
+- **agent:** yes
+- **needs-lawyer:** no
+- **depends:** T-203, T-107
+- **acceptance:** T0/T1 מסומנים "רמה בסיסית / לא מאומת"; לא מוצג כאדם אחד קול אחד.
 
 ## E3 · תוכן ומודרציה (תחום C)
 
