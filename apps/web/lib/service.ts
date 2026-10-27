@@ -17,9 +17,10 @@ export async function castVote(
 ): Promise<VoteOutcome> {
   if (input.pollId !== DEMO_POLL.id) return { ok: false, error: "unknown_poll" };
   if (!OPTION_IDS.includes(input.option)) return { ok: false, error: "bad_option" };
-  if (!(await verifyToken(input.preparedMsg, input.signature))) return { ok: false, error: "bad_token" };
+  const tier = await verifyToken(input.preparedMsg, input.signature);
+  if (!tier) return { ok: false, error: "bad_token" };
   if (tokenEpoch(input.preparedMsg) !== currentEpoch(now)) return { ok: false, error: "wrong_epoch" };
-  const status = await ballots.enqueue(input.pollId, nullifier(input.preparedMsg, input.pollId), input.option, currentEpoch(now));
+  const status = await ballots.enqueue(input.pollId, nullifier(input.preparedMsg, input.pollId), input.option, currentEpoch(now), tier);
   return { ok: true, status };
 }
 
@@ -38,7 +39,7 @@ export const scheduledMode = () => process.env.BATCH_MODE === "scheduled";
 
 export async function runBatch(ballots: BallotStore, now = new Date()) {
   const flushed = await ballots.flush(now);
-  const snap = toPublic(await ballots.tally(DEMO_POLL.id), OPTION_IDS, now);
+  const snap = toPublic(await ballots.tally(DEMO_POLL.id), OPTION_IDS, now, await ballots.tiers(DEMO_POLL.id));
   await ballots.saveSnapshot(DEMO_POLL.id, snap);
   return { flushed, snapshotAt: snap.snapshotAt };
 }
@@ -50,7 +51,7 @@ export async function results(ballots: BallotStore, now = new Date()): Promise<P
   await maybeFlush(ballots, now);
   const snap = await ballots.getSnapshot(DEMO_POLL.id);
   if (snap && now.getTime() - Date.parse(snap.snapshotAt) < secs("SNAPSHOT_INTERVAL_SECONDS", 86400)) return snap;
-  const fresh = toPublic(await ballots.tally(DEMO_POLL.id), OPTION_IDS, now);
+  const fresh = toPublic(await ballots.tally(DEMO_POLL.id), OPTION_IDS, now, await ballots.tiers(DEMO_POLL.id));
   await ballots.saveSnapshot(DEMO_POLL.id, fresh);
   return fresh;
 }
