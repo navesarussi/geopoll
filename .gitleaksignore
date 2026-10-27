@@ -1,0 +1,2 @@
+# Dev-only non-production fallback HMAC key (throws in production). Reviewed 2026-10-27.
+b731af848afb1b8083d53623e6d34d40cccf71d8:apps/web/lib/identity/t2.ts:generic-api-key:47

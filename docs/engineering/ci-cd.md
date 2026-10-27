@@ -6,6 +6,12 @@
 | workflow | מה בודק |
 |---|---|
 | [docs.yml](../../.github/workflows/docs.yml) | markdownlint (כללים מקלים), בדיקת קישורים פנימיים (lychee offline), תקינות YAML |
+| [ci.yml](../../.github/workflows/ci.yml) | job מאגד **`CI gate`** (הוא ה-check היחיד שצריך להיות חובה): lint קל (`scripts/lint.mjs`; ESLint עוד לא אומץ), typecheck, vitest + coverage ratchet (`scripts/ci/coverage-baseline.json`), אינטגרציה מול Postgres 17 ב-docker (pull עם retries), gitleaks, build + תקציב גודל bundle (`scripts/ci/bundle-budget.json`), Lighthouse (מייעץ בלבד) |
+| [dependabot.yml](../../.github/dependabot.yml) | עדכוני npm ו-Actions שבועיים, מקובצים |
+
+**Vercel:** `apps/web/vercel.json` מפעיל את `scripts/vercel-should-build.sh`, שמדלג על בנייה כשאין שינוי ב-`apps/web` / `packages/*` וכשהענף אינו `main` (חוסך מכסת Hobby). אפשר להפעיל previews עם `GEOPOLL_PREVIEW_BUILDS=1`.
+
+**Branch protection:** ריפו פרטי בחשבון אישי. נוה צריך להפעיל אותו ב-Settings (check חובה: `CI gate`) או ליצור `ADMIN_PAT`.
 
 ## תבניות לעתיד (מושבתות)
 ב-[.github/workflow-templates/](../../.github/workflow-templates/) – **לא רצות** עד שיועברו ל-`.github/workflows/` ב-PR שמאושר:

@@ -11,7 +11,8 @@
     "migrate": "tsx scripts/migrate.ts",
     "batch-worker": "tsx scripts/batch-worker.ts",
     "seed": "tsx scripts/seed.ts",
-    "relay": "tsx scripts/relay-server.ts"
+    "relay": "tsx scripts/relay-server.ts",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "@cloudflare/blindrsa-ts": "^0.4.4",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
+    "@vitest/coverage-v8": "^4.1.12",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vitest": "^4.1.12"
