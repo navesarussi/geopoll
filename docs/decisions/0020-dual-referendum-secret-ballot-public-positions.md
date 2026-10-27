@@ -1,6 +1,6 @@
 # ADR-0020: משאל כפול – קלפי חשאית + עמדות פומביות, וסקרים פתוחים תמיד
 
-- **סטטוס:** מוצע (proposed) · 2026-10-27 · ממתין לאישור נוה ולחוות דעת עו"ד
+- **סטטוס:** התקבל (accepted) · אושר ע"י נוה 2026-10-27 · סעיפים משפטיים (ס' 16ה, תיקון 13) ברשימת שאלות לעו"ד (`docs/legal/lawyer-questions.md`, PR #50) – אסור להפעיל מול משתמשים אמיתיים לפני חוות דעת
 - **קשור:** [ADR-0004](0004-election-poll-legal-labelling-blackout-il.md), [ADR-0012](0012-public-results-display-buckets-batching.md), [ADR-0017](0017-anonymous-credential-scheme.md), [ADR-0019](0019-modular-identity-tiers-anonymous-vote-core.md)
 
 ## הקשר
