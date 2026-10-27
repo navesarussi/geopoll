@@ -9,16 +9,16 @@ jobs:
   markdown:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@v16
+        uses: DavidAnson/markdownlint-cli2-action@v24
         with:
           config: .markdownlint.yaml
           globs: "**/*.md"
   links:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: internal link check (offline)
         uses: lycheeverse/lychee-action@v2
         with:
@@ -27,6 +27,6 @@ jobs:
   yaml:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: yamllint
         run: pip install --quiet yamllint && yamllint -d relaxed .github
