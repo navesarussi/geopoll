@@ -11,12 +11,12 @@ appId: app.geopoll.beta
 - assertNotVisible: ".*Something went wrong.*"
 - assertVisible:
     id: "screen-polls"
-- takeScreenshot: /tmp/smoke/shot-1-polls
+- takeScreenshot: 1-polls
 - tapOn:
     id: "tab-results"
 - assertVisible:
     id: "screen-results"
-- takeScreenshot: /tmp/smoke/shot-2-results
+- takeScreenshot: 2-results
 - tapOn:
     id: "tab-positions"
 - assertVisible:
@@ -25,13 +25,13 @@ appId: app.geopoll.beta
     id: "tab-settings"
 - assertVisible:
     id: "screen-settings"
-- takeScreenshot: /tmp/smoke/shot-3-settings
+- takeScreenshot: 3-settings
 - tapOn:
     id: "lang-en"
 - assertVisible: "Settings"
 - tapOn:
     id: "theme-dark"
-- takeScreenshot: /tmp/smoke/shot-4-settings-en-dark
+- takeScreenshot: 4-settings-en-dark
 - scrollUntilVisible:
     element:
       id: "app-version"
@@ -39,4 +39,4 @@ appId: app.geopoll.beta
 - tapOn:
     id: "tab-polls"
 - assertNotVisible: ".*Something went wrong.*"
-- takeScreenshot: /tmp/smoke/shot-5-polls-en-dark
+- takeScreenshot: 5-polls-en-dark

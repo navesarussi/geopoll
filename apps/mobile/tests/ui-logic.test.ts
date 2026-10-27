@@ -15,9 +15,9 @@ describe("design tokens", () => {
       for (const col of c.chart) expect(contrast(col, c.surface), col).toBeGreaterThanOrEqual(3);
     });
   }
-  it("RTL/LTR text props", () => {
-    expect(textDir("rtl")).toEqual({ writingDirection: "rtl", textAlign: "right" });
-    expect(textDir("ltr").textAlign).toBe("left");
+  it("RTL/LTR text props: always start-aligned relative to the root direction (bug-learnings #5)", () => {
+    expect(textDir("rtl")).toEqual({ writingDirection: "rtl", textAlign: "left" });
+    expect(textDir("ltr")).toEqual({ writingDirection: "ltr", textAlign: "left" });
   });
 });
 

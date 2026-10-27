@@ -42,5 +42,7 @@ export function contrast(a: string, b: string): number {
   const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p);
   return (x + 0.05) / (y + 0.05);
 }
-/** Text-direction props for a locale direction. */
-export const textDir = (dir: "rtl" | "ltr") => ({ writingDirection: dir, textAlign: dir === "rtl" ? "right" : "left" } as const);
+/** Text-direction props for a locale direction. The app root sets `direction: dir`, and under an RTL layout direction
+ *  React Native treats textAlign "left"/"right" as start/end — so "left" means "start" (= right for Hebrew).
+ *  Regression (bug-learnings #5): textAlign "right" inside an RTL root rendered Hebrew flush LEFT on iOS. */
+export const textDir = (dir: "rtl" | "ltr") => ({ writingDirection: dir, textAlign: "left" } as const);
