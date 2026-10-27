@@ -68,6 +68,29 @@ jobs:
         run: |
           umask 077; printf '%s\n' "$ASC_API_KEY_P8" > asc_api_key.p8
           node -e 'const f="eas.json",j=require("./"+f),i=j.submit.production.ios; i.ascAppId=process.env.ASC_APP_ID; i.ascApiKeyIssuerId=process.env.ASC_API_ISSUER_ID; i.ascApiKeyId=process.env.ASC_API_KEY_ID; require("fs").writeFileSync(f,JSON.stringify(j,null,2))'
+      - name: Set up iOS credentials once (EAS-managed; non-interactive builds can't create them – answered via expect, defaults = generate)
+        env:
+          EXPO_ASC_API_KEY_PATH: ${{ github.workspace }}/apps/mobile/asc_api_key.p8
+          EXPO_ASC_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
+          EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+          EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+          EXPO_NO_CAPABILITY_SYNC: "1" # ASC API rejects PUSH_NOTIFICATIONS patch; enable Push manually in developer portal
+        run: |
+          sudo apt-get install -y -qq expect >/dev/null
+          cat > /tmp/creds.exp <<'EXP'
+          set timeout 300
+          spawn npx --yes eas-cli@latest credentials:configure-build -p ios -e production
+          expect {
+            -re {[Pp]ush [Nn]otifications.*\?} { send "n\r"; exp_continue }
+            -re {\(Y/n\)} { send "Y\r"; exp_continue }
+            -re {\(y/N\)} { send "y\r"; exp_continue }
+            -re {›.*\r?\n} { exp_continue }
+            eof
+          }
+          catch wait r; exit [lindex $r 3]
+          EXP
+          expect /tmp/creds.exp
       - name: iOS production build (EAS-managed cert/profile via ASC API key, free tier)
         env:
           EXPO_ASC_API_KEY_PATH: ${{ github.workspace }}/apps/mobile/asc_api_key.p8
@@ -75,9 +98,17 @@ jobs:
           EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
           EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+          EXPO_NO_CAPABILITY_SYNC: "1" # ASC API rejects PUSH_NOTIFICATIONS patch; enable Push manually in developer portal
         run: |
           $EAS build --platform ios --profile production --non-interactive --wait --json > /tmp/ios.json
           node -e 'const b=JSON.parse(require("fs").readFileSync("/tmp/ios.json","utf8"))[0]; console.log("buildId=" + b.id, "status=" + b.status, "url=https://expo.dev/accounts/saussilberg/projects/geopoll/builds/" + b.id)'
+      - name: Diagnose failed build (error + log tail)
+        if: failure()
+        run: |
+          id=$(npx --yes eas-cli@latest build:list --platform ios --limit 1 --json --non-interactive | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>console.log(JSON.parse(d)[0].id))')
+          npx --yes eas-cli@latest build:view "$id" --json > /tmp/bv.json
+          node -e 'const b=require("/tmp/bv.json");console.log(JSON.stringify(b.error));for(const u of b.logFiles||[])console.log(u)' > /tmp/bv.txt; head -1 /tmp/bv.txt
+          for u in $(tail -n +2 /tmp/bv.txt); do curl -sL "$u" | node -e 'let d="";process.stdin.on("data",c=>d+=c).on("end",()=>{const l=d.split("\n").map(x=>{try{return JSON.parse(x).msg}catch{return x}});console.log(l.filter(Boolean).slice(-60).join("\n"))})'; done
       - name: Submit to TestFlight
         run: $EAS submit --platform ios --profile production --latest --non-interactive
       - if: always()
