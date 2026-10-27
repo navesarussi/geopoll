@@ -58,6 +58,7 @@
 | — | Backlog משימות (מוצע) | [docs/roadmap/backlog.md](docs/roadmap/backlog.md) |
 | — | הנדסה: [monorepo](docs/engineering/monorepo.md), [CI/CD](docs/engineering/ci-cd.md), [הגנת ענפים](docs/engineering/branch-protection.md) | [docs/engineering/](docs/engineering/monorepo.md) |
 | — | כללים לסוכני AI | [AGENTS.md](AGENTS.md) |
+| — | שאלות פתוחות לעורך דין | [docs/legal/lawyer-questions.md](docs/legal/lawyer-questions.md) |
 
 ## היררכיית מסמכים
 1. **האפיון הראשי (ההורה):** README, `docs/axes/*` ו-`docs/decisions/*` (ה-PRD הוא הרקע ההיסטורי). כאן מוגדרים החזון, העקרונות וההחלטות.
