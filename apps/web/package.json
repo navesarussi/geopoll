@@ -19,7 +19,7 @@
     "@cloudflare/blindrsa-ts": "^0.4.4",
     "@electric-sql/pglite": "^0.5.12",
     "@sentry/nextjs": "^11.9.0",
-    "next": "^15.5.28",
+    "next": "^16.4.3",
     "next-auth": "^4.24.15",
     "postgres": "^3.4.9",
     "react": "^19.3.1",
