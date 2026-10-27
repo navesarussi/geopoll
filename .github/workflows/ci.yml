@@ -114,6 +114,8 @@ jobs:
       - run: npm ci
         working-directory: apps/web # mobile tests run the real web issuer (apps/web/lib/crypto.ts)
       - run: npm ci
+      - name: Expo native deps consistent (bug-learnings #1)
+        run: node ../../scripts/ci/expo-native-deps.mjs .
       - run: npm run typecheck
       - run: npm test
       - run: npx expo export --platform ios --output-dir /tmp/expo-export # Metro resolves packages/*; no EAS, no secrets

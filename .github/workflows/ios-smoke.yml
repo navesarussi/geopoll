@@ -26,7 +26,7 @@ jobs:
       - run: npm ci
       - run: npx vitest run
       - name: Native deps match the Expo SDK (bug-learnings #1)
-        run: npx expo install --check
+        run: npx expo install --check && node ../../scripts/ci/expo-native-deps.mjs .
       - name: expo prebuild (iOS)
         run: npx expo prebuild --platform ios --clean --no-install
       - name: pod install
@@ -60,6 +60,11 @@ jobs:
           echo "--- last app log lines ---"; tail -n 120 /tmp/smoke/app.log
           cp ~/Library/Logs/DiagnosticReports/*GeoPoll* /tmp/smoke/ 2>/dev/null || true
           exit $fail
+      - name: Maestro – past the launch spinner to the first real screen
+        run: |
+          curl -fsSL "https://get.maestro.mobile.dev" | bash
+          export PATH="$HOME/.maestro/bin:$PATH"
+          MAESTRO_CLI_NO_ANALYTICS=1 maestro test .maestro/launch.yaml --format junit --output /tmp/smoke/maestro.xml --test-output-dir /tmp/smoke/maestro
       - if: always()
         uses: actions/upload-artifact@v4
         with: { name: ios-smoke, path: /tmp/smoke, if-no-files-found: ignore }
