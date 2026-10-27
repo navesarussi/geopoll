@@ -6,6 +6,7 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 | # | Date | Area | Symptom |
 |---|------|------|---------|
 | 1 | 2026-10-27 | mobile/iOS | TestFlight build 5 crashed on launch |
+| 2 | 2026-10-27 | mobile | §16ה blackout shown as "results once k participants" |
 
 ## 1. TestFlight build 5 crashes on launch (iOS)
 
@@ -25,3 +26,13 @@ added so the same class of bug is caught before release. Newest first. Agents: a
   5. `iOS crash logs` workflow (manual) pulls TestFlight crash submissions via the ASC API.
 - **Lesson:** JS tests cannot catch native link errors. Never submit to TestFlight without a Release-config simulator launch,
   and keep Expo packages exactly on the SDK's expected versions (`expo install --check`).
+
+## 2. Mobile showed blackout as "below k" (§16ה)
+
+- **Symptom:** during the pre-election blackout `/api/results` returns `published:false, blackout:true`; the app showed
+  "Results are shown once there are at least 50 participants" instead of the legal blackout notice. Voting buttons also stayed enabled
+  for closed / scheduled / blacked-out polls (server rejected, but the UX was misleading).
+- **Root cause:** the mobile results view only branched on `published`; poll status was never fetched (polls were compiled-in config).
+- **Fix:** `resultsState()` (blackout wins) + `GET /api/polls` with effective status; the app disables voting unless status is `open`.
+- **Regression tests:** `apps/mobile/tests/polls.test.ts` (resultsState, fetchPolls), `apps/web/tests/api-polls.test.ts`.
+- **Lesson:** any "not published" state has more than one cause; model it as an explicit enum, not a boolean.
