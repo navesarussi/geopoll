@@ -1,5 +1,5 @@
 # EAS ops for apps/mobile on the FREE tier. Priority: iOS → TestFlight. Android preview is optional (off by default).
-# Triggers: workflow_dispatch (on main) or push to ops/** (dispatch only works for workflows on main – KupaPay lesson).
+# Trigger: manual workflow_dispatch from main only (ops/** pushes no longer build/submit). iOS submit is gated on the iOS smoke test.
 # Secrets (values never echoed): EXPO_TOKEN (robot geopoll-ci), ASC_API_KEY_ID, ASC_API_ISSUER_ID, ASC_API_KEY_P8,
 # APPLE_TEAM_ID, ASC_APP_ID (App Store Connect app record "Apple ID"). Name/bundle id are working values (app.config.ts).
 name: Mobile EAS
@@ -14,15 +14,18 @@ on:
         description: "Android preview APK (internal)"
         type: boolean
         default: false
-  push:
-    branches: ["ops/**"]
 concurrency: { group: mobile-eas, cancel-in-progress: false }
 permissions:
   contents: read
 env:
   EAS: npx --yes eas-cli@latest
 jobs:
+  smoke:
+    if: github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/ios-smoke.yml
+
   init:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: apps/mobile } }
     env:
@@ -42,8 +45,8 @@ jobs:
         with: { name: app-json-linked, path: apps/mobile/app.json }
 
   ios:
-    needs: init
-    if: github.event_name == 'push' || inputs.ios
+    needs: [init, smoke]
+    if: inputs.ios
     runs-on: ubuntu-latest
     timeout-minutes: 240 # free-tier queue can be slow
     defaults: { run: { working-directory: apps/mobile } }
@@ -116,7 +119,7 @@ jobs:
 
   android:
     needs: init
-    if: github.event_name == 'workflow_dispatch' && inputs.android
+    if: inputs.android
     runs-on: ubuntu-latest
     defaults: { run: { working-directory: apps/mobile } }
     env:

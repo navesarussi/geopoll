@@ -6,5 +6,5 @@ export default defineConfig({
     "@geopoll/design-tokens": path.resolve(__dirname, "../../packages/design-tokens/src/index.ts"),
     "@geopoll/i18n": path.resolve(__dirname, "../../packages/i18n/src/index.ts"),
   } },
-  test: { include: ["tests/**/*.test.ts"], testTimeout: 30000 },
+  test: { include: ["tests/**/*.test.ts"], esbuild: { jsx: "automatic" }, testTimeout: 30000 },
 });
