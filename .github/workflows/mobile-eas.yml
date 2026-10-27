@@ -75,6 +75,7 @@ jobs:
           EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
           EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+          EXPO_NO_CAPABILITY_SYNC: "1" # ASC API rejects PUSH_NOTIFICATIONS patch; enable Push manually in developer portal
         run: |
           sudo apt-get install -y -qq expect >/dev/null
           cat > /tmp/creds.exp <<'EXP'
@@ -97,6 +98,7 @@ jobs:
           EXPO_ASC_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
           EXPO_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           EXPO_APPLE_TEAM_TYPE: INDIVIDUAL
+          EXPO_NO_CAPABILITY_SYNC: "1" # ASC API rejects PUSH_NOTIFICATIONS patch; enable Push manually in developer portal
         run: |
           $EAS build --platform ios --profile production --non-interactive --wait --json > /tmp/ios.json
           node -e 'const b=JSON.parse(require("fs").readFileSync("/tmp/ios.json","utf8"))[0]; console.log("buildId=" + b.id, "status=" + b.status, "url=https://expo.dev/accounts/saussilberg/projects/geopoll/builds/" + b.id)'
