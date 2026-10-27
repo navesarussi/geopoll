@@ -7,6 +7,7 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 |---|------|------|---------|
 | 1 | 2026-10-27 | mobile/iOS | TestFlight build 5 crashed on launch |
 | 2 | 2026-10-27 | mobile | §16ה blackout shown as "results once k participants" |
+| 3 | 2026-10-27 | CI | flaky timeout in tiers.test.ts under coverage |
 
 ## 1. TestFlight build 5 crashes on launch (iOS)
 
@@ -36,3 +37,10 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 - **Fix:** `resultsState()` (blackout wins) + `GET /api/polls` with effective status; the app disables voting unless status is `open`.
 - **Regression tests:** `apps/mobile/tests/polls.test.ts` (resultsState, fetchPolls), `apps/web/tests/api-polls.test.ts`.
 - **Lesson:** any "not published" state has more than one cause; model it as an explicit enum, not a boolean.
+
+## 3. Flaky CI timeout: `tiers.test.ts` "tier travels with the ballot"
+
+- **Symptom:** PR #108 unit job failed with `Test timed out in 60000ms`; rerun passed. Locally the file takes ~21s on main and on the branch.
+- **Root cause:** the test issues 55 blind-RSA tokens (CPU-bound); with v8 coverage on a shared GitHub runner it crossed 60s. Not a regression.
+- **Fix:** per-test timeout 180s. **Guard:** the test itself; rerun-to-green is not accepted as a fix.
+- **Lesson:** CPU-heavy crypto loops need headroom ×3 over local time under coverage, or a smaller k fixture.
