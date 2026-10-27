@@ -182,7 +182,7 @@ export class ContentStore {
   }
   async reportedQueue(limit = 100) {
     return this.db.q<{ id: number; poll_id: string; display_name: string; body: string; report_count: number; hidden: boolean; deleted: boolean; anon: boolean; created_at: string; banned: boolean }>(
-      `select p.id, p.poll_id, p.display_name, p.body, p.report_count, p.hidden, p.deleted, p.anon, p.created_at,
+      `select p.id::int as id, p.poll_id, p.display_name, p.body, p.report_count, p.hidden, p.deleted, p.anon, p.created_at,
               exists (select 1 from zone_c.bans b where b.author_hash = p.author_hash) as banned
        from zone_c.posts p where p.report_count > 0 order by p.report_count desc, p.created_at desc limit $1`, [limit]);
   }
@@ -211,7 +211,7 @@ export class ContentStore {
   }
   async auditLog(limit = 200) {
     return this.db.q<{ id: number; at: string; actor: string; action: string; target: string; detail: string }>(
-      `select id, at, actor, action, target, detail from zone_c.admin_audit order by id desc limit $1`, [limit]);
+      `select id::int as id, at, actor, action, target, detail from zone_c.admin_audit order by id desc limit $1`, [limit]);
   }
   // ---- profiles ----
   async getProfile(profileHash: string): Promise<Profile | null> {
