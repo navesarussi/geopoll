@@ -1,5 +1,6 @@
 import { sessionAdmin } from "@/lib/admin";
-import { parseOptions, savePoll, type PollInput } from "@/lib/polls";
+import { localToIso, parseOptions, savePoll, type PollInput } from "@/lib/polls";
+import { config } from "@/lib/config";
 import { stores } from "@/lib/store";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -15,6 +16,7 @@ export async function POST(req: Request) {
   const ver = v("version");
   const input: PollInput = {
     id: v("id").trim(), kind: v("kind"),
+    opensAt: localToIso(v("opens_at"), config().jurisdiction.timeZone), closesAt: localToIso(v("closes_at"), config().jurisdiction.timeZone),
     question: { he: v("question_he"), en: v("question_en") },
     source: { he: v("source_he"), en: v("source_en") },
     options: parseOptions(v("options")),

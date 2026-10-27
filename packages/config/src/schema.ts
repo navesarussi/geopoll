@@ -17,6 +17,8 @@ export interface PollDef {
   /** ADR-0020: every poll has a secret ballot + a public-positions survey. */
   publicPositions: boolean;
   dummy: boolean;
+  /** #79: optional voting window (ISO timestamps). Outside it the poll is closed; a manual "closed" always wins. */
+  schedule?: { opensAt?: string; closesAt?: string };
 }
 
 export interface ElectionEvent { type: "knesset" | "municipal"; /** ISO date (local election day) */ date: string }
@@ -50,6 +52,8 @@ export interface Features {
   teenDefaultAnonymous: boolean;
   /** ADR-0004 / #77: during the §16ה blackout show the last PRE-window snapshot marked "not current". OFF pending lawyer (K7). */
   blackoutShowStale: boolean;
+  /** #79: import from docs/content/question-bank.md in /admin. OFF until lawyer D4 (copyright on wording). */
+  questionBankImport: boolean;
 }
 export interface Services { relayUrl: string }
 
@@ -79,11 +83,16 @@ export function validate(c: GlobalConfig): GlobalConfig {
   req(/^\d{2}:\d{2}$/.test(j.blackout.endsAtLocal), "blackout.endsAtLocal must be HH:MM");
   for (const e of j.elections) req(/^\d{4}-\d{2}-\d{2}$/.test(e.date), `bad election date ${e.date}`);
   const ids = new Set<string>();
+  const isTs = (s?: string) => s === undefined || (!Number.isNaN(Date.parse(s)) && /^\d{4}-\d{2}-\d{2}T/.test(s));
   for (const p of c.polls) {
     req(!!p.id && !ids.has(p.id), `duplicate/empty poll id ${p.id}`); ids.add(p.id);
     req(p.options.length >= 2, `poll ${p.id} needs >=2 options`);
     req(new Set(p.options.map((o) => o.id)).size === p.options.length, `poll ${p.id} duplicate option ids`);
     req(!!p.question.he && p.options.every((o) => !!o.label.he), `poll ${p.id} missing Hebrew text`);
+    if (p.schedule) {
+      req(isTs(p.schedule.opensAt) && isTs(p.schedule.closesAt), `poll ${p.id} bad schedule timestamp`);
+      req(!p.schedule.opensAt || !p.schedule.closesAt || Date.parse(p.schedule.opensAt) < Date.parse(p.schedule.closesAt), `poll ${p.id} opensAt must be before closesAt`);
+    }
   }
   req(typeof c.services.relayUrl === "string" && c.services.relayUrl.length > 0, "services.relayUrl required");
   return c;

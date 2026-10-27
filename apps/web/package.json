@@ -11,6 +11,7 @@
     "migrate": "tsx scripts/migrate.ts",
     "batch-worker": "tsx scripts/batch-worker.ts",
     "seed": "tsx scripts/seed.ts",
+    "build:question-bank": "node scripts/build-question-bank.mjs",
     "relay": "tsx scripts/relay-server.ts",
     "test:coverage": "vitest run --coverage"
   },

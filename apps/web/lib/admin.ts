@@ -1,7 +1,7 @@
 import { config, blackoutFor, polls } from "./config";
 import { bucket, kThreshold } from "./results";
 import type { Stores } from "./store";
-import { syncPolls } from "./polls";
+import { effectiveStatus, syncPolls } from "./polls";
 import type { Locale } from "@geopoll/config";
 
 /**
@@ -36,7 +36,7 @@ export async function dashboard(s: Stores, now = new Date(), lang: Locale = "he"
     const snap = await s.ballots.getSnapshot(p.id);
     rows.push({
       id: p.id, kind: p.kind, dummy: !!p.dummy, question: p.question[lang] ?? p.question.he,
-      status: await s.ballots.pollStatus(p.id),
+      status: await effectiveStatus(s.ballots, p, now), manual: await s.ballots.pollStatus(p.id), schedule: p.schedule ?? null,
       turnout: bucket(t.counted), passesK: t.counted >= k,
       queued: t.queued >= k ? bucket(t.queued) : t.queued > 0 ? `<${k}` : "0",
       snapshotAt: snap?.snapshotAt ?? null, published: snap?.published ?? false,
