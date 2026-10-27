@@ -32,8 +32,13 @@ export default function App() {
   const flush = useCallback(async () => { if (await isOnline()) { await flushQueue(secureKV, http, RELAY).catch(() => {}); } await refreshQueue(); }, [refreshQueue]);
 
   useEffect(() => {
-    checkVersion(http, APP_VERSION, PLATFORM).then(setVer);
-    (async () => { setLocked((await secureKV.get(LOCK_PREF)) === "1"); setSigned(await isSignedIn()); await flush(); })();
+    // Never hang on the launch spinner (bug-learnings #2): version check times out open, secure-store errors default to unlocked.
+    const timeout = new Promise<VersionCheck>((r) => setTimeout(() => r({ status: "ok", storeUrl: null }), 6000));
+    Promise.race([checkVersion(http, APP_VERSION, PLATFORM), timeout]).then(setVer);
+    (async () => {
+      try { setLocked((await secureKV.get(LOCK_PREF)) === "1"); } catch (e) { console.warn("lock pref unavailable", e); setLocked(false); }
+      try { setSigned(await isSignedIn()); await flush(); } catch (e) { console.warn("startup", e); }
+    })();
     const un = onReconnect(flush);
     const sub = AppState.addEventListener("change", async (st) => { if (st === "background" && (await secureKV.get(LOCK_PREF)) === "1") setLocked(true); });
     return () => { un(); sub.remove(); };
@@ -42,7 +47,7 @@ export default function App() {
   const ctx: Ctx = { t, lang, dir };
   const text = { writingDirection: dir, textAlign: dir === "rtl" ? "right" : "left" } as const;
 
-  if (!ver || locked === null) return <SafeAreaView style={[s.root, { justifyContent: "center" }]}><ActivityIndicator /></SafeAreaView>;
+  if (!ver || locked === null) return <SafeAreaView testID="launch-loading" style={[s.root, { justifyContent: "center" }]}><ActivityIndicator /></SafeAreaView>;
   if (ver.status === "force-update") return (
     <SafeAreaView style={[s.root, s.pad, { justifyContent: "center", direction: dir }]}>
       <Text style={[s.h1, text]}>{t.m_forceUpdate}</Text>
@@ -68,7 +73,7 @@ export default function App() {
       </ScrollView>
       <View style={s.tabs}>
         {(["polls", "positions", "settings"] as Tab[]).map((k) => (
-          <Pressable key={k} style={s.tab} onPress={() => setTab(k)} accessibilityState={{ selected: tab === k }}>
+          <Pressable key={k} testID={`tab-${k}`} style={s.tab} onPress={() => setTab(k)} accessibilityState={{ selected: tab === k }}>
             <Text style={tab === k ? s.ok : s.muted}>{k === "polls" ? t.m_polls : k === "positions" ? t.m_positions : t.m_settings}</Text>
           </Pressable>))}
       </View>
