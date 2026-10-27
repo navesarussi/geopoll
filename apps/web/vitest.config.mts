@@ -1,3 +1,10 @@
 import { defineConfig } from "vitest/config";
 import path from "node:path";
-export default defineConfig({ resolve: { alias: { "@": path.resolve(__dirname) } }, test: { testTimeout: 30000 } });
+export default defineConfig({
+  resolve: { alias: {
+    "@geopoll/config": path.resolve(__dirname, "../../packages/config/src/index.ts"),
+    "@geopoll/design-tokens": path.resolve(__dirname, "../../packages/design-tokens/src/index.ts"),
+    "@": path.resolve(__dirname),
+  } },
+  test: { testTimeout: 30000 },
+});

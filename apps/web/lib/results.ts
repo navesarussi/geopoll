@@ -1,4 +1,4 @@
-export const K_THRESHOLD = 50; // ADR-0012 / national k
+import { config } from "./config";
 
 export type Tally = Record<string, number>;
 export interface PublicResults {
@@ -8,23 +8,34 @@ export interface PublicResults {
   snapshotAt: string;
   /** ADR-0019: "basic" if any counted ballot came from T0/T1 (or seed data). */
   assurance?: "basic" | "verified";
+  /** ADR-0004: §16ה(ח) blackout – publication suppressed. */
+  blackout?: boolean;
 }
+
+/** k-threshold from config (ADR-0012). Small localities use kSmallLocality once locality polls exist. */
+export const kThreshold = () => config().jurisdiction.thresholds.kNational;
+export const K_THRESHOLD = kThreshold();
 
 export function bucket(n: number): string {
-  if (n < K_THRESHOLD) return `פחות מ-${K_THRESHOLD}`;
-  const steps = [100000, 10000, 1000, 500, 100, 50];
-  for (const s of steps) if (n >= s) return `מעל ${s.toLocaleString("en-US")}`;
-  return `מעל ${K_THRESHOLD}`;
+  const k = kThreshold();
+  if (n < k) return `פחות מ-${k}`;
+  for (const s of config().jurisdiction.publication.buckets) if (n >= s) return `מעל ${s.toLocaleString("en-US")}`;
+  return `מעל ${k}`;
 }
 
-/** Whole-percent rounding (ADR-0012 working assumption). */
+/** Rounding per config (ADR-0012 working assumption: whole percent). */
 export function toPublic(tally: Tally, options: string[], snapshotAt: Date, tiers: string[] = ["T0"]): PublicResults {
   const assurance = tiers.some((t) => t === "T0" || t === "T1") ? "basic" : "verified";
   const total = options.reduce((s, o) => s + (tally[o] ?? 0), 0);
-  if (total < K_THRESHOLD) {
+  if (total < kThreshold()) {
     return { published: false, participants: bucket(total), percents: null, snapshotAt: snapshotAt.toISOString(), assurance };
   }
+  const r = config().jurisdiction.publication.roundingPercent;
   const percents: Record<string, number> = {};
-  for (const o of options) percents[o] = Math.round(((tally[o] ?? 0) / total) * 100);
+  for (const o of options) percents[o] = Math.round(((tally[o] ?? 0) / total) * 100 / r) * r;
   return { published: true, participants: bucket(total), percents, snapshotAt: snapshotAt.toISOString(), assurance };
 }
+
+/** Suppressed view during blackout: no numbers at all (not even the bucket). */
+export const blackoutResults = (now: Date): PublicResults =>
+  ({ published: false, participants: "", percents: null, snapshotAt: now.toISOString(), blackout: true });

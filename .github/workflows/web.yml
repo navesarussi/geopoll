@@ -2,9 +2,9 @@ name: web
 on:
   push:
     branches: [main]
-    paths: ["apps/web/**"]
+    paths: ["apps/web/**", "packages/config/**", "packages/design-tokens/**"]
   pull_request:
-    paths: ["apps/web/**", ".github/workflows/web.yml"]
+    paths: ["apps/web/**", "packages/config/**", "packages/design-tokens/**", ".github/workflows/web.yml"]
 permissions:
   contents: read
 jobs:
