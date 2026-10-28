@@ -30,3 +30,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: yamllint
         run: pip install --quiet yamllint && yamllint -d relaxed .github
+  threat-model:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: STRIDE coverage (T-103)
+        run: node scripts/ci/threat-model-stride.mjs

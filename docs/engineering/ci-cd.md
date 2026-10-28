@@ -5,7 +5,7 @@
 ## פעיל עכשיו
 | workflow | מה בודק |
 |---|---|
-| [docs.yml](../../.github/workflows/docs.yml) | markdownlint (כללים מקלים), בדיקת קישורים פנימיים (lychee offline), תקינות YAML |
+| [docs.yml](../../.github/workflows/docs.yml) | markdownlint (כללים מקלים), בדיקת קישורים פנימיים (lychee offline), תקינות YAML, כיסוי STRIDE ב-[threat-model.md](../architecture/threat-model.md) |
 | [ci.yml](../../.github/workflows/ci.yml) | job מאגד **`CI gate`** (הוא ה-check היחיד שצריך להיות חובה): lint קל (`scripts/lint.mjs`; ESLint עוד לא אומץ), typecheck, vitest + coverage ratchet (`scripts/ci/coverage-baseline.json`), אינטגרציה מול Postgres 17 ב-docker (pull עם retries), gitleaks, build + תקציב גודל bundle (`scripts/ci/bundle-budget.json`), Lighthouse (מייעץ בלבד) |
 | [dependabot.yml](../../.github/dependabot.yml) | עדכוני npm ו-Actions שבועיים, מקובצים |
 

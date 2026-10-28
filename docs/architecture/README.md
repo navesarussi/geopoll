@@ -131,7 +131,7 @@ sequenceDiagram
 - דף סטטוס ציבורי ודוח שקיפות (ADR-0014).
 
 ## 11. מודל איומים
-סיכום ב-[threat-model.md](threat-model.md).
+STRIDE מלא (T-103) ב-[threat-model.md](threat-model.md); טבלת T1–T12 + STRIDE לכל שירות + מתאם זמנים והפרשים.
 
 ## 12. מסלול גדילה
 MVP → ארצי → עולמי: [scaling-path.md](scaling-path.md).
