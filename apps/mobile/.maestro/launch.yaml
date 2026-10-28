@@ -1,4 +1,5 @@
-# Launch regression (bug-learnings #1, #2): the app must get past the launch spinner to the real tab bar.
+# Launch regression (bug-learnings #1, #2): the app must get past the splash/launch spinner to the real tab bar,
+# and every tab must render without the error screen.
 appId: app.geopoll.beta
 ---
 - launchApp:
@@ -9,9 +10,33 @@ appId: app.geopoll.beta
     timeout: 30000
 - assertNotVisible: ".*Something went wrong.*"
 - assertVisible:
-    id: "tab-settings"
+    id: "screen-polls"
+- takeScreenshot: 1-polls
+- tapOn:
+    id: "tab-results"
+- assertVisible:
+    id: "screen-results"
+- takeScreenshot: 2-results
+- tapOn:
+    id: "tab-positions"
+- assertVisible:
+    id: "screen-positions"
 - tapOn:
     id: "tab-settings"
 - assertVisible:
+    id: "screen-settings"
+- takeScreenshot: 3-settings
+- tapOn:
+    id: "lang-en"
+- assertVisible: "Settings"
+- tapOn:
+    id: "theme-dark"
+- takeScreenshot: 4-settings-en-dark
+- scrollUntilVisible:
+    element:
+      id: "app-version"
+    direction: DOWN
+- tapOn:
     id: "tab-polls"
-- takeScreenshot: first-screen
+- assertNotVisible: ".*Something went wrong.*"
+- takeScreenshot: 5-polls-en-dark

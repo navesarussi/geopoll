@@ -54,3 +54,19 @@ added so the same class of bug is caught before release. Newest first. Agents: a
 - **Root cause:** the test issues 55 blind-RSA tokens (CPU-bound); with v8 coverage on a shared GitHub runner it crossed 60s. Not a regression.
 - **Fix:** per-test timeout 180s. **Guard:** the test itself; rerun-to-green is not accepted as a fix.
 - **Lesson:** CPU-heavy crypto loops need headroom ×3 over local time under coverage, or a smaller k fixture.
+
+## 5. Hebrew text rendered flush-left after the UI redesign (RTL)
+
+- **Symptom:** PR #112 simulator screenshot: inside the RTL root (`direction: "rtl"`) every Hebrew label was aligned to the left edge.
+- **Root cause:** under an RTL layout direction React Native treats `textAlign: "left" | "right"` as start/end, so the old
+  `dir === "rtl" ? "right" : "left"` flipped twice.
+- **Fix:** `textDir()` in `apps/mobile/src/theme/tokens.ts` always returns `textAlign: "left"` (= start) plus `writingDirection`.
+- **Regression tests:** `apps/mobile/tests/ui-logic.test.ts` (textDir contract); the Maestro flow saves Hebrew + English screenshots
+  to the `ios-smoke` artifact for every mobile PR.
+- **Lesson:** set direction once at the root and use start-relative alignment everywhere; review a simulator screenshot for any layout change.
+
+## 6. Maestro `takeScreenshot` with an absolute path fails the flow
+
+- **Symptom:** PR #112 smoke job: `Invalid path "/tmp/smoke/shot-1-polls.png" … resolves outside this run's takeScreenshot output folder`.
+- **Fix:** plain screenshot names; Maestro writes them into `--test-output-dir` (`/tmp/smoke/maestro`), which is uploaded as the artifact.
+- **Guard:** the smoke job itself runs the flow on every mobile PR.
