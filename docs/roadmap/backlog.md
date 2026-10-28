@@ -64,6 +64,7 @@
 - **agent:** yes
 - **needs-lawyer:** no
 - **depends:** —
+- **status:** בוצע (2026-10-28) – [threat-model.md](../architecture/threat-model.md) v1.0; בדיקת CI `scripts/ci/threat-model-stride.mjs`
 - **acceptance:** STRIDE לכל שירות ב-docs/architecture/threat-model.md; ניתוח מתאם זמנים והתקפות הפרש.
 
 ### T-104: השוואת ספקי KYC לפי קריטריוני ADR-0007
