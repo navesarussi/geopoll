@@ -3,6 +3,7 @@ import { webcrypto } from "node:crypto";
 import { blindSign, issuerKeys, parseToken, suite, verifyToken, type Tier } from "@/lib/crypto";
 import { resolveTier, tierForAccount, type TierAdapter } from "@/lib/identity";
 import { castVote, results } from "@/lib/service";
+import { toPublic } from "@/lib/results";
 import { currentEpoch, DEMO_POLL } from "@/lib/poll";
 import { freshStores } from "./helpers";
 
@@ -52,4 +53,11 @@ describe("identity tiers (T-107, ADR-0019)", () => {
     expect((await results(ballots, new Date(Date.now() + 1000))).assurance).toBe("basic");
     delete process.env.SNAPSHOT_INTERVAL_SECONDS;
   }, 180_000); // 55 blind-RSA signatures; CI coverage runner took >60s (bug-learnings #3)
+  it("T-205: any T0/T1 ballot makes the whole result basic, below k too; only all-T2 is verified", () => {
+    const at = new Date("2026-01-01T00:00:00Z");
+    expect(toPublic({ yes: 60 }, ["yes", "no"], at, ["T2", "T1"]).assurance).toBe("basic");
+    expect(toPublic({ yes: 60 }, ["yes", "no"], at, ["T0"]).assurance).toBe("basic");
+    expect(toPublic({ yes: 3 }, ["yes", "no"], at, ["T1"]).assurance).toBe("basic");
+    expect(toPublic({ yes: 60 }, ["yes", "no"], at, ["T2"]).assurance).toBe("verified");
+  });
 });

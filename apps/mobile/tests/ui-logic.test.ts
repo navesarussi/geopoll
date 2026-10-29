@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { canVote, chartRows, pollChip } from "../src/core/ui-logic";
+import { canVote, chartRows, isBasicAssurance, pollChip } from "../src/core/ui-logic";
 import { resultsState } from "../src/core/polls";
 import { contrast, palettes, textDir } from "../src/theme/tokens";
 import { DICTS } from "@geopoll/i18n";
@@ -61,5 +61,25 @@ describe("results chart rows", () => {
   it("blackout wins over published results (§16ה)", () => {
     expect(resultsState({ published: true, blackout: true })).toBe("blackout");
     expect(resultsState({ published: false })).toBe("belowK");
+  });
+});
+
+describe("T-205 assurance label (ADR-0019)", () => {
+  it("is basic unless the API explicitly says verified (fail-safe)", () => {
+    expect(isBasicAssurance({ assurance: "basic" })).toBe(true);
+    expect(isBasicAssurance({})).toBe(true);
+    expect(isBasicAssurance(null)).toBe(true);
+    expect(isBasicAssurance({ assurance: "VERIFIED" })).toBe(true);
+    expect(isBasicAssurance({ assurance: "verified" })).toBe(false);
+  });
+  it("label exists in he and en and never claims one person = one vote", () => {
+    for (const d of [DICTS.he, DICTS.en]) {
+      expect(d.m_assuranceBasic).toBeTruthy();
+      expect(d.basicAssurance.trim()).toBeTruthy();
+    }
+    expect(DICTS.he.m_assuranceBasic).toContain("לא מאומת");
+    expect(DICTS.en.m_assuranceBasic.toLowerCase()).toContain("unverified");
+    expect(DICTS.he.basicAssurance).toMatch(/אינה "אדם אחד, קול אחד"/);
+    expect(DICTS.en.basicAssurance).toMatch(/not "one person, one vote"/);
   });
 });

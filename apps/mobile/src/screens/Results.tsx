@@ -3,13 +3,13 @@ import { RefreshControl, ScrollView, View } from "react-native";
 import { loadConfig } from "@geopoll/config";
 import { pollText, tr } from "@geopoll/i18n";
 import { resultsState, type LivePoll } from "../core/polls";
-import { chartRows } from "../core/ui-logic";
+import { chartRows, isBasicAssurance } from "../core/ui-logic";
 import { http } from "../native/platform";
 import { BarChart, Card, Chip, EmptyState, Notice, Skeleton, T, useUI } from "../components/kit";
 import { space } from "../theme/tokens";
 
 const cfg = loadConfig("IL");
-type Results = { published: boolean; blackout?: boolean; participants?: string; percents?: Record<string, number>; snapshotAt?: string };
+type Results = { published: boolean; blackout?: boolean; participants?: string; percents?: Record<string, number>; snapshotAt?: string; assurance?: "basic" | "verified" };
 
 export function ResultsScreen({ polls, header }: { polls: LivePoll[]; header?: React.ReactNode }) {
   const { t, c } = useUI();
@@ -42,8 +42,10 @@ function ResultCard({ poll, gen }: { poll: LivePoll; gen: number }) {
         : (<>
           <View style={{ flexDirection: "row", gap: space.sm, flexWrap: "wrap" }}>
             <Chip label={`${t.participants}: ${res!.participants ?? "—"}`} tone="muted" />
+            {isBasicAssurance(res) ? <Chip label={t.m_assuranceBasic} tone="warn" /> : null}
           </View>
           <BarChart rows={chartRows(pt.options, res!.percents)} leadingLabel={t.m_leading} />
+          {isBasicAssurance(res) ? <T v="caption" color={c.muted} testID="results-basic-assurance">{t.basicAssurance.trim()}</T> : null}
           {poll.kind !== "referendum" ? <T v="caption" color={c.muted}>{t.electionLabel}</T> : null}
           {res!.snapshotAt ? <T v="caption" color={c.muted}>{t.results} · {new Date(res!.snapshotAt).toLocaleString(lang)}</T> : null}
         </>)}
