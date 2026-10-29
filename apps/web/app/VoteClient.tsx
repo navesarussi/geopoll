@@ -120,7 +120,7 @@ export default function VoteClient({ signedIn, providers, t, poll, kThreshold, b
             ))}
           </>
         )}
-        {res && !res.blackout && <p className="small">{t.updated}: {new Date(res.snapshotAt).toLocaleString(lang, { timeZone: "Asia/Jerusalem" })}. {t.resultsNote}{res.assurance === "basic" && t.basicAssurance}</p>}
+        {res && !res.blackout && <p className="small">{t.updated}: {new Date(res.snapshotAt).toLocaleString(lang, { timeZone: "Asia/Jerusalem" })}. {t.resultsNote}{res.assurance !== "verified" && t.basicAssurance}</p>}
         <button className="link" onClick={load}>{t.refresh}</button>
       </section>
       <Survey signedIn={signedIn} poll={poll} t={t} lq={`?lang=${lang}`} />

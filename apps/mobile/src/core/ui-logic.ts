@@ -16,3 +16,7 @@ export function chartRows(options: { id: string; text: string }[], percents: Rec
     .sort((a, b) => b.pct - a.pct);
   return rows.map((r, i) => ({ ...r, leader: i === 0 && r.pct > 0 && (rows[1]?.pct ?? -1) < r.pct }));
 }
+/** T-205 / ADR-0019: results are labelled "basic / unverified" unless the API explicitly says every counted
+ *  ballot came from a verified tier. Fail-safe: a missing or unknown value is treated as basic, so the app
+ *  never implies "one person, one vote" by accident. */
+export const isBasicAssurance = (res: { assurance?: unknown } | null | undefined) => res?.assurance !== "verified";
