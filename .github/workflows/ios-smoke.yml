@@ -18,10 +18,10 @@ jobs:
     defaults: { run: { working-directory: apps/mobile } }
     env: { BUNDLE_ID: app.geopoll.beta, CI: "1" }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: maxim-lobanov/setup-xcode@v1 # Swift 6.2+ required by Expo SDK 58 SPM deps (same major as EAS image)
         with: { xcode-version: latest-stable }
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with: { node-version: "22", cache: npm, cache-dependency-path: apps/mobile/package-lock.json }
       - run: npm ci
       - run: npx vitest run
@@ -66,5 +66,5 @@ jobs:
           export PATH="$HOME/.maestro/bin:$PATH"
           MAESTRO_CLI_NO_ANALYTICS=1 maestro test .maestro/launch.yaml --format junit --output /tmp/smoke/maestro.xml --test-output-dir /tmp/smoke/maestro
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with: { name: ios-smoke, path: /tmp/smoke, if-no-files-found: ignore }
